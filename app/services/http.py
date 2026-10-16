@@ -5,7 +5,7 @@ from functools import wraps
 
 import requests
 
-USER_AGENT = "WetBulbApp/2.0 (+https://derossimolina.com.br)"
+USER_AGENT = "WetBulbApp/2.0 (+https://derossi.dev)"
 DEFAULT_TIMEOUT = 15
 
 _session = requests.Session()
