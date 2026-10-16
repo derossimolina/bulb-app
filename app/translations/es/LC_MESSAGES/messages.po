@@ -1,0 +1,393 @@
+# Spanish translations for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-10-15 22:50-0300\n"
+"PO-Revision-Date: 2025-01-23 17:22-0300\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: es <LL@li.org>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: app/routes.py:29
+msgid "City not found. Try adding the country code, e.g. \"Paris, FR\"."
+msgstr ""
+"Ciudad no encontrada. Intente agregar el código del país, ej.: \"Paris, "
+"FR\"."
+
+#: app/routes.py:33
+msgid "Weather service unavailable. Please try again later."
+msgstr "Servicio meteorológico no disponible. Inténtelo de nuevo más tarde."
+
+#: app/meteo/indices.py:23 app/templates/partials/_forecast.html:46
+msgid "High pressure"
+msgstr "Alta presión"
+
+#: app/meteo/indices.py:24
+msgid "Stable weather, few clouds"
+msgstr "Tiempo estable, pocas nubes"
+
+#: app/meteo/indices.py:26 app/templates/partials/_forecast.html:48
+msgid "Low pressure"
+msgstr "Baja presión"
+
+#: app/meteo/indices.py:27
+msgid "Unstable weather, clouds and rain likely"
+msgstr "Tiempo inestable, probables nubes y lluvia"
+
+#: app/meteo/indices.py:29 app/templates/partials/_forecast.html:47
+msgid "Normal pressure"
+msgstr "Presión normal"
+
+#: app/meteo/indices.py:30
+msgid "No dominant pressure system"
+msgstr "Sin sistema de presión dominante"
+
+#: app/meteo/indices.py:36
+msgid "Rising"
+msgstr "En aumento"
+
+#: app/meteo/indices.py:38
+msgid "Falling"
+msgstr "En descenso"
+
+#: app/meteo/indices.py:40
+msgid "Steady"
+msgstr "Estable"
+
+#: app/meteo/indices.py:61
+msgid "Very low"
+msgstr "Muy bajo"
+
+#: app/meteo/indices.py:62
+msgid "Low"
+msgstr "Bajo"
+
+#: app/meteo/indices.py:63
+msgid "Moderate"
+msgstr "Moderado"
+
+#: app/meteo/indices.py:64
+msgid "High"
+msgstr "Alto"
+
+#: app/meteo/wetbulb.py:31
+msgid "Life risk! Seek an air-conditioned place immediately!"
+msgstr ""
+"¡Peligro de muerte! ¡Busque un lugar con aire acondicionado de inmediato!"
+
+#: app/meteo/wetbulb.py:33
+msgid ""
+"Danger! Seek an air-conditioned place. Risk of life for sensitive people."
+msgstr ""
+"¡Peligro! Busque un lugar con aire acondicionado. Riesgo de muerte para "
+"personas sensibles."
+
+#: app/meteo/wetbulb.py:35
+msgid "Alert! Look for a cool place."
+msgstr "¡Alerta! Busca un lugar fresco."
+
+#: app/meteo/wetbulb.py:45
+msgid "Normal temperature."
+msgstr "Temperatura normal."
+
+#: app/meteo/wmo.py:5
+msgid "Clear sky"
+msgstr "Cielo despejado"
+
+#: app/meteo/wmo.py:6
+msgid "Mainly clear"
+msgstr "Mayormente despejado"
+
+#: app/meteo/wmo.py:7
+msgid "Partly cloudy"
+msgstr "Parcialmente nublado"
+
+#: app/meteo/wmo.py:8
+msgid "Overcast"
+msgstr "Cubierto"
+
+#: app/meteo/wmo.py:9
+msgid "Fog"
+msgstr "Niebla"
+
+#: app/meteo/wmo.py:10
+msgid "Depositing rime fog"
+msgstr "Niebla con escarcha"
+
+#: app/meteo/wmo.py:11
+msgid "Light drizzle"
+msgstr "Llovizna ligera"
+
+#: app/meteo/wmo.py:12
+msgid "Moderate drizzle"
+msgstr "Llovizna moderada"
+
+#: app/meteo/wmo.py:13
+msgid "Dense drizzle"
+msgstr "Llovizna densa"
+
+#: app/meteo/wmo.py:14
+msgid "Light freezing drizzle"
+msgstr "Llovizna helada ligera"
+
+#: app/meteo/wmo.py:15
+msgid "Dense freezing drizzle"
+msgstr "Llovizna helada densa"
+
+#: app/meteo/wmo.py:16
+msgid "Slight rain"
+msgstr "Lluvia ligera"
+
+#: app/meteo/wmo.py:17
+msgid "Moderate rain"
+msgstr "Lluvia moderada"
+
+#: app/meteo/wmo.py:18
+msgid "Heavy rain"
+msgstr "Lluvia fuerte"
+
+#: app/meteo/wmo.py:19
+msgid "Light freezing rain"
+msgstr "Lluvia helada ligera"
+
+#: app/meteo/wmo.py:20
+msgid "Heavy freezing rain"
+msgstr "Lluvia helada fuerte"
+
+#: app/meteo/wmo.py:21
+msgid "Slight snowfall"
+msgstr "Nevada ligera"
+
+#: app/meteo/wmo.py:22
+msgid "Moderate snowfall"
+msgstr "Nevada moderada"
+
+#: app/meteo/wmo.py:23
+msgid "Heavy snowfall"
+msgstr "Nevada fuerte"
+
+#: app/meteo/wmo.py:24
+msgid "Snow grains"
+msgstr "Granos de nieve"
+
+#: app/meteo/wmo.py:25
+msgid "Slight rain showers"
+msgstr "Chubascos ligeros"
+
+#: app/meteo/wmo.py:26
+msgid "Moderate rain showers"
+msgstr "Chubascos moderados"
+
+#: app/meteo/wmo.py:27
+msgid "Violent rain showers"
+msgstr "Chubascos violentos"
+
+#: app/meteo/wmo.py:28
+msgid "Slight snow showers"
+msgstr "Chubascos de nieve ligeros"
+
+#: app/meteo/wmo.py:29
+msgid "Heavy snow showers"
+msgstr "Chubascos de nieve fuertes"
+
+#: app/meteo/wmo.py:30
+msgid "Thunderstorm"
+msgstr "Tormenta"
+
+#: app/meteo/wmo.py:31
+msgid "Thunderstorm with slight hail"
+msgstr "Tormenta con granizo ligero"
+
+#: app/meteo/wmo.py:32
+msgid "Thunderstorm with heavy hail"
+msgstr "Tormenta con granizo fuerte"
+
+#: app/templates/base.html:7
+msgid "Wet Bulb Temperature"
+msgstr "Temperatura de bulbo húmedo"
+
+#: app/templates/base.html:16
+msgid "Wet Bulb Temperature Calculator"
+msgstr "Calculadora de temperatura de bulbo húmedo"
+
+#: app/templates/base.html:36
+msgid "Weather data:"
+msgstr "Datos meteorológicos:"
+
+#: app/templates/base.html:37
+msgid "Official alerts:"
+msgstr "Avisos oficiales:"
+
+#: app/templates/base.html:43
+msgid "We use cookies to ensure you get the best experience on our website."
+msgstr ""
+"Utilizamos cookies para garantizar que obtenga la mejor experiencia en "
+"nuestro sitio web."
+
+#: app/templates/base.html:44
+msgid "Accept"
+msgstr "Aceptar"
+
+#: app/templates/index.html:8
+msgid "City:"
+msgstr "Ciudad:"
+
+#: app/templates/index.html:10
+msgid "Enter city name"
+msgstr "Introduzca el nombre de la ciudad"
+
+#: app/templates/index.html:12
+msgid "Get Wet Bulb Temperature"
+msgstr "Obtener temperatura de bulbo húmedo"
+
+#: app/templates/partials/_about.html:2
+msgid "What is Wet Bulb Temperature?"
+msgstr "¿Qué es la temperatura de bulbo húmedo?"
+
+#: app/templates/partials/_about.html:3
+msgid ""
+"The wet bulb temperature is the temperature measured by a thermometer whose "
+"bulb (the sensitive part) is wrapped in a wet cloth. This temperature "
+"reflects the amount of moisture in the air, as the evaporation of water from"
+" the cloth cools the thermometer."
+msgstr ""
+"La temperatura de bulbo húmedo es la temperatura que se mide con un "
+"termómetro cuyo bulbo (la parte sensible) está envuelto en un paño húmedo. "
+"Esta temperatura refleja la cantidad de humedad en el aire, ya que la "
+"evaporación del agua del paño enfría el termómetro."
+
+#: app/templates/partials/_about.html:6
+msgid "What is its use?"
+msgstr "¿Cual es su utilidad?"
+
+#: app/templates/partials/_about.html:7
+msgid ""
+"Wet bulb temperature is crucial for understanding thermal comfort in "
+"environments. When the relative humidity is high, the evaporation of sweat "
+"from the human body decreases, making the perceived temperature feel hotter."
+" In extreme cases, when the wet bulb temperature is too high, the body may "
+"struggle to cool down effectively, which can be dangerous."
+msgstr ""
+"La temperatura de bulbo húmedo es fundamental para comprender el confort "
+"térmico en los entornos. Cuando la humedad relativa es alta, la evaporación "
+"del sudor del cuerpo humano disminuye, lo que hace que la temperatura "
+"percibida se sienta más alta. En casos extremos, cuando la temperatura de "
+"bulbo húmedo es demasiado alta, el cuerpo puede tener dificultades para "
+"enfriarse de manera efectiva, lo que puede ser peligroso."
+
+#: app/templates/partials/_about.html:11
+msgid "Reference"
+msgstr "Referencia"
+
+#: app/templates/partials/_alerts.html:2
+msgid "INMET weather alerts"
+msgstr "Avisos meteorológicos del INMET"
+
+#: app/templates/partials/_alerts.html:6
+msgid "INMET alert service is unavailable right now."
+msgstr "El servicio de avisos del INMET no está disponible en este momento."
+
+#: app/templates/partials/_alerts.html:11
+msgid "No active INMET alerts for this city."
+msgstr "No hay avisos activos del INMET para esta ciudad."
+
+#: app/templates/partials/_alerts.html:22
+msgid "Today"
+msgstr "Hoy"
+
+#: app/templates/partials/_alerts.html:22
+msgid "Upcoming"
+msgstr "Próximos días"
+
+#: app/templates/partials/_alerts.html:27
+msgid "Risks"
+msgstr "Riesgos"
+
+#: app/templates/partials/_alerts.html:31
+msgid "Instructions"
+msgstr "Instrucciones"
+
+#: app/templates/partials/_alerts.html:39
+msgid "Source: National Institute of Meteorology (INMET), official alerts."
+msgstr ""
+"Fuente: Instituto Nacional de Meteorología de Brasil (INMET), avisos "
+"oficiales."
+
+#: app/templates/partials/_current.html:4
+msgid "Results for"
+msgstr "Resultados para"
+
+#: app/templates/partials/_current.html:13
+msgid "Feels like"
+msgstr "Sensación"
+
+#: app/templates/partials/_current.html:18
+msgid "Wet Bulb Temperature:"
+msgstr "Temperatura de bulbo húmedo:"
+
+#: app/templates/partials/_current.html:22
+msgid "Relative humidity"
+msgstr "Humedad relativa"
+
+#: app/templates/partials/_current.html:24
+msgid "Dew point"
+msgstr "Punto de rocío"
+
+#: app/templates/partials/_current.html:28
+#: app/templates/partials/_forecast.html:24
+msgid "Pressure"
+msgstr "Presión"
+
+#: app/templates/partials/_current.html:34
+msgid "Wind"
+msgstr "Viento"
+
+#: app/templates/partials/_current.html:36
+#: app/templates/partials/_forecast.html:32
+msgid "Gusts"
+msgstr "Ráfagas"
+
+#: app/templates/partials/_forecast.html:2
+msgid "7-Day Weather Forecast"
+msgstr "Pronóstico del tiempo para 7 días"
+
+#: app/templates/partials/_forecast.html:17
+msgid "Humidity"
+msgstr "Humedad"
+
+#: app/templates/partials/_forecast.html:20
+msgid "Rain"
+msgstr "Lluvia"
+
+#: app/templates/partials/_forecast.html:35
+msgid "Wet bulb max"
+msgstr "Bulbo húmedo máx."
+
+#: app/templates/partials/_forecast.html:38
+msgid "Tornado"
+msgstr "Tornado"
+
+#: app/templates/partials/_forecast.html:49
+msgid "trend vs. previous day"
+msgstr "tendencia respecto al día anterior"
+
+#: app/templates/partials/_forecast.html:50
+msgid ""
+"The tornado indicator is an experimental estimate based on atmospheric "
+"instability (CAPE) and wind shear. It is not an official forecast — always "
+"follow civil defense and official weather alerts."
+msgstr ""
+"El indicador de tornado es una estimación experimental basada en la "
+"inestabilidad atmosférica (CAPE) y la cizalladura del viento. No es un "
+"pronóstico oficial: siga siempre a Protección Civil y los avisos "
+"meteorológicos oficiales."

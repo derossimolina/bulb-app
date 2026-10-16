@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ _('Wet Bulb Temperature') }}{% endblock %}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <main class="container">
+        <header class="app-header">
+            <h1>{{ _('Wet Bulb Temperature Calculator') }}</h1>
+            <div class="lang-switch" role="navigation" aria-label="Language selection">
+                {% for code, flag, label in [('en', 'us', 'English'), ('pt', 'br', 'Português'), ('es', 'es', 'Español')] %}
+                <a href="{{ url_for('main.change_language', lang=code) }}"
+                   class="lang-btn {% if get_locale() == code %}active{% endif %}" title="{{ label }}">
+                    <img src="https://flagcdn.com/w20/{{ flag }}.png" alt="{{ label }}" width="20" height="15">
+                </a>
+                {% endfor %}
+            </div>
+        </header>
+
+        {% block content %}{% endblock %}
+
+        <footer>
+            <p><a href="https://derossimolina.com.br">Copyright 2025-6 J. de Rossi Molina Ltda</a></p>
+            <div class="social">
+                <a href="https://github.com/jeronimo-molina" target="_blank" rel="noopener"><i class="fab fa-github"></i> GitHub</a>
+                <a href="https://www.linkedin.com/in/molinajeronimo" target="_blank" rel="noopener"><i class="fab fa-linkedin"></i> LinkedIn</a>
+            </div>
+            <p class="sources">
+                {{ _('Weather data:') }} <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> (CC BY 4.0)
+                · {{ _('Official alerts:') }} <a href="https://avisos.inmet.gov.br" target="_blank" rel="noopener">INMET</a>
+            </p>
+        </footer>
+    </main>
+
+    <div class="cookie-consent" id="cookie-consent">
+        {{ _('We use cookies to ensure you get the best experience on our website.') }}
+        <button class="btn" onclick="acceptCookies()">{{ _('Accept') }}</button>
+    </div>
+
+    <script>
+        function acceptCookies() {
+            document.cookie = "cookies_accepted=true; path=/; max-age=" + 60 * 60 * 24 * 365;
+            document.getElementById('cookie-consent').style.display = 'none';
+        }
+        if (document.cookie.indexOf('cookies_accepted=true') !== -1) {
+            document.getElementById('cookie-consent').style.display = 'none';
+        }
+
+        // Abre/fecha os dias da previsão (delegação: funciona também após trocar os resultados)
+        document.addEventListener('click', function (event) {
+            var button = event.target.closest('.day-summary');
+            if (!button) return;
+            var open = button.closest('.day').classList.toggle('open');
+            button.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+
+        // Busca sem recarregar a página; se algo falhar, envia o formulário normalmente
+        (function () {
+            var form = document.querySelector('.search-form');
+            var results = document.getElementById('results');
+            if (!form || !results || !window.fetch || !window.DOMParser) return;
+
+            function play() {
+                results.classList.remove('animate', 'leaving');
+                void results.offsetWidth;  // reinicia as animações CSS
+                results.classList.add('animate');
+            }
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                var city = form.elements.city.value.trim();
+                if (city.length < 2) return;
+                var url = form.action + '?' + new URLSearchParams({ city: city });
+                var button = form.querySelector('button');
+                button.classList.add('loading');
+                button.disabled = true;
+                results.classList.add('leaving');
+
+                fetch(url, { headers: { 'X-Requested-With': 'fetch' } })
+                    .then(function (response) { return response.text(); })
+                    .then(function (html) {
+                        var page = new DOMParser().parseFromString(html, 'text/html');
+                        var fresh = page.getElementById('results');
+                        results.innerHTML = fresh ? fresh.innerHTML : '';
+                        document.title = page.title;
+                        history.pushState({ city: city }, '', url);
+                        play();
+                    })
+                    .catch(function () { form.submit(); })
+                    .then(function () {
+                        button.classList.remove('loading');
+                        button.disabled = false;
+                    });
+            });
+
+            window.addEventListener('popstate', function () { location.reload(); });
+        })();
+    </script>
+</body>
+
+</html>

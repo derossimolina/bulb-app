@@ -1,0 +1,45 @@
+{% set c = weather.current %}
+<section class="section-block">
+    <h2>
+        {{ _('Results for') }} {{ city.name }}{% if city.state %}, {{ city.state }}{% endif %}
+        <img src="https://flagcdn.com/w40/{{ city.country_code|lower }}.png" alt="{{ city.country }}" class="flag">
+    </h2>
+
+    <div class="current-grid">
+        <div class="md-card current-main">
+            <div class="current-emoji">{{ c.emoji }}</div>
+            <div>
+                <div class="current-temp">{{ c.temperature }}°C</div>
+                <div class="current-desc">{{ c.condition }}</div>
+                <div class="current-desc">{{ _('Feels like') }} {{ c.apparent_temperature }}°C</div>
+            </div>
+        </div>
+
+        <div class="md-card stat">
+            <span class="stat-label">{{ _('Wet Bulb Temperature:') }}</span>
+            <span class="stat-value">{{ c.wet_bulb }}°C</span>
+        </div>
+        <div class="md-card stat">
+            <span class="stat-label">{{ _('Relative humidity') }}</span>
+            <span class="stat-value">💧 {{ c.humidity }}%</span>
+            <span class="md-muted">{{ _('Dew point') }} {{ c.dew_point }}°C</span>
+        </div>
+        {% if c.pressure %}
+        <div class="md-card stat">
+            <span class="stat-label">{{ _('Pressure') }}</span>
+            <span class="stat-value"><span class="pressure-badge pressure-{{ c.pressure.key }}">{{ c.pressure.symbol }}</span> {{ c.pressure.value }} hPa</span>
+            <span class="md-muted">{{ c.pressure.label }}</span>
+        </div>
+        {% endif %}
+        <div class="md-card stat">
+            <span class="stat-label">{{ _('Wind') }}</span>
+            <span class="stat-value">💨 {{ c.wind_kmh }} km/h</span>
+            <span class="md-muted">{{ _('Gusts') }} {{ c.gusts_kmh }} km/h</span>
+        </div>
+    </div>
+
+    {% set r = c.wet_bulb_risk %}
+    <div class="card-panel {{ r.color }} lighten-2">
+        <i class="fas {{ r.icon }}"></i> {{ r.message }}
+    </div>
+</section>

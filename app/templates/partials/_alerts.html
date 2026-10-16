@@ -1,0 +1,42 @@
+<section class="section-block">
+    <h2><i class="fas fa-bullhorn"></i> {{ _('INMET weather alerts') }}</h2>
+
+    {% if not alerts.available %}
+    <div class="card-panel grey lighten-3">
+        <i class="fas fa-plug"></i> {{ _('INMET alert service is unavailable right now.') }}
+        <a href="https://avisos.inmet.gov.br" target="_blank" rel="noopener">avisos.inmet.gov.br</a>
+    </div>
+    {% elif not alerts.alerts %}
+    <div class="card-panel green lighten-4">
+        <i class="fas fa-check-circle"></i> {{ _('No active INMET alerts for this city.') }}
+    </div>
+    {% else %}
+    <div class="alerts-list">
+        {% for a in alerts.alerts %}
+        <details class="alert-card" style="--alert-color: {{ a.color or '#999' }}" {% if loop.first %}open{% endif %}>
+            <summary>
+                {% if a.icon %}<img src="{{ a.icon }}" alt="" class="alert-icon">{% endif %}
+                <span class="alert-title">{{ a.event }}</span>
+                <span class="alert-severity">{{ a.severity }}</span>
+                <span class="alert-period">
+                    {% if a.period == 'today' %}{{ _('Today') }}{% else %}{{ _('Upcoming') }}{% endif %}
+                    · {{ a.start }} → {{ a.end }}
+                </span>
+            </summary>
+            {% if a.risks %}
+            <h4>{{ _('Risks') }}</h4>
+            <ul>{% for item in a.risks %}<li>{{ item }}</li>{% endfor %}</ul>
+            {% endif %}
+            {% if a.instructions %}
+            <h4>{{ _('Instructions') }}</h4>
+            <ul>{% for item in a.instructions %}<li>{{ item }}</li>{% endfor %}</ul>
+            {% endif %}
+        </details>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <p class="md-muted small">
+        {{ _('Source: National Institute of Meteorology (INMET), official alerts.') }}
+        {% if alerts.ibge_code %}IBGE {{ alerts.ibge_code }}{% endif %}
+    </p>
+</section>
