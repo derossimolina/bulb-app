@@ -22,3 +22,8 @@ node_modules
 .env
 .git
 .gitignore
+tests
+scripts
+.claude
+.pytest_cache
+messages.pot

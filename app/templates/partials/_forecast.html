@@ -1,0 +1,87 @@
+{% set week_min = weather.daily|map(attribute='temp_min')|reject('none')|min %}
+{% set week_max = weather.daily|map(attribute='temp_max')|reject('none')|max %}
+{% set week_span = (week_max - week_min) or 1 %}
+<section class="section-block">
+    <h2>{{ _('7-Day Weather Forecast') }}</h2>
+    <div class="forecast-list md-card">
+        {% for day in weather.daily %}
+        {% set panel_id = 'day-panel-' ~ loop.index %}
+        <div class="day {% if loop.first %}open{% endif %}" style="--i: {{ loop.index0 }}">
+            <button type="button" class="day-summary" aria-expanded="{{ 'true' if loop.first else 'false' }}" aria-controls="{{ panel_id }}">
+                <span class="day-name">
+                    <strong>{% if loop.first %}{{ _('Today') }}{% else %}{{ day.date|dateformat("EEE") }}{% endif %}</strong>
+                    <small>{{ day.date|dateformat("d MMM") }}</small>
+                </span>
+                <span class="day-emoji" title="{{ day.condition }}">{{ day.emoji }}</span>
+                <span class="day-condition">{{ day.condition }}</span>
+                <span class="day-rain" title="{{ _('Rain') }}">
+                    {% if day.precipitation_probability %}💧 {{ day.precipitation_probability }}%{% endif %}
+                </span>
+                <span class="day-temps">
+                    <span class="t-min">{{ day.temp_min|round|int }}°</span>
+                    <span class="range-track">
+                        <span class="range-fill" style="left: {{ ((day.temp_min - week_min) / week_span * 100)|round(1) }}%;
+                              right: {{ ((week_max - day.temp_max) / week_span * 100)|round(1) }}%"></span>
+                    </span>
+                    <span class="t-max">{{ day.temp_max|round|int }}°</span>
+                </span>
+                <span class="chip chip-{{ day.tornado.color }} day-tornado" title="{{ _('Tornado') }}">🌪️ {{ day.tornado.label }}</span>
+                <i class="fas fa-chevron-down day-chevron" aria-hidden="true"></i>
+            </button>
+
+            <div class="day-panel" id="{{ panel_id }}" role="region">
+                <div class="day-panel-inner">
+                    <div class="tiles">
+                        <div class="tile">
+                            <span class="tile-label">💧 {{ _('Humidity') }}</span>
+                            <span class="tile-value">{{ day.humidity_mean }}%</span>
+                            <span class="tile-sub">{{ day.humidity_min }}–{{ day.humidity_max }}%</span>
+                            <span class="meter"><span style="width: {{ day.humidity_mean or 0 }}%"></span></span>
+                        </div>
+                        <div class="tile">
+                            <span class="tile-label">🌧️ {{ _('Rain') }}</span>
+                            <span class="tile-value">{{ day.precipitation }} mm</span>
+                            <span class="tile-sub">{{ day.precipitation_probability if day.precipitation_probability is not none else '–' }}%</span>
+                            <span class="meter rain"><span style="width: {{ day.precipitation_probability or 0 }}%"></span></span>
+                        </div>
+                        {% if day.pressure %}
+                        <div class="tile" title="{{ day.pressure.hint }}">
+                            <span class="tile-label">🧭 {{ _('Pressure') }}</span>
+                            <span class="tile-value">
+                                <span class="pressure-badge pressure-{{ day.pressure.key }}">{{ day.pressure.symbol }}</span>
+                                {{ day.pressure.value|round|int }} <small>hPa</small>
+                                {% if day.pressure.trend %}<span class="trend" title="{{ day.pressure.trend.label }}">{{ day.pressure.trend.arrow }}</span>{% endif %}
+                            </span>
+                            <span class="tile-sub">{{ day.pressure.label }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="tile">
+                            <span class="tile-label">💨 {{ _('Gusts') }}</span>
+                            <span class="tile-value">{{ day.gusts_kmh }} <small>km/h</small></span>
+                        </div>
+                        <div class="tile">
+                            <span class="tile-label">🌡️ {{ _('Wet bulb max') }}</span>
+                            <span class="tile-value"><span class="dot dot-{{ day.wet_bulb_risk.color }}"></span>{{ day.wet_bulb_max }}°C</span>
+                            <span class="tile-sub">{{ day.wet_bulb_risk.message }}</span>
+                        </div>
+                        <div class="tile">
+                            <span class="tile-label">🌪️ {{ _('Tornado') }}</span>
+                            <span class="tile-value"><span class="chip chip-{{ day.tornado.color }}">{{ day.tornado.label }}</span></span>
+                            <span class="tile-sub">CAPE {{ day.tornado.cape }} J/kg</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="legend md-muted small">
+        <p><span class="pressure-badge pressure-high">A</span> {{ _('High pressure') }} (≥ 1020 hPa) ·
+           <span class="pressure-badge pressure-normal">≈</span> {{ _('Normal pressure') }} ·
+           <span class="pressure-badge pressure-low">B</span> {{ _('Low pressure') }} (≤ 1008 hPa) ·
+           ↑ ↓ {{ _('trend vs. previous day') }}</p>
+        <p>🌪️ {{ _('The tornado indicator is an experimental estimate based on atmospheric instability (CAPE) and wind shear. It is not an official forecast — always follow civil defense and official weather alerts.') }}</p>
+    </div>
+</section>
+
