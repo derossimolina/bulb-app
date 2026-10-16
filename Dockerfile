@@ -13,5 +13,7 @@ COPY wsgi.py .
 RUN useradd --create-home appuser
 USER appuser
 
+# O Render define a porta em $PORT; localmente usa 5000
+ENV PORT=5000
 EXPOSE 5000
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "60", "wsgi:app"]
+CMD ["sh", "-c", "exec gunicorn --bind 0.0.0.0:${PORT} --workers 2 --timeout 60 wsgi:app"]

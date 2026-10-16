@@ -1,5 +1,19 @@
-envVars:
-  - key: LC_ALL
-    value: en_US.UTF-8
-  - key: LANG
-    value: en_US.UTF-8
+# Blueprint do Render: https://render.com/docs/blueprint-spec
+# O "name" precisa ser igual ao do serviço existente, senão o Render cria outro serviço.
+services:
+  - type: web
+    name: bulb-app
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    branch: main
+    autoDeploy: true
+    healthCheckPath: /
+    envVars:
+      - key: LC_ALL
+        value: en_US.UTF-8
+      - key: LANG
+        value: en_US.UTF-8
+      - key: SECRET_KEY
+        generateValue: true
