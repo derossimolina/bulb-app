@@ -40,8 +40,8 @@
                         </div>
                         <div class="tile">
                             <span class="tile-label">🌧️ {{ _('Rain') }}</span>
-                            <span class="tile-value">{{ day.precipitation }} mm</span>
-                            <span class="tile-sub">{{ day.precipitation_probability if day.precipitation_probability is not none else '–' }}%</span>
+                            <span class="tile-value">{% if day.precipitation is not none %}{{ day.precipitation }} <small>mm</small>{% else %}–{% endif %}</span>
+                            <span class="tile-sub">{% if day.precipitation_probability is not none %}{{ day.precipitation_probability }}%{% else %}–{% endif %}</span>
                             <span class="meter rain"><span style="width: {{ day.precipitation_probability or 0 }}%"></span></span>
                         </div>
                         {% if day.pressure %}
@@ -57,7 +57,7 @@
                         {% endif %}
                         <div class="tile">
                             <span class="tile-label">💨 {{ _('Gusts') }}</span>
-                            <span class="tile-value">{{ day.gusts_kmh }} <small>km/h</small></span>
+                            <span class="tile-value">{% if day.gusts_kmh is not none %}{{ day.gusts_kmh }} <small>km/h</small>{% else %}–{% endif %}</span>
                         </div>
                         <div class="tile">
                             <span class="tile-label">🌡️ {{ _('Wet bulb max') }}</span>
@@ -67,7 +67,7 @@
                         <div class="tile">
                             <span class="tile-label">🌪️ {{ _('Tornado') }}</span>
                             <span class="tile-value"><span class="chip chip-{{ day.tornado.color }}">{{ day.tornado.label }}</span></span>
-                            <span class="tile-sub">CAPE {{ day.tornado.cape }} J/kg</span>
+                            {% if day.tornado.cape is not none %}<span class="tile-sub">CAPE {{ day.tornado.cape }} J/kg</span>{% endif %}
                         </div>
                     </div>
                 </div>

@@ -16,4 +16,4 @@ USER appuser
 # O Render define a porta em $PORT; localmente usa 5000
 ENV PORT=5000
 EXPOSE 5000
-CMD ["sh", "-c", "exec gunicorn --bind 0.0.0.0:${PORT} --workers 2 --timeout 60 wsgi:app"]
+CMD ["sh", "-c", "exec gunicorn --bind 0.0.0.0:${PORT} --workers 2 --timeout 60 --access-logfile - wsgi:app"]

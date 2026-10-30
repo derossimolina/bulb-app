@@ -22,6 +22,12 @@
     {% endif %}
 
     {% if weather %}
+        {% if weather.source == 'met_norway' %}
+        <div class="card-panel amber lighten-4 source-notice">
+            <i class="fas fa-info-circle"></i>
+            {{ _('Open-Meteo is temporarily unavailable, so this forecast comes from MET Norway. Wind gusts and the tornado indicator are not available from this source.') }}
+        </div>
+        {% endif %}
         {% include "partials/_current.html" %}
         {% if alerts is not none %}
             {% include "partials/_alerts.html" %}

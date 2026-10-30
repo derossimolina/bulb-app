@@ -4,18 +4,30 @@ Condições atuais e previsão de 7 dias via Open-Meteo.
 O Open-Meteo combina automaticamente os melhores modelos numéricos disponíveis
 para cada local (ECMWF IFS, DWD ICON, NOAA GFS, entre outros), com resolução de
 até 1–11 km e atualização horária. Não requer chave de API.
+
+O limite gratuito do Open-Meteo é por IP. No plano Free do Render o IP de saída é
+compartilhado, então ele pode responder 429 mesmo com pouco uso desta aplicação.
+Nesse caso (ou em qualquer outra falha) os dados vêm do MET Norway; veja met_norway.py.
 """
 import datetime
+import logging
+import time
 from collections import defaultdict
 
 from ..meteo import wmo
 from ..meteo.indices import bulk_shear, classify_pressure, tornado_potential_day
 from ..meteo.wetbulb import calculate_wet_bulb, wet_bulb_risk
-from .http import get_json, ttl_cache
+from . import met_norway
+from .http import ServiceError, get_json, ttl_cache
 
 FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
 FORECAST_DAYS = 7
 MS_TO_KMH = 3.6
+# Depois de um 429, vai direto para a fonte reserva por este tempo (segundos)
+RATE_LIMIT_PAUSE = 120
+
+log = logging.getLogger(__name__)
+_open_meteo_paused_until = 0.0
 
 CURRENT_VARS = [
     "temperature_2m", "relative_humidity_2m", "apparent_temperature", "dew_point_2m",
@@ -143,11 +155,26 @@ def build_daily(raw):
     return forecast
 
 
-def get_weather(latitude, longitude):
+def _fetch(latitude, longitude, timezone):
+    """Dados no formato do Open-Meteo e a fonte usada ("open_meteo" ou "met_norway")."""
+    global _open_meteo_paused_until
+    if time.monotonic() >= _open_meteo_paused_until:
+        try:
+            return fetch_raw(latitude, longitude), "open_meteo"
+        except ServiceError as exc:
+            log.warning("Open-Meteo indisponível, usando MET Norway: %s", exc)
+            if exc.status == 429:
+                _open_meteo_paused_until = time.monotonic() + RATE_LIMIT_PAUSE
+    raw = met_norway.fetch_raw(latitude, longitude)
+    return met_norway.to_open_meteo(raw, timezone, FORECAST_DAYS), "met_norway"
+
+
+def get_weather(latitude, longitude, timezone="auto"):
     """Condições atuais + previsão diária para as coordenadas informadas."""
-    raw = fetch_raw(round(latitude, 4), round(longitude, 4))
+    raw, source = _fetch(round(latitude, 4), round(longitude, 4), timezone)
     return {
         "current": build_current(raw),
         "daily": build_daily(raw),
         "timezone": raw.get("timezone"),
+        "source": source,
     }

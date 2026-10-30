@@ -23,7 +23,7 @@ def index():
 
     try:
         city = geocoding.find_city(query, get_locale())
-        weather = forecast.get_weather(city["latitude"], city["longitude"])
+        weather = forecast.get_weather(city["latitude"], city["longitude"], city["timezone"])
     except geocoding.CityNotFound:
         return render_template("index.html", query=query,
                                error=_("City not found. Try adding the country code, e.g. \"Paris, FR\"."))

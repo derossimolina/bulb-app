@@ -58,6 +58,7 @@ def bulk_shear(speed_low, dir_low, speed_high, dir_high):
 
 
 TORNADO_LEVELS = {
+    "unavailable": {"rank": -1, "label": _l("Unavailable"), "color": "grey"},
     "very_low": {"rank": 0, "label": _l("Very low"), "color": "green"},
     "low": {"rank": 1, "label": _l("Low"), "color": "light-green"},
     "moderate": {"rank": 2, "label": _l("Moderate"), "color": "orange"},
@@ -96,7 +97,10 @@ def tornado_potential_day(hours):
     Potencial de tornado diário (pior horário do dia).
 
     `hours` é uma lista de dicts com cape, lifted_index, deep_shear e low_shear.
+    Sem nenhum valor de CAPE (fonte sem dados de instabilidade) o nível é "unavailable".
     """
+    if not any(h.get("cape") is not None for h in hours):
+        return {"key": "unavailable", **TORNADO_LEVELS["unavailable"], "wmaxshear": None, "cape": None}
     worst_level, worst_index, worst_cape = "very_low", 0.0, 0.0
     for h in hours:
         level, index = tornado_potential_hour(
