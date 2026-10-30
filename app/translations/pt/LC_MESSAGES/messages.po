@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-30 14:29-0300\n"
+"POT-Creation-Date: 2026-10-30 14:37-0300\n"
 "PO-Revision-Date: 2025-01-23 17:22-0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: pt <LL@li.org>\n"
@@ -27,61 +27,41 @@ msgstr ""
 msgid "Weather service unavailable. Please try again later."
 msgstr "Serviço meteorológico indisponível. Tente novamente mais tarde."
 
-#: app/meteo/indices.py:23 app/templates/partials/_forecast.html:80
+#: app/meteo/indices.py:15 app/templates/partials/_forecast.html:72
 msgid "High pressure"
 msgstr "Alta pressão"
 
-#: app/meteo/indices.py:24
+#: app/meteo/indices.py:16
 msgid "Stable weather, few clouds"
 msgstr "Tempo estável, poucas nuvens"
 
-#: app/meteo/indices.py:26 app/templates/partials/_forecast.html:82
+#: app/meteo/indices.py:18 app/templates/partials/_forecast.html:74
 msgid "Low pressure"
 msgstr "Baixa pressão"
 
-#: app/meteo/indices.py:27
+#: app/meteo/indices.py:19
 msgid "Unstable weather, clouds and rain likely"
 msgstr "Tempo instável, nuvens e chuva prováveis"
 
-#: app/meteo/indices.py:29 app/templates/partials/_forecast.html:81
+#: app/meteo/indices.py:21 app/templates/partials/_forecast.html:73
 msgid "Normal pressure"
 msgstr "Pressão normal"
 
-#: app/meteo/indices.py:30
+#: app/meteo/indices.py:22
 msgid "No dominant pressure system"
 msgstr "Sem sistema de pressão dominante"
 
-#: app/meteo/indices.py:36
+#: app/meteo/indices.py:28
 msgid "Rising"
 msgstr "Subindo"
 
-#: app/meteo/indices.py:38
+#: app/meteo/indices.py:30
 msgid "Falling"
 msgstr "Caindo"
 
-#: app/meteo/indices.py:40
+#: app/meteo/indices.py:32
 msgid "Steady"
 msgstr "Estável"
-
-#: app/meteo/indices.py:61
-msgid "Unavailable"
-msgstr "Indisponível"
-
-#: app/meteo/indices.py:62
-msgid "Very low"
-msgstr "Muito baixo"
-
-#: app/meteo/indices.py:63
-msgid "Low"
-msgstr "Baixo"
-
-#: app/meteo/indices.py:64
-msgid "Moderate"
-msgstr "Moderado"
-
-#: app/meteo/indices.py:65
-msgid "High"
-msgstr "Alto"
 
 #: app/meteo/wetbulb.py:31
 msgid "Life risk! Seek an air-conditioned place immediately!"
@@ -252,16 +232,6 @@ msgstr "Digite o nome da cidade"
 msgid "Get Wet Bulb Temperature"
 msgstr "Obter temperatura de bulbo úmido"
 
-#: app/templates/index.html:28
-msgid ""
-"Open-Meteo is temporarily unavailable, so this forecast comes from MET "
-"Norway. Wind gusts and the tornado indicator are not available from this "
-"source."
-msgstr ""
-"O Open-Meteo está temporariamente indisponível, por isso esta previsão vem "
-"do MET Norway. Rajadas de vento e o indicador de tornado não estão "
-"disponíveis nesta fonte."
-
 #: app/templates/partials/_about.html:2
 msgid "What is Wet Bulb Temperature?"
 msgstr "O que é temperatura de bulbo úmido?"
@@ -355,7 +325,7 @@ msgid "Dew point"
 msgstr "Ponto de orvalho"
 
 #: app/templates/partials/_current.html:29
-#: app/templates/partials/_forecast.html:49
+#: app/templates/partials/_forecast.html:46
 msgid "Pressure"
 msgstr "Pressão"
 
@@ -363,44 +333,27 @@ msgstr "Pressão"
 msgid "Wind"
 msgstr "Vento"
 
-#: app/templates/partials/_current.html:37
-#: app/templates/partials/_forecast.html:59
-msgid "Gusts"
-msgstr "Rajadas"
-
 #: app/templates/partials/_forecast.html:5
 msgid "7-Day Weather Forecast"
 msgstr "Previsão do tempo para 7 dias"
 
 #: app/templates/partials/_forecast.html:17
-#: app/templates/partials/_forecast.html:42
+#: app/templates/partials/_forecast.html:41
 msgid "Rain"
 msgstr "Chuva"
 
-#: app/templates/partials/_forecast.html:28
-#: app/templates/partials/_forecast.html:68
-msgid "Tornado"
-msgstr "Tornado"
-
-#: app/templates/partials/_forecast.html:36
+#: app/templates/partials/_forecast.html:35
 msgid "Humidity"
 msgstr "Umidade"
 
-#: app/templates/partials/_forecast.html:63
+#: app/templates/partials/_forecast.html:56
+msgid "Max wind"
+msgstr "Vento máx."
+
+#: app/templates/partials/_forecast.html:60
 msgid "Wet bulb max"
 msgstr "Bulbo úmido máx."
 
-#: app/templates/partials/_forecast.html:83
+#: app/templates/partials/_forecast.html:75
 msgid "trend vs. previous day"
 msgstr "tendência em relação ao dia anterior"
-
-#: app/templates/partials/_forecast.html:84
-msgid ""
-"The tornado indicator is an experimental estimate based on atmospheric "
-"instability (CAPE) and wind shear. It is not an official forecast — always "
-"follow civil defense and official weather alerts."
-msgstr ""
-"O indicador de tornado é uma estimativa experimental baseada na "
-"instabilidade atmosférica (CAPE) e no cisalhamento do vento. Não é uma "
-"previsão oficial — siga sempre a Defesa Civil e os avisos meteorológicos "
-"oficiais."

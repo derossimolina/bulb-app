@@ -1,4 +1,4 @@
-"""Códigos de tempo WMO (usados pelo Open-Meteo) → descrição e emoji."""
+"""Códigos de tempo WMO → descrição e emoji (os símbolos do MET Norway são convertidos para eles)."""
 from flask_babel import lazy_gettext as _l
 
 WMO_CODES = {

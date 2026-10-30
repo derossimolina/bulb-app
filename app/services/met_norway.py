@@ -1,15 +1,14 @@
 """
-Fonte reserva: previsão do MET Norway (Instituto Meteorológico da Noruega).
+Previsão do MET Norway (Instituto Meteorológico da Noruega): fonte única de dados.
 
-Usada quando o Open-Meteo recusa chamadas (429 — limite por IP, que no plano Free
-do Render é compartilhado com outros serviços) ou está fora do ar. API gratuita e
-global, sem chave; exige User-Agent identificável. Licença dos dados: CC BY 4.0.
+API gratuita e global, sem chave; exige User-Agent identificável e cache das
+respostas. Licença dos dados: CC BY 4.0.
 https://api.met.no/weatherapi/locationforecast/2.0/documentation
 
-A resposta é convertida para o formato do Open-Meteo, para reaproveitar todo o
-processamento de forecast.py. O MET Norway não fornece CAPE, índice de
-levantamento nem vento em altitude (então não há indicador de tornado) e, fora da
-Escandinávia, também não traz rajadas nem probabilidade de chuva.
+A série vem em UTC, de hora em hora nos primeiros ~2,5 dias e de 6 em 6 horas
+depois. `parse` converte para horário local e agrega por dia. Fora da
+Escandinávia o MET Norway não traz rajadas nem probabilidade de chuva, por isso
+esses dados não são usados.
 """
 import datetime
 from collections import defaultdict
@@ -18,7 +17,6 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from .http import get_json, ttl_cache
 
 FORECAST_URL = "https://api.met.no/weatherapi/locationforecast/2.0/complete"
-SOURCE_NAME = "MET Norway"
 
 # symbol_code do MET Norway (sem o sufixo _day/_night/_polartwilight) → código WMO
 SYMBOL_TO_WMO = {
@@ -62,8 +60,8 @@ def _mean(values):
     return sum(values) / len(values) if values else None
 
 
-def to_open_meteo(raw, timezone, days=7):
-    """Converte a resposta do MET Norway em {current, daily, hourly} no formato do Open-Meteo."""
+def parse(raw, timezone, days=7):
+    """Converte a resposta do MET Norway em séries {current, daily, hourly} no horário local."""
     tz = _zone(timezone)
     rows = []
     for item in raw.get("properties", {}).get("timeseries", []):
@@ -82,11 +80,9 @@ def to_open_meteo(raw, timezone, days=7):
             "apparent_temperature": instant.get("apparent_air_temperature"),
             "wind_speed_10m": instant.get("wind_speed"),
             "wind_direction_10m": instant.get("wind_from_direction"),
-            "wind_gusts_10m": instant.get("wind_speed_of_gust"),
             "cloud_cover": instant.get("cloud_area_fraction"),
             "weather_code": symbol_to_wmo(period.get("summary", {}).get("symbol_code")),
             "precipitation": period_details.get("precipitation_amount"),
-            "precipitation_probability": period_details.get("probability_of_precipitation"),
             "temp_max": period_details.get("air_temperature_max"),
             "temp_min": period_details.get("air_temperature_min"),
         })
@@ -96,7 +92,7 @@ def to_open_meteo(raw, timezone, days=7):
     first = rows[0]
     current = {key: first[key] for key in (
         "temperature_2m", "relative_humidity_2m", "apparent_temperature", "dew_point_2m",
-        "pressure_msl", "weather_code", "wind_speed_10m", "wind_gusts_10m", "precipitation", "cloud_cover",
+        "pressure_msl", "weather_code", "wind_speed_10m", "precipitation", "cloud_cover",
     )}
     current["time"] = first["local"].strftime("%Y-%m-%dT%H:%M")
 
@@ -115,18 +111,15 @@ def to_open_meteo(raw, timezone, days=7):
         humidity = _values(day, "relative_humidity_2m")
         codes = _values(day, "weather_code")
         precipitation = _values(day, "precipitation")
-        probability = _values(day, "precipitation_probability")
-        gusts = _values(day, "wind_gusts_10m")
+        wind = _values(day, "wind_speed_10m")
         daily["time"].append(date.isoformat())
         daily["temperature_2m_max"].append(max(temps + _values(day, "temp_max"), default=None))
         daily["temperature_2m_min"].append(min(temps + _values(day, "temp_min"), default=None))
         daily["relative_humidity_2m_mean"].append(_mean(humidity))
         daily["relative_humidity_2m_min"].append(min(humidity, default=None))
         daily["relative_humidity_2m_max"].append(max(humidity, default=None))
-        daily["weather_code"].append(max(codes, default=None))  # condição mais severa, como no Open-Meteo
+        daily["weather_code"].append(max(codes, default=None))  # condição mais severa do dia
         daily["precipitation_sum"].append(round(sum(precipitation), 1) if precipitation else None)
-        daily["precipitation_probability_max"].append(max(probability, default=None))
-        daily["wind_gusts_10m_max"].append(max(gusts, default=None))
-        daily["uv_index_max"].append(None)
+        daily["wind_speed_10m_max"].append(max(wind, default=None))
 
     return {"timezone": str(tz), "current": current, "daily": dict(daily), "hourly": hourly}

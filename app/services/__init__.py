@@ -1,1 +1,1 @@
-"""Integrações com APIs externas (Open-Meteo, INMET, IBGE)."""
+"""Integrações com APIs externas (MET Norway, geocodificação do Open-Meteo, INMET, IBGE)."""
