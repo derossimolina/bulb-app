@@ -2,20 +2,17 @@
 
 ## Purpose
 A web tool that calculates the **wet bulb temperature** for any city from real-time weather data, and shows a
-**7-day forecast** with relative humidity, high/low pressure systems and an experimental **tornado potential**
-indicator. For Brazilian cities it also shows the **official INMET weather alerts**.
+**7-day forecast** with relative humidity and high/low pressure systems. For Brazilian cities it also shows the
+**official INMET weather alerts**.
 
 The wet bulb temperature is an important measure for assessing thermal comfort and heat stress — above ~35 °C
 the human body can no longer cool itself (Sherwood & Huber, 2010).
 
 ## Features
-- **Current conditions**: temperature, feels-like, relative humidity, dew point, sea-level pressure, wind and gusts.
+- **Current conditions**: temperature, feels-like, relative humidity, dew point, sea-level pressure and wind.
 - **Wet bulb temperature** (Stull, 2011) with heat-stress risk levels, now and as a daily maximum in the forecast.
-- **7-day forecast**: min/max temperature, mean/min/max relative humidity, rain probability and amount, gusts.
+- **7-day forecast**: min/max temperature, mean/min/max relative humidity, rain amount and maximum wind.
 - **Pressure index**: **A** high pressure (≥ 1020 hPa), **B** low pressure (≤ 1008 hPa), and trend vs. the previous day.
-- **Tornado potential** (very low / low / moderate / high): derived hourly from CAPE, lifted index, deep-layer
-  (surface–500 hPa) and low-level (surface–850 hPa) wind shear using the WMAXSHEAR parameter
-  (Taszarek et al., 2020). *Experimental — not an official forecast.*
 - **INMET alerts** (Brazil only): active and upcoming alerts with severity, risks and instructions, matched to the
   city by IBGE code (with a fallback to the alert polygon).
 - Interface in English, Portuguese and Spanish.
@@ -23,10 +20,15 @@ the human body can no longer cool itself (Sherwood & Huber, 2010).
 ## Data sources
 | Data | Source | Key required |
 |------|--------|--------------|
-| Forecast and current weather | [Open-Meteo](https://open-meteo.com/) — best-match blend of ECMWF, DWD ICON, NOAA GFS and other models | No |
+| Forecast and current weather | [MET Norway](https://api.met.no/weatherapi/locationforecast/2.0/documentation) — Locationforecast 2.0 (CC BY 4.0) | No (identifying User-Agent) |
 | City search | [Open-Meteo Geocoding](https://open-meteo.com/en/docs/geocoding-api) (GeoNames) | No |
 | Official alerts | [INMET](https://avisos.inmet.gov.br) — `apiprevmet3.inmet.gov.br/avisos/ativos` | No |
 | Municipality codes | [IBGE](https://servicodados.ibge.gov.br/api/docs/localidades) (bundled in `app/data/`) | No |
+
+Open-Meteo is no longer used for weather data: its free tier is limited per IP, and on Render's free plan the
+outbound IP is shared with other services, which caused `429 Too Many Requests` errors in production.
+Wind gusts are not shown because MET Norway only provides them for Scandinavia; INMET station data (which has
+gusts) requires an access token.
 
 ## Project structure
 ```
@@ -34,8 +36,8 @@ app/
   __init__.py          # create_app() factory, Babel setup
   config.py            # settings (SECRET_KEY from environment)
   routes.py            # web routes
-  meteo/               # pure calculations: wet bulb, pressure & tornado indices, WMO weather codes
-  services/            # external APIs: geocoding, forecast (Open-Meteo), INMET alerts, HTTP/cache helpers
+  meteo/               # pure calculations: wet bulb, pressure index, WMO weather codes
+  services/            # external APIs: geocoding, forecast (MET Norway), INMET alerts, HTTP/cache helpers
   data/                # bundled IBGE municipality table
   templates/           # base.html, index.html and partials/
   static/              # CSS
