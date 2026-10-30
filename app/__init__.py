@@ -1,4 +1,6 @@
 """Wet Bulb Temperature — aplicação Flask."""
+import logging
+
 from flask import Flask, request, session
 from flask_babel import Babel
 
@@ -16,6 +18,9 @@ def get_locale():
 
 
 def create_app(config_object=Config):
+    # Avisos e erros dos serviços externos com nível e origem nos logs (Render/gunicorn)
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s [%(name)s] %(message)s")
+
     app = Flask(__name__)
     app.config.from_object(config_object)
 

@@ -58,4 +58,8 @@ def test_tornado_day_takes_worst_hour():
         {"cape": 3000, "lifted_index": -6, "deep_shear": 25, "low_shear": 15},
     ]
     assert tornado_potential_day(hours)["key"] == "high"
-    assert tornado_potential_day([])["key"] == "very_low"
+
+
+def test_tornado_unavailable_without_cape():
+    assert tornado_potential_day([])["key"] == "unavailable"
+    assert tornado_potential_day([{"cape": None, "deep_shear": None}])["key"] == "unavailable"

@@ -166,6 +166,7 @@ h4{ font-size:1rem; margin:12px 0 4px }
 .chip-light-green{ background:#9ccc65; color:#1f2937 }
 .chip-orange{ background:#fb8c00 }
 .chip-red{ background:#e53935 }
+.chip-grey{ background:#9e9e9e }
 
 /* Wet bulb risk dots */
 .dot{ display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:6px; vertical-align:middle }
