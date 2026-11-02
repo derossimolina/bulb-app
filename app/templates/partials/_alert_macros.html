@@ -1,0 +1,29 @@
+{# Ícone de aviso do INMET com tipbox (nível, período, riscos e instruções).
+   O conteúdo fica em .tip-content (oculto) e é exibido por JS num balão flutuante,
+   para não ser cortado por cards com overflow (faixa com rolagem, acordeão). #}
+{# focusable=False dentro de outro controle (ex.: linha do acordeão), onde o tipbox abre só com o mouse #}
+{% macro alert_icon(a, show_tag=False, focusable=True) %}
+<span class="alert-badge"{% if focusable %} tabindex="0" role="button"{% endif %} style="--alert-color: {{ a.color or '#999' }}"
+      aria-label="{{ a.event }} — {{ a.severity }}">
+    {% if a.icon %}<img src="{{ a.icon }}" alt="" class="alert-badge-icon">{% else %}<i class="fas fa-exclamation-triangle alert-badge-icon"></i>{% endif %}
+    {% if show_tag %}<span class="alert-tag">{{ a.severity }}</span>{% endif %}
+    <span class="tip-content" hidden>
+        <span class="tip-title">
+            {% if a.icon %}<img src="{{ a.icon }}" alt="" class="tip-icon">{% endif %}
+            <strong>{{ a.event }}</strong>
+            {# Cor explícita: o balão fica fora do ícone e não herda --alert-color #}
+            <span class="alert-tag" style="background: {{ a.color or '#999' }}">{{ a.severity }}</span>
+        </span>
+        <span class="tip-period">{{ a.start }} → {{ a.end }}</span>
+        {% if a.risks %}
+        <span class="tip-heading">{{ _('Risks') }}</span>
+        {% for item in a.risks %}<span class="tip-item">{{ item }}</span>{% endfor %}
+        {% endif %}
+        {% if a.instructions %}
+        <span class="tip-heading">{{ _('Instructions') }}</span>
+        {% for item in a.instructions %}<span class="tip-item">{{ item }}</span>{% endfor %}
+        {% endif %}
+        <span class="tip-source">{{ _('Source: National Institute of Meteorology (INMET), official alerts.') }}</span>
+    </span>
+</span>
+{% endmacro %}

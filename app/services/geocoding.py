@@ -1,8 +1,17 @@
-"""Busca de cidades pela API de geocodificação do Open-Meteo (GeoNames)."""
+"""
+Busca de cidades pelo Nominatim (OpenStreetMap).
+
+Política de uso: no máximo 1 requisição por segundo, User-Agent identificável e
+cache dos resultados (feito aqui por 24 h). https://operations.osmfoundation.org/policies/nominatim/
+O Nominatim não informa o fuso horário; ele é obtido pelas coordenadas com o tzfpy.
+"""
+from tzfpy import get_tz
+
 from .http import get_json, ttl_cache
 from .text import normalize
 
-GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search"
+SEARCH_URL = "https://nominatim.openstreetmap.org/search"
+SETTLEMENT_TYPES = ("city", "town", "village", "municipality")
 
 # Siglas das UFs brasileiras → nome do estado (para buscas como "Santa Maria, RS")
 BR_STATES = {
@@ -28,8 +37,9 @@ def parse_query(query):
 def _matches_region(result, region):
     """Verifica se o resultado pertence à região informada (código/nome de país, estado ou UF)."""
     wanted = normalize(region)
-    if result.get("country_code") == "BR" and region.upper() in BR_STATES:
-        if normalize(result.get("admin1")) == normalize(BR_STATES[region.upper()]):
+    code = region.upper()
+    if result.get("country_code") == "BR" and code in BR_STATES:
+        if result.get("state_code") == f"BR-{code}" or normalize(result.get("admin1")) == normalize(BR_STATES[code]):
             return True
     for candidate in (result.get("country_code"), result.get("country"), result.get("admin1"), result.get("admin2")):
         value = normalize(candidate)
@@ -38,21 +48,37 @@ def _matches_region(result, region):
     return False
 
 
-def _search(name, language):
-    params = {"name": name, "count": 50, "language": language, "format": "json"}
-    return get_json(GEOCODING_URL, params).get("results") or []
+def _from_nominatim(item):
+    address = item.get("address", {})
+    return {
+        "name": item.get("name") or address.get("city") or address.get("town") or address.get("village", ""),
+        "latitude": float(item["lat"]),
+        "longitude": float(item["lon"]),
+        "country": address.get("country", ""),
+        "country_code": address.get("country_code", "").upper(),
+        "admin1": address.get("state", ""),
+        "admin2": address.get("county") or address.get("state_district", ""),
+        "state_code": address.get("ISO3166-2-lvl4", ""),
+        "type": item.get("addresstype", ""),
+    }
+
+
+def _search(query, language):
+    params = {
+        "q": query, "format": "jsonv2", "addressdetails": 1, "limit": 40,
+        "featureType": "settlement", "accept-language": language,
+    }
+    return [_from_nominatim(item) for item in get_json(SEARCH_URL, params)]
 
 
 def _pick_best(results, name):
     """
-    Prefere cidades (feature_code PPL*) com o nome exato e maior população;
-    sem isso, mantém a ordem de relevância da API.
+    Prefere municípios/cidades com o nome exato; o Nominatim já ordena por
+    importância, então o primeiro dessa lista é o mais relevante.
     """
-    cities = [r for r in results if str(r.get("feature_code", "")).startswith("PPL")] or results
-    exact = [r for r in cities if normalize(r.get("name")) == normalize(name)]
-    if exact:
-        return max(exact, key=lambda r: r.get("population") or 0)
-    return cities[0]
+    settlements = [r for r in results if r["type"] in SETTLEMENT_TYPES] or results
+    exact = [r for r in settlements if normalize(r["name"]) == normalize(name)]
+    return (exact or settlements)[0]
 
 
 @ttl_cache(seconds=24 * 3600)
@@ -65,9 +91,9 @@ def find_city(query, language="en"):
     results = _search(name, language)
     if region:
         matching = [r for r in results if _matches_region(r, region)]
-        if not matching and language != "en":
-            # nomes de estados/países vêm traduzidos; tenta também em inglês
-            matching = [r for r in _search(name, "en") if _matches_region(r, region)]
+        if not matching:
+            # Cidades pequenas podem não aparecer entre os 40 primeiros: busca com a região no texto
+            matching = [r for r in _search(f"{name}, {region}", language) if _matches_region(r, region)]
         results = matching
     if not results:
         raise CityNotFound(query)
@@ -77,9 +103,8 @@ def find_city(query, language="en"):
         "name": best["name"],
         "latitude": best["latitude"],
         "longitude": best["longitude"],
-        "country": best.get("country", ""),
-        "country_code": best.get("country_code", ""),
-        "state": best.get("admin1", ""),
-        "timezone": best.get("timezone", "auto"),
-        "elevation": best.get("elevation"),
+        "country": best["country"],
+        "country_code": best["country_code"],
+        "state": best["admin1"],
+        "timezone": get_tz(best["longitude"], best["latitude"]) or "UTC",
     }

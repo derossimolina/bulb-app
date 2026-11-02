@@ -51,3 +51,17 @@ def test_alerts_service_down(monkeypatch):
     monkeypatch.setattr(inmet, "_active_alerts", boom)
     result = inmet.get_alerts_for_city("Porto Alegre", "Rio Grande do Sul", -30.03, -51.23)
     assert result["available"] is False and result["alerts"] == []
+
+
+def test_alerts_by_date_spans_days_and_dedupes():
+    import datetime
+    alerts = [
+        {"id": 1, "event": "Tempestade", "severity_rank": 1, "start": "2026-10-30 12:00", "end": "2026-11-01 08:00"},
+        {"id": 1, "event": "Tempestade", "severity_rank": 1, "start": "2026-10-31 00:00", "end": "2026-10-31 23:59"},
+        {"id": 2, "event": "Chuva", "severity_rank": 2, "start": "2026-10-31 00:00", "end": "2026-10-31 23:59"},
+    ]
+    days = inmet.alerts_by_date(alerts)
+    d = datetime.date
+    assert [a["id"] for a in days[d(2026, 10, 30)]] == [1]
+    assert [a["id"] for a in days[d(2026, 10, 31)]] == [2, 1]   # mais severo primeiro, sem repetir
+    assert [a["id"] for a in days[d(2026, 11, 1)]] == [1]
