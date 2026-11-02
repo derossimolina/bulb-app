@@ -1,1 +1,1 @@
-"""Integrações com APIs externas (MET Norway, Nominatim/OpenStreetMap, INMET, IBGE)."""
+"""Integrações com APIs externas (MET Norway, geocodificação do Open-Meteo, INMET, IBGE)."""

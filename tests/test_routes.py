@@ -89,7 +89,6 @@ def test_parse_query():
 
 @pytest.mark.parametrize("region,result,expected", [
     ("RS", {"country_code": "BR", "admin1": "Rio Grande do Sul"}, True),
-    ("RS", {"country_code": "BR", "admin1": "", "state_code": "BR-RS"}, True),
     ("RS", {"country_code": "BR", "admin1": "Santa Catarina"}, False),
     ("RS", {"country_code": "RS", "admin1": "Belgrade"}, True),
     ("Oklahoma", {"country_code": "US", "admin1": "Oklahoma"}, True),
@@ -100,50 +99,21 @@ def test_matches_region(region, result, expected):
     assert geocoding._matches_region(result, region) is expected
 
 
-NOMINATIM = [
-    {"name": "Santa Maria", "lat": "34.95", "lon": "-120.43", "addresstype": "city",
-     "address": {"state": "Califórnia", "country": "Estados Unidos", "country_code": "us", "ISO3166-2-lvl4": "US-CA"}},
-    {"name": "Santa Maria", "lat": "-29.68", "lon": "-53.80", "addresstype": "city",
-     "address": {"state": "Rio Grande do Sul", "country": "Brasil", "country_code": "br", "ISO3166-2-lvl4": "BR-RS"}},
-    {"name": "Santa Maria", "lat": "-5.83", "lon": "-35.69", "addresstype": "municipality",
-     "address": {"state": "Rio Grande do Norte", "country": "Brasil", "country_code": "br", "ISO3166-2-lvl4": "BR-RN"}},
-]
-
-
-def test_find_city_with_nominatim_and_uf(monkeypatch):
-    geocoding.find_city.cache_clear()
-    monkeypatch.setattr(geocoding, "_nominatim_paused_until", 0.0)
-    monkeypatch.setattr(geocoding, "get_json", lambda url, params: NOMINATIM)
-    city = geocoding.find_city("Santa Maria, RS", "pt")
-    assert (city["state"], city["country_code"]) == ("Rio Grande do Sul", "BR")
-    assert city["timezone"] == "America/Sao_Paulo"
-    assert geocoding.find_city("Santa Maria", "pt")["country_code"] == "US"  # mais importante primeiro
-    assert geocoding.find_city("Santa Maria, RN", "pt")["timezone"] == "America/Fortaleza"
-
 
 OPEN_METEO = {"results": [
     {"name": "Santa Maria", "latitude": 34.95, "longitude": -120.43, "feature_code": "PPL", "population": 106290,
-     "country": "Estados Unidos", "country_code": "US", "admin1": "Califórnia"},
+     "country": "Estados Unidos", "country_code": "US", "admin1": "Califórnia", "timezone": "America/Los_Angeles"},
     {"name": "Santa Maria", "latitude": -29.68, "longitude": -53.80, "feature_code": "PPLA2", "population": 249219,
-     "country": "Brasil", "country_code": "BR", "admin1": "Rio Grande do Sul"},
+     "country": "Brasil", "country_code": "BR", "admin1": "Rio Grande do Sul", "timezone": "America/Sao_Paulo"},
+    {"name": "Santa Maria", "latitude": -5.83, "longitude": -35.69, "feature_code": "PPL", "population": 5000,
+     "country": "Brasil", "country_code": "BR", "admin1": "Rio Grande do Norte", "timezone": "America/Fortaleza"},
 ]}
 
 
-def test_find_city_falls_back_to_open_meteo_when_nominatim_refuses(monkeypatch):
-    """Reproduz a falha de 02/11/2026: Nominatim respondendo 429 ao IP do Render."""
+def test_find_city_with_open_meteo(monkeypatch):
     geocoding.find_city.cache_clear()
-    monkeypatch.setattr(geocoding, "_nominatim_paused_until", 0.0)
-    calls = []
-
-    def fake_get_json(url, params):
-        calls.append(url)
-        if url == geocoding.SEARCH_URL:
-            raise geocoding.ServiceError("429 Too many requests", status=429)
-        return OPEN_METEO
-
-    monkeypatch.setattr(geocoding, "get_json", fake_get_json)
-    city = geocoding.find_city("Santa Maria, RS", "pt")
-    assert (city["state"], city["timezone"]) == ("Rio Grande do Sul", "America/Sao_Paulo")
-    assert geocoding.find_city("Santa Maria", "pt")["country_code"] == "BR"   # mais populosa
-    # Só a primeira busca tentou o Nominatim; depois ele fica em pausa
-    assert calls.count(geocoding.SEARCH_URL) == 1
+    monkeypatch.setattr(geocoding, "get_json", lambda url, params: OPEN_METEO)
+    assert geocoding.find_city("Santa Maria", "pt")["state"] == "Rio Grande do Sul"  # mais populosa
+    city = geocoding.find_city("Santa Maria, RN", "pt")
+    assert (city["state"], city["timezone"]) == ("Rio Grande do Norte", "America/Fortaleza")
+    assert geocoding.find_city("Santa Maria, US", "pt")["timezone"] == "America/Los_Angeles"

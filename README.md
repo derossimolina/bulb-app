@@ -22,11 +22,11 @@ the human body can no longer cool itself (Sherwood & Huber, 2010).
 | Data | Source | Key required |
 |------|--------|--------------|
 | Forecast and current weather | [MET Norway](https://api.met.no/weatherapi/locationforecast/2.0/documentation) — Locationforecast 2.0 (CC BY 4.0) | No (identifying User-Agent) |
-| City search | [Nominatim](https://nominatim.org/) (OpenStreetMap, max. 1 request/s); time zone from coordinates with [tzfpy](https://github.com/ringsaturn/tzfpy) | No (identifying User-Agent) |
+| City search | [Open-Meteo Geocoding](https://open-meteo.com/en/docs/geocoding-api) (GeoNames) | No |
 | Official alerts | [INMET](https://avisos.inmet.gov.br) — `apiprevmet3.inmet.gov.br/avisos/ativos` | No |
 | Municipality codes | [IBGE](https://servicodados.ibge.gov.br/api/docs/localidades) (bundled in `app/data/`) | No |
 
-Open-Meteo is no longer used: its free tier is limited per IP, and on Render's free plan the
+Open-Meteo is no longer used for weather data (only for city search): its free tier is limited per IP, and on Render's free plan the
 outbound IP is shared with other services, which caused `429 Too Many Requests` errors in production.
 Wind gusts are not shown because MET Norway only provides them for Scandinavia; INMET station data (which has
 gusts) requires an access token.
