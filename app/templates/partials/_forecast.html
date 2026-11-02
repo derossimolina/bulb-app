@@ -1,3 +1,4 @@
+{% from "partials/_alert_macros.html" import alert_icon %}
 {% set week_min = weather.daily|map(attribute='temp_min')|reject('none')|min %}
 {% set week_max = weather.daily|map(attribute='temp_max')|reject('none')|max %}
 {% set week_span = (week_max - week_min) or 1 %}
@@ -12,7 +13,10 @@
                     <strong>{% if loop.first %}{{ _('Today') }}{% else %}{{ day.date|dateformat("EEE") }}{% endif %}</strong>
                     <small>{{ day.date|dateformat("d MMM") }}</small>
                 </span>
-                <span class="day-emoji" title="{{ day.condition }}">{{ day.emoji }}</span>
+                <span class="day-icons">
+                    <span class="day-emoji" title="{{ day.condition }}">{{ day.emoji }}</span>
+                    {% if day.alerts %}<span class="day-alerts">{% for a in day.alerts %}{{ alert_icon(a, focusable=False) }}{% endfor %}</span>{% endif %}
+                </span>
                 <span class="day-condition">{{ day.condition }}</span>
                 <span class="day-rain" title="{{ _('Rain') }}">
                     {% if day.precipitation %}💧 {{ day.precipitation }} mm{% endif %}
@@ -56,6 +60,12 @@
                             <span class="tile-label">💨 {{ _('Max wind') }}</span>
                             <span class="tile-value">{% if day.wind_max_kmh is not none %}{{ day.wind_max_kmh }} <small>km/h</small>{% else %}–{% endif %}</span>
                         </div>
+                        {% if day.alerts %}
+                        <div class="tile tile-alerts">
+                            <span class="tile-label"><i class="fas fa-bullhorn"></i> {{ _('INMET alerts') }}</span>
+                            <span class="alert-row">{% for a in day.alerts %}{{ alert_icon(a) }}{% endfor %}</span>
+                        </div>
+                        {% endif %}
                         <div class="tile">
                             <span class="tile-label">🌡️ {{ _('Wet bulb max') }}</span>
                             <span class="tile-value"><span class="dot dot-{{ day.wet_bulb_risk.color }}"></span>{{ day.wet_bulb_max }}°C</span>

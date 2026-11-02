@@ -23,9 +23,6 @@
 
     {% if weather %}
         {% include "partials/_current.html" %}
-        {% if alerts is not none %}
-            {% include "partials/_alerts.html" %}
-        {% endif %}
         {% include "partials/_forecast.html" %}
     {% endif %}
 </div>

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-30 14:37-0300\n"
+"POT-Creation-Date: 2026-11-02 14:45-0300\n"
 "PO-Revision-Date: 2025-01-23 17:22-0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: es <LL@li.org>\n"
@@ -28,7 +28,7 @@ msgstr ""
 msgid "Weather service unavailable. Please try again later."
 msgstr "Servicio meteorológico no disponible. Inténtelo de nuevo más tarde."
 
-#: app/meteo/indices.py:15 app/templates/partials/_forecast.html:72
+#: app/meteo/indices.py:15 app/templates/partials/_forecast.html:82
 msgid "High pressure"
 msgstr "Alta presión"
 
@@ -36,7 +36,7 @@ msgstr "Alta presión"
 msgid "Stable weather, few clouds"
 msgstr "Tiempo estable, pocas nubes"
 
-#: app/meteo/indices.py:18 app/templates/partials/_forecast.html:74
+#: app/meteo/indices.py:18 app/templates/partials/_forecast.html:84
 msgid "Low pressure"
 msgstr "Baja presión"
 
@@ -44,7 +44,7 @@ msgstr "Baja presión"
 msgid "Unstable weather, clouds and rain likely"
 msgstr "Tiempo inestable, probables nubes y lluvia"
 
-#: app/meteo/indices.py:21 app/templates/partials/_forecast.html:73
+#: app/meteo/indices.py:21 app/templates/partials/_forecast.html:83
 msgid "Normal pressure"
 msgstr "Presión normal"
 
@@ -273,91 +273,86 @@ msgstr ""
 msgid "Reference"
 msgstr "Referencia"
 
-#: app/templates/partials/_alerts.html:2
-msgid "INMET weather alerts"
-msgstr "Avisos meteorológicos del INMET"
-
-#: app/templates/partials/_alerts.html:6
-msgid "INMET alert service is unavailable right now."
-msgstr "El servicio de avisos del INMET no está disponible en este momento."
-
-#: app/templates/partials/_alerts.html:11
-msgid "No active INMET alerts for this city."
-msgstr "No hay avisos activos del INMET para esta ciudad."
-
-#: app/templates/partials/_alerts.html:22
-#: app/templates/partials/_forecast.html:12
-msgid "Today"
-msgstr "Hoy"
-
-#: app/templates/partials/_alerts.html:22
-msgid "Upcoming"
-msgstr "Próximos días"
-
-#: app/templates/partials/_alerts.html:27
+#: app/templates/partials/_alert_macros.html:18
 msgid "Risks"
 msgstr "Riesgos"
 
-#: app/templates/partials/_alerts.html:31
+#: app/templates/partials/_alert_macros.html:22
 msgid "Instructions"
 msgstr "Instrucciones"
 
-#: app/templates/partials/_alerts.html:39
+#: app/templates/partials/_alert_macros.html:25
 msgid "Source: National Institute of Meteorology (INMET), official alerts."
 msgstr ""
 "Fuente: Instituto Nacional de Meteorología de Brasil (INMET), avisos "
 "oficiales."
 
-#: app/templates/partials/_current.html:4
+#: app/templates/partials/_current.html:6
 msgid "Results for"
 msgstr "Resultados para"
 
-#: app/templates/partials/_current.html:14
+#: app/templates/partials/_current.html:12
+msgid "Now"
+msgstr "Ahora"
+
+#: app/templates/partials/_current.html:18
 msgid "Feels like"
 msgstr "Sensación"
 
-#: app/templates/partials/_current.html:19
+#: app/templates/partials/_current.html:29
 msgid "Wet Bulb Temperature:"
 msgstr "Temperatura de bulbo húmedo:"
 
-#: app/templates/partials/_current.html:23
+#: app/templates/partials/_current.html:34
 msgid "Relative humidity"
 msgstr "Humedad relativa"
 
-#: app/templates/partials/_current.html:25
+#: app/templates/partials/_current.html:36
 msgid "Dew point"
 msgstr "Punto de rocío"
 
-#: app/templates/partials/_current.html:29
-#: app/templates/partials/_forecast.html:46
+#: app/templates/partials/_current.html:40
+#: app/templates/partials/_forecast.html:50
 msgid "Pressure"
 msgstr "Presión"
 
-#: app/templates/partials/_current.html:35
+#: app/templates/partials/_current.html:46
 msgid "Wind"
 msgstr "Viento"
 
-#: app/templates/partials/_forecast.html:5
+#: app/templates/partials/_current.html:52
+msgid "INMET alert service is unavailable right now."
+msgstr "El servicio de avisos del INMET no está disponible en este momento."
+
+#: app/templates/partials/_forecast.html:6
 msgid "7-Day Weather Forecast"
 msgstr "Pronóstico del tiempo para 7 días"
 
-#: app/templates/partials/_forecast.html:17
-#: app/templates/partials/_forecast.html:41
+#: app/templates/partials/_forecast.html:13
+msgid "Today"
+msgstr "Hoy"
+
+#: app/templates/partials/_forecast.html:21
+#: app/templates/partials/_forecast.html:45
 msgid "Rain"
 msgstr "Lluvia"
 
-#: app/templates/partials/_forecast.html:35
+#: app/templates/partials/_forecast.html:39
 msgid "Humidity"
 msgstr "Humedad"
 
-#: app/templates/partials/_forecast.html:56
+#: app/templates/partials/_forecast.html:60
 msgid "Max wind"
 msgstr "Viento máx."
 
-#: app/templates/partials/_forecast.html:60
+#: app/templates/partials/_forecast.html:65
+msgid "INMET alerts"
+msgstr "Avisos del INMET"
+
+#: app/templates/partials/_forecast.html:70
 msgid "Wet bulb max"
 msgstr "Bulbo húmedo máx."
 
-#: app/templates/partials/_forecast.html:75
+#: app/templates/partials/_forecast.html:85
 msgid "trend vs. previous day"
 msgstr "tendencia respecto al día anterior"

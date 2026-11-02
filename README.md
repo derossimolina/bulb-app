@@ -13,19 +13,20 @@ the human body can no longer cool itself (Sherwood & Huber, 2010).
 - **Wet bulb temperature** (Stull, 2011) with heat-stress risk levels, now and as a daily maximum in the forecast.
 - **7-day forecast**: min/max temperature, mean/min/max relative humidity, rain amount and maximum wind.
 - **Pressure index**: **A** high pressure (≥ 1020 hPa), **B** low pressure (≤ 1008 hPa), and trend vs. the previous day.
-- **INMET alerts** (Brazil only): active and upcoming alerts with severity, risks and instructions, matched to the
-  city by IBGE code (with a fallback to the alert polygon).
+- **INMET alerts** (Brazil only), matched to the city by IBGE code (with a fallback to the alert polygon):
+  today's alerts appear in the "Now" card with their severity tag; alerts for other days appear as icons on that
+  day of the forecast. Hovering (or tapping) an icon opens a tooltip with severity, period, risks and instructions.
 - Interface in English, Portuguese and Spanish.
 
 ## Data sources
 | Data | Source | Key required |
 |------|--------|--------------|
 | Forecast and current weather | [MET Norway](https://api.met.no/weatherapi/locationforecast/2.0/documentation) — Locationforecast 2.0 (CC BY 4.0) | No (identifying User-Agent) |
-| City search | [Open-Meteo Geocoding](https://open-meteo.com/en/docs/geocoding-api) (GeoNames) | No |
+| City search | [Nominatim](https://nominatim.org/) (OpenStreetMap, max. 1 request/s); time zone from coordinates with [tzfpy](https://github.com/ringsaturn/tzfpy) | No (identifying User-Agent) |
 | Official alerts | [INMET](https://avisos.inmet.gov.br) — `apiprevmet3.inmet.gov.br/avisos/ativos` | No |
 | Municipality codes | [IBGE](https://servicodados.ibge.gov.br/api/docs/localidades) (bundled in `app/data/`) | No |
 
-Open-Meteo is no longer used for weather data: its free tier is limited per IP, and on Render's free plan the
+Open-Meteo is no longer used: its free tier is limited per IP, and on Render's free plan the
 outbound IP is shared with other services, which caused `429 Too Many Requests` errors in production.
 Wind gusts are not shown because MET Norway only provides them for Scandinavia; INMET station data (which has
 gusts) requires an access token.

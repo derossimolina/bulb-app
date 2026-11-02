@@ -1,4 +1,6 @@
+{% from "partials/_alert_macros.html" import alert_icon %}
 {% set c = weather.current %}
+{% set r = c.wet_bulb_risk %}
 <section class="section-block">
     <h2>
         {{ _('Results for') }} {{ city.name }}{% if city.state %}, {{ city.state }}{% endif %}
@@ -7,17 +9,26 @@
 
     <div class="current-grid">
         <div class="md-card current-main">
-            <div class="current-emoji">{{ c.emoji }}</div>
-            <div>
-                <div class="current-temp">{{ c.temperature }}°C</div>
-                <div class="current-desc">{{ c.condition }}</div>
-                <div class="current-desc">{{ _('Feels like') }} {{ c.apparent_temperature }}°C</div>
+            <span class="stat-label">{{ _('Now') }}</span>
+            <div class="current-main-body">
+                <div class="current-emoji">{{ c.emoji }}</div>
+                <div>
+                    <div class="current-temp">{{ c.temperature }}°C</div>
+                    <div class="current-desc">{{ c.condition }}</div>
+                    <div class="current-desc">{{ _('Feels like') }} {{ c.apparent_temperature }}°C</div>
+                </div>
             </div>
+            {% if c.alerts %}
+            <div class="alert-row">
+                {% for a in c.alerts %}{{ alert_icon(a, show_tag=True) }}{% endfor %}
+            </div>
+            {% endif %}
         </div>
 
-        <div class="md-card stat">
+        <div class="md-card stat wet-bulb-card risk-{{ r.key }}">
             <span class="stat-label">{{ _('Wet Bulb Temperature:') }}</span>
-            <span class="stat-value">{{ c.wet_bulb }}°C</span>
+            <span class="stat-value"><i class="fas {{ r.icon }}"></i> {{ c.wet_bulb }}°C</span>
+            <span class="risk-message">{{ r.message }}</span>
         </div>
         <div class="md-card stat">
             <span class="stat-label">{{ _('Relative humidity') }}</span>
@@ -37,8 +48,7 @@
         </div>
     </div>
 
-    {% set r = c.wet_bulb_risk %}
-    <div class="card-panel {{ r.color }} lighten-2">
-        <i class="fas {{ r.icon }}"></i> {{ r.message }}
-    </div>
+    {% if alerts is not none and not alerts.available %}
+    <p class="md-muted small"><i class="fas fa-plug"></i> {{ _('INMET alert service is unavailable right now.') }}</p>
+    {% endif %}
 </section>

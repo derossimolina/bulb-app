@@ -35,6 +35,12 @@ def index():
     alerts = None
     if city["country_code"] == "BR":
         alerts = inmet.get_alerts_for_city(city["name"], city["state"], city["latitude"], city["longitude"])
+        # Avisos de hoje ficam no card "Agora"; os dos outros dias, no dia correspondente da previsão
+        by_date = inmet.alerts_by_date(alerts["alerts"])
+        today = weather["daily"][0]["date"] if weather["daily"] else None
+        weather["current"]["alerts"] = by_date.get(today, [])
+        for day in weather["daily"][1:]:
+            day["alerts"] = by_date.get(day["date"], [])
 
     return render_template("index.html", query=query, city=city, weather=weather, alerts=alerts)
 

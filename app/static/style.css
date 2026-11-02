@@ -77,16 +77,28 @@ h4{ font-size:1rem; margin:12px 0 4px }
 
 /* Current conditions */
 .flag{ height:22px; border-radius:3px }
-.current-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:14px; margin-bottom:14px }
-.current-main{ grid-column:span 2; flex-direction:row; align-items:center; gap:16px; min-width:0 }
-.current-main > div:last-child{ min-width:0 }
-.current-emoji{ flex:0 0 72px; width:72px; height:72px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-	font-size:2.4rem; line-height:1; background:linear-gradient(145deg, rgba(103,80,164,.14), rgba(79,195,247,.18)); box-shadow:inset 0 0 0 1px rgba(103,80,164,.10) }
-.current-temp{ font-size:2.4rem; font-weight:700; color:var(--md-primary-variant); line-height:1.1 }
+/* Cards atuais numa única linha; no celular viram uma faixa com rolagem lateral */
+.current-grid{ display:flex; gap:14px; margin:0 -6px 14px; padding:6px 6px 12px; overflow-x:auto; scroll-snap-type:x proximity }
+.current-grid > .md-card{ flex:1 1 0; min-width:150px; scroll-snap-align:start }
+.current-grid > .current-main{ flex:1.9 1 0; min-width:260px; gap:8px }
+.current-main-body{ display:flex; align-items:center; gap:14px; min-width:0 }
+.current-main-body > div:last-child{ min-width:0 }
+.current-emoji{ flex:0 0 64px; width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+	font-size:2.1rem; line-height:1; background:linear-gradient(145deg, rgba(103,80,164,.14), rgba(79,195,247,.18)); box-shadow:inset 0 0 0 1px rgba(103,80,164,.10) }
+.current-temp{ font-size:2.2rem; font-weight:700; color:var(--md-primary-variant); line-height:1.1 }
 .current-desc{ color:var(--md-muted); font-size:.95rem; overflow-wrap:anywhere }
 .stat{ gap:4px; justify-content:center }
 .stat-label{ font-size:.85rem; color:var(--md-muted) }
 .stat-value{ font-size:1.4rem; font-weight:700; color:var(--md-primary-variant) }
+
+/* Bulbo úmido: a cor do card segue o nível de risco */
+.wet-bulb-card{ border-left:6px solid var(--risk); background:var(--risk-bg) }
+.wet-bulb-card .stat-value, .wet-bulb-card .stat-value i{ color:var(--risk-text) }
+.risk-message{ font-size:.8rem; color:var(--risk-text); font-weight:500 }
+.risk-normal{ --risk:#43a047; --risk-bg:#e8f5e9; --risk-text:#1b5e20 }
+.risk-alert{ --risk:#fbc02d; --risk-bg:#fff8e1; --risk-text:#8a6100 }
+.risk-danger{ --risk:#fb8c00; --risk-bg:#fff3e0; --risk-text:#a84300 }
+.risk-extreme{ --risk:#e53935; --risk-bg:#ffebee; --risk-text:#b71c1c }
 
 /* Forecast: lista de dias expansível */
 .forecast-list{ padding:6px; gap:0 }
@@ -99,7 +111,7 @@ h4{ font-size:1rem; margin:12px 0 4px }
 @keyframes day-in{ from{ opacity:0; transform:translateY(8px) } to{ opacity:1; transform:none } }
 
 .day-summary{ all:unset; box-sizing:border-box; width:100%; cursor:pointer; display:grid; align-items:center; gap:12px; padding:12px 14px; border-radius:12px;
-	grid-template-columns:72px 36px minmax(0,1fr) 80px minmax(150px,240px) 18px }
+	grid-template-columns:72px 92px minmax(0,1fr) 80px minmax(150px,240px) 18px }
 .day-summary:hover{ background:rgba(103,80,164,.05) }
 .day-summary:focus-visible{ outline:2px solid var(--md-primary); outline-offset:-2px }
 .day-name{ display:flex; flex-direction:column; line-height:1.2 }
@@ -137,12 +149,12 @@ h4{ font-size:1rem; margin:12px 0 4px }
 .meter.rain > span{ background:#1e88e5 }
 .day.open .meter > span{ transform:scaleX(1) }
 
-@media (min-width:1000px){ .tiles{ grid-template-columns:repeat(5, minmax(0,1fr)) } }
+@media (min-width:1000px){ .tiles{ grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)) } }
 @media (prefers-reduced-motion: reduce){
 	.day, .day-panel, .tile, .meter > span, .day-chevron, .day-emoji, .results, .results.animate > *, .results.animate .day, .results.animate .current-grid > *{ animation:none !important; transition:none }
 }
 @media (max-width:760px){
-	.day-summary{ grid-template-columns:52px 30px minmax(0,1fr) 18px; row-gap:6px; padding:10px }
+	.day-summary{ grid-template-columns:52px auto minmax(0,1fr) 18px; row-gap:6px; padding:10px }
 	.day-summary .day-condition{ display:none }
 	.day-rain{ grid-column:3; grid-row:1; justify-self:start }
 	.day-temps{ grid-column:1 / -1; grid-row:2 }
@@ -165,16 +177,29 @@ h4{ font-size:1rem; margin:12px 0 4px }
 .dot-green{ background:#66bb6a } .dot-yellow{ background:#fdd835 } .dot-orange{ background:#fb8c00 } .dot-red{ background:#e53935 }
 
 /* INMET alerts */
-.alerts-list{ display:flex; flex-direction:column; gap:10px }
-.alert-card{ background:var(--card-bg); border-radius:12px; border-left:8px solid var(--alert-color); box-shadow:var(--md-elevation); padding:10px 14px }
-.alert-card summary{ cursor:pointer; display:flex; align-items:center; gap:10px; flex-wrap:wrap; list-style:none }
-.alert-card summary::-webkit-details-marker{ display:none }
-.alert-icon{ width:28px; height:auto }
-.alert-title{ font-weight:700; font-size:1.05rem }
-.alert-severity{ background:var(--alert-color); color:#1f2937; border-radius:10px; padding:1px 10px; font-size:.8rem; font-weight:600 }
-.alert-period{ color:var(--md-muted); font-size:.85rem; margin-left:auto }
-.alert-card ul{ margin:4px 0 8px 18px }
-.alert-card li{ list-style:disc; font-size:.9rem }
+.alert-row{ display:flex; flex-wrap:wrap; gap:8px; align-items:center }
+.alert-badge{ display:inline-flex; align-items:center; gap:6px; cursor:help; border-radius:10px; outline:none }
+.alert-badge:focus-visible{ box-shadow:0 0 0 2px var(--md-primary) }
+.alert-badge-icon{ width:26px; height:26px; object-fit:contain; color:var(--alert-color); font-size:1.2rem }
+.alert-tag{ display:inline-block; background:var(--alert-color); color:#1f2937; border-radius:10px; padding:1px 9px; font-size:.72rem; font-weight:700; white-space:nowrap }
+.day-icons{ display:flex; align-items:center; gap:4px }
+.day-alerts{ display:inline-flex; gap:2px; transition:opacity .25s ease }
+.day-alerts .alert-badge-icon{ width:22px; height:22px }
+.day.open .day-alerts{ opacity:0; pointer-events:none }
+.tile-alerts .alert-row{ margin-top:4px; flex-wrap:nowrap; gap:10px }
+.tile-alerts .alert-badge{ padding-bottom:3px; border-bottom:3px solid var(--alert-color); border-radius:0 }
+.tile-alerts .alert-badge-icon{ width:32px; height:32px }
+
+/* Tipbox flutuante (posicionado por JS para não ser cortado por overflow) */
+.tipbox{ position:fixed; z-index:3000; max-width:min(360px, calc(100vw - 24px)); max-height:min(60vh, 420px); overflow:auto;
+	background:#1f2937; color:#f9fafb; border-radius:12px; padding:12px 14px; box-shadow:0 12px 32px rgba(16,24,40,.35);
+	font-size:.82rem; line-height:1.4; opacity:0; transform:translateY(4px); transition:opacity .15s ease, transform .15s ease; pointer-events:none }
+.tipbox.visible{ opacity:1; transform:none; pointer-events:auto }
+.tipbox .tip-title{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:.95rem }
+.tipbox .tip-icon{ width:24px; height:24px; object-fit:contain }
+.tipbox .tip-period, .tipbox .tip-source{ display:block; color:#cbd5e1; margin-top:4px; font-size:.75rem }
+.tipbox .tip-heading{ display:block; margin-top:8px; font-weight:700; color:#fde68a }
+.tipbox .tip-item{ display:block; margin-top:2px }
 
 /* Footer */
 footer{ margin-top:40px; color:var(--md-muted); display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center }
@@ -187,8 +212,8 @@ footer .sources{ font-size:.8rem }
 
 @media (max-width:520px){
 	h1{ font-size:1.6rem }
-	.current-main{ grid-column:1 / -1; padding:14px 16px }
-	.current-emoji{ flex-basis:60px; width:60px; height:60px; font-size:2rem }
-	.current-temp{ font-size:2.1rem }
-	.alert-period{ margin-left:0 }
+	.current-grid > .md-card{ flex:0 0 44%; min-width:0 }
+	.current-grid > .current-main{ flex-basis:78% }
+	.current-emoji{ flex-basis:56px; width:56px; height:56px; font-size:1.8rem }
+	.current-temp{ font-size:2rem }
 }

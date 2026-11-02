@@ -61,6 +61,62 @@
             button.setAttribute('aria-expanded', open ? 'true' : 'false');
         });
 
+        // Tipbox dos avisos do INMET: um balão único, posicionado junto ao ícone
+        (function () {
+            var tip = document.createElement('div');
+            tip.className = 'tipbox';
+            tip.setAttribute('role', 'tooltip');
+            document.body.appendChild(tip);
+            var current = null, hideTimer = null;
+
+            function show(badge) {
+                var content = badge.querySelector('.tip-content');
+                if (!content) return;
+                clearTimeout(hideTimer);
+                current = badge;
+                tip.innerHTML = content.innerHTML;
+                tip.classList.add('visible');
+                var r = badge.getBoundingClientRect(), t = tip.getBoundingClientRect();
+                var left = Math.min(Math.max(8, r.left + r.width / 2 - t.width / 2), window.innerWidth - t.width - 8);
+                var top = r.top - t.height - 8;  // acima do ícone; abaixo se não couber
+                if (top < 8) top = Math.min(r.bottom + 8, window.innerHeight - t.height - 8);
+                tip.style.left = left + 'px';
+                tip.style.top = top + 'px';
+            }
+            function hide(delay) {
+                clearTimeout(hideTimer);
+                hideTimer = setTimeout(function () { tip.classList.remove('visible'); current = null; }, delay || 0);
+            }
+
+            document.addEventListener('mouseover', function (e) {
+                var badge = e.target.closest('.alert-badge');
+                if (badge && badge !== current) show(badge);
+                else if (badge || e.target.closest('.tipbox')) clearTimeout(hideTimer);
+            });
+            document.addEventListener('mouseout', function (e) {
+                if (e.target.closest('.alert-badge, .tipbox')) hide(150);
+            });
+            document.addEventListener('focusin', function (e) {
+                var badge = e.target.closest('.alert-badge');
+                if (badge) show(badge);
+            });
+            document.addEventListener('focusout', function (e) {
+                if (e.target.closest('.alert-badge')) hide(150);
+            });
+            // Toque: abre/fecha ao tocar no ícone (fora da linha do acordeão, que abre o dia)
+            document.addEventListener('click', function (e) {
+                var badge = e.target.closest('.alert-badge');
+                if (badge && !badge.closest('.day-summary')) {
+                    if (current === badge && tip.classList.contains('visible')) hide(); else show(badge);
+                } else if (!e.target.closest('.tipbox')) {
+                    hide();
+                }
+            });
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hide(); });
+            window.addEventListener('scroll', function (e) { if (e.target !== tip) hide(); }, true);
+            window.addEventListener('resize', function () { hide(); });
+        })();
+
         // Busca sem recarregar a página; se algo falhar, envia o formulário normalmente
         (function () {
             var form = document.querySelector('.search-form');

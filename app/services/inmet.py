@@ -8,6 +8,7 @@ O código IBGE da cidade vem da tabela de municípios do IBGE em app/data
 (atualizável com scripts/update_ibge_municipios.py). Se a cidade não for
 encontrada na tabela, usa-se o polígono do aviso para verificar a localização.
 """
+import datetime
 import json
 import logging
 from functools import lru_cache
@@ -111,6 +112,35 @@ def _format_alert(period, alert):
         "instructions": _as_list(alert.get("instrucoes")),
         "icon": alert.get("icone") if str(alert.get("icone", "")).startswith("data:image/") else None,
     }
+
+
+def _date(value):
+    """Data de "AAAA-MM-DD HH:MM" (horário de Brasília, como vem do INMET)."""
+    try:
+        return datetime.date.fromisoformat(str(value)[:10])
+    except ValueError:
+        return None
+
+
+def alerts_by_date(alerts):
+    """
+    {data: [avisos]} para cada dia coberto por cada aviso (do início ao fim).
+    Avisos repetidos no mesmo dia (mesmo id e evento) aparecem uma vez só.
+    """
+    days = {}
+    for alert in alerts:
+        start, end = _date(alert.get("start")), _date(alert.get("end"))
+        if start is None:
+            continue
+        day = start
+        while day <= (end or start):
+            same_day = days.setdefault(day, [])
+            if not any(a["id"] == alert["id"] and a["event"] == alert["event"] for a in same_day):
+                same_day.append(alert)
+            day += datetime.timedelta(days=1)
+    for same_day in days.values():
+        same_day.sort(key=lambda a: -a["severity_rank"])
+    return days
 
 
 def get_alerts_for_city(city_name, state, latitude, longitude):
