@@ -1,11 +1,11 @@
 # WYW — Especificação
 
-> **WYW** — "Weather is your Wheather" *(grafia a confirmar, ver Q-1)*.
+> **WYW** — "Weather is your Weather".
 > Site e app Android de previsão do tempo com **nível de risco à vida** para quem permanece num local.
 
 | | |
 |---|---|
-| Versão | 0.1 (rascunho para revisão) |
+| Versão | 0.2 — decisões D-1 a D-5 incorporadas |
 | Data | 06/11/2026 |
 | Responsável | derossi research — [derossi.dev](https://derossi.dev) |
 | Repositório | `derossimolina/bulb-app` |
@@ -128,15 +128,22 @@ do período `início → fim` do aviso.
 
 | ID | Indicador | Ativo no horário quando | Dados |
 |---|---|---|---|
-| **IND-SOL** | Calor ao sol, ao ar livre | temperatura do ar **> 35 °C** **e** sol acima do horizonte **e** nebulosidade **< 75 %** | MET (temperatura, nebulosidade); elevação solar calculada (NOAA) |
-| **IND-SOMBRA** | Calor à sombra, ao ar livre | temperatura do ar **> 38 °C** | MET |
+| **IND-CALOR** | Calor do ar, ao ar livre | temperatura do ar **> 35 °C** com sol (sol acima do horizonte **e** nebulosidade **< 75 %**) **ou** temperatura do ar **> 38 °C** em qualquer condição | MET (temperatura, nebulosidade); elevação solar calculada (NOAA) |
 | **IND-TW** | Bulbo úmido | Tw **≥ 31 °C** (nível "Perigo" de 4.3) | MET (temperatura, umidade) |
 | **IND-TEMP** | Tempestade (local aberto ou fechado) | símbolo de trovoada no horário (WMO 95–99) **ou** aviso INMET "Tempestade" de qualquer nível vigente | MET, INMET |
-| **IND-VENTO** | Vento forte | vento médio ou rajada **> 60 km/h** **ou** aviso INMET "Vendaval"/"Ventos Costeiros" de nível Perigo ou Grande Perigo vigente | MET (vento), Open-Meteo (rajada), INMET |
+| **IND-VENTO** | Vento forte | vento médio ou rajada **> 60 km/h** **ou** aviso INMET "Vendaval" de nível Perigo ou Grande Perigo vigente **ou** aviso INMET "Ventos Costeiros" de nível Perigo ou Grande Perigo vigente **com o ponto avaliado dentro do polígono do aviso** (faixa litorânea; D-5) | MET (vento), Open-Meteo (rajada), INMET |
 | **IND-TORNADO** | Possibilidade de tornado (local aberto ou fechado) | potencial de tornado **alto** (4.4) | Open-Meteo |
 
-**Observação.** A temperatura do ar das previsões é medida à sombra. Por isso, de dia com sol e acima de 38 °C,
-IND-SOL e IND-SOMBRA ficam ativos juntos e, sozinhos, já resultam em "Risco à sua vida" (ver Q-3).
+**Calor do ar (D-3).** Como não há como saber se a pessoa está ao ar livre, ao sol ou à sombra, IND-CALOR é
+**um único indicador** (nunca conta duas vezes) e, sozinho, gera só **Atenção** com uma recomendação:
+
+| Variante | Condição | Recomendação |
+|---|---|---|
+| Sol | > 35 °C, de dia, nebulosidade < 75 % | "Se estiver ao ar livre e ao sol, saia do sol e procure sombra ou um lugar fresco." |
+| Sombra | > 38 °C (a qualquer hora) | "Calor insalubre mesmo à sombra: se estiver ao ar livre, procure um lugar fresco ou com ar condicionado." |
+
+Quando as duas variantes valem, mostra-se só a de sombra (mais grave). O bulbo úmido (IND-TW) é um indicador
+separado: calor do ar **e** bulbo úmido ≥ 31 °C no mesmo horário somam dois indicadores.
 
 ### 4.3 Níveis do bulbo úmido (convenção existente)
 | Tw | Nível | Cor | Mensagem |
@@ -157,13 +164,14 @@ Recupera o classificador removido no commit `7e6d4b1` (`app/meteo/indices.py` em
 | Moderado | WMAXSHEAR ≥ 800 e cisalhamento superfície–850 hPa ≥ 8 m/s |
 | **Alto** | WMAXSHEAR ≥ 1200, cisalhamento superfície–850 hPa ≥ 12 m/s e índice de levantamento ≤ −4 |
 
-Potencial **moderado** mostra o ícone de tornado em modo informativo, sem disparar risco (ver Q-2).
+Potencial **moderado** mostra o ícone de tornado só em modo informativo ("Possibilidade moderada de tornado"),
+sem contar como indicador (D-2).
 
 ### 4.5 Nível de risco
 | Nível | Regra | Exibição |
 |---|---|---|
 | **Sem risco** | nenhum indicador ativo na janela | faixa discreta: "Sem risco identificado nas próximas 3 horas" |
-| **Atenção** | algum indicador ativo, mas nunca dois no mesmo horário | faixa amarela com os indicadores |
+| **Atenção** | algum indicador ativo, mas nunca dois no mesmo horário | faixa amarela com os indicadores e, para IND-CALOR, a recomendação |
 | **Risco à sua vida** | **dois ou mais indicadores ativos no mesmo horário** (exceto IND-TORNADO) | faixa vermelha, REQ-WEB-41 / REQ-APP-30 |
 | **Extremo** | IND-TORNADO ativo em qualquer horário (basta ele, sozinho) | igual ao anterior, com ícone de tornado |
 
@@ -180,10 +188,10 @@ exemplo:
 | # | Entradas (no mesmo horário, salvo indicação) | Esperado |
 |---|---|---|
 | 1 | 30 °C, Tw 22 °C, sem trovoada, vento 20 km/h | Sem risco |
-| 2 | 36 °C, de dia, nebulosidade 20 % | Atenção (IND-SOL) |
+| 2 | 36 °C, de dia, nebulosidade 20 % | Atenção (IND-CALOR, recomendação "sol") |
 | 3 | 36 °C, de dia, nebulosidade 90 % | Sem risco |
-| 4 | 39 °C, de dia, nebulosidade 10 % | Risco à sua vida (IND-SOL + IND-SOMBRA) |
-| 5 | 39 °C, à noite | Atenção (IND-SOMBRA) |
+| 4 | 39 °C, de dia, nebulosidade 10 % | Atenção (IND-CALOR, recomendação "sombra"); calor conta uma vez só |
+| 5 | 39 °C, à noite | Atenção (IND-CALOR, recomendação "sombra") |
 | 6 | Tw 31 °C e trovoada no mesmo horário | Risco à sua vida |
 | 7 | Tw 31 °C em h0 e trovoada só em h2 | Atenção |
 | 8 | Rajada 65 km/h e aviso INMET "Tempestade" vigente | Risco à sua vida |
@@ -191,6 +199,9 @@ exemplo:
 | 10 | Potencial de tornado alto em h3, nada mais | Extremo |
 | 11 | Potencial de tornado moderado + Tw 32 °C | Atenção, com ícone informativo de tornado |
 | 12 | Sem dados do Open-Meteo, Tw 33 °C e trovoada | Risco à sua vida; tornado "indisponível" |
+| 13 | 36 °C, de dia, nebulosidade 20 %, Tw 31 °C | Risco à sua vida (IND-CALOR + IND-TW) |
+| 14 | Aviso INMET "Ventos Costeiros" (Perigo) vigente, ponto fora do polígono do aviso, trovoada | Atenção (só IND-TEMP) |
+| 15 | Aviso INMET "Ventos Costeiros" (Perigo) vigente, ponto dentro do polígono do aviso, trovoada | Risco à sua vida |
 
 ---
 
@@ -198,7 +209,7 @@ exemplo:
 
 ### 5.1 Plataforma
 - **REQ-APP-01 🆕** Kotlin, Jetpack Compose, `minSdk 31` (Android 12), `targetSdk` exigido pelo Google Play na
-  data de publicação. Pacote: `dev.derossi.wyw` (ver Q-4). Nome do app: **WYW**.
+  data de publicação. Pacote: `dev.derossi.wyw` (D-4). Nome do app: **WYW** — "Weather is your Weather".
 - **REQ-APP-02 🆕** O app funciona sem o servidor do site: consulta MET Norway, Open-Meteo e INMET direto do
   aparelho, com a tabela IBGE embutida. Respostas em cache por 15 min (previsão) e 10 min (avisos).
 - **REQ-APP-03 🆕** Interface em português, inglês e espanhol, seguindo o idioma do sistema.
@@ -234,6 +245,9 @@ exemplo:
 - **REQ-APP-32 🆕** Não repetir a notificação para o mesmo risco: só notificar de novo se o conjunto de indicadores
   mudar, se o nível subir ou depois de 3 h. Quando o risco acabar, remover a notificação.
 - **REQ-APP-33 🆕** Tocar na notificação abre o app na tela de início com o detalhe do risco.
+- **REQ-APP-34 🆕** Com nível **Atenção** por IND-CALOR no local atual, o app publica uma **notificação de
+  recomendação** (estilo padrão do sistema, sem fundo vermelho, canal "Recomendações" de importância padrão) com a
+  recomendação da variante (4.2) e o aviso sobre as autoridades. Segue as mesmas regras de repetição de REQ-APP-32.
 - **AC-APP-30** Num aparelho com Android 12, simulando Tw 32 °C e trovoada no local atual: a notificação aparece
   com área vermelha, ícone amarelo, "Risco à sua vida!", as duas linhas de indicadores e o aviso sobre as
   autoridades; nenhuma segunda notificação é criada na verificação seguinte.
@@ -246,6 +260,8 @@ primeiro plano e mídia, o que não se aplica aqui.
 - **REQ-APP-40 🆕** Publicação no Google Play: conta de desenvolvedor, política de privacidade publicada no site
   (`/privacy`), formulário de segurança de dados e declaração de localização em segundo plano com vídeo
   demonstrando o recurso.
+- **REQ-APP-41 🆕** Até a conta do Google Play existir, o app é distribuído como APK de teste (assinado com a
+  chave de upload definitiva, guardada fora do repositório).
 
 ---
 
@@ -290,19 +306,21 @@ calcula o nível final, exibindo a faixa de risco.
 | **M1** | Nome WYW, rodapé derossi research, motor de risco em Python + `risk-cases.json`, faixa de risco (sem tornado/rajadas) | WEB-01, 02, 40, 41, 43; seção 4 |
 | **M2** | Complemento no navegador: rajadas, tornado, busca de endereço | WEB-11, 22, 42, 44 |
 | **M3** | App Android: telas, busca, risco com o app aberto | APP-01…13, 21 |
-| **M4** | Segundo plano e notificação de risco | APP-20, 22, 23, 30…33 |
-| **M5** | Publicação no Google Play e política de privacidade | APP-40 |
+| **M4** | Segundo plano, notificação de risco e de recomendação | APP-20, 22, 23, 30…34, 41 |
+| **M5** | Publicação no Google Play e política de privacidade — **bloqueado** até a conta de desenvolvedor (D-4) | APP-40 |
 
 ---
 
-## 9. Questões em aberto
-- **Q-1** Grafia do nome: "Weather is your **Wheather**" está correto ou seria "Weather is your **Weather**"/"**Whether**"?
-- **Q-2** Potencial de tornado **moderado** só como ícone informativo (proposto) ou também como indicador extremo?
-  No verão do Sul do Brasil o moderado é frequente e geraria muitos alarmes.
-- **Q-3** De dia, com sol e acima de 38 °C, IND-SOL e IND-SOMBRA contam como dois indicadores (proposto) ou como um?
-- **Q-4** Nome do pacote Android (`dev.derossi.wyw`) e conta de desenvolvedor do Google Play a usar.
-- **Q-5** Rótulo "Ventos Costeiros" do INMET: incluir em IND-VENTO só nos municípios costeiros (como o próprio aviso
-  delimita) — proposto — ou tratar como os demais avisos de vento.
+## 9. Decisões
+| ID | Questão | Decisão (06/11/2026) |
+|---|---|---|
+| **D-1** | Grafia do nome | "WYW — Weather is your Weather". |
+| **D-2** | Potencial de tornado moderado | Só ícone informativo; não conta como indicador. Só o potencial **alto** é indicador (extremo). |
+| **D-3** | Calor ao sol e à sombra | Formam um único indicador, IND-CALOR. Sozinho, gera Atenção com recomendação ("se estiver ao ar livre e ao sol, saia"); nunca gera Risco à sua vida por si só. Bulbo úmido segue separado. |
+| **D-4** | Pacote e conta do Google Play | Pacote `dev.derossi.wyw` (domínio derossi.dev; não depende da conta e é definitivo após a primeira publicação). A conta de desenvolvedor depende do D-U-N-S, previsto para daqui a no mínimo 30 dias: M3 e M4 seguem com APK de teste; M5 aguarda a conta. |
+| **D-5** | "Ventos Costeiros" do INMET | Entra em IND-VENTO só quando o ponto avaliado está dentro do polígono do aviso (a faixa litorânea definida pelo INMET), e não apenas no município. |
+
+Novas dúvidas entram aqui como **Q-6** em diante, antes de virar código.
 
 ## 10. Referências
 - Stull, R. (2011). Wet-Bulb Temperature from Relative Humidity and Air Temperature. *J. Appl. Meteor. Climatol.*
