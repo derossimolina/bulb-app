@@ -265,7 +265,7 @@ primeiro plano e mídia, o que não se aplica aqui.
 
 
 ### 5.6 Design system do app
-O app segue o design system **Contexto v8** (artefato "Contexto" no Claude,
+O app (e só o app; o site mantém o estilo atual, D-7) segue o design system **Contexto v8** (artefato "Contexto" no Claude,
 [claude.ai/artifact/6ThQ7KTG8djxUFBkF8zqPn](https://claude.ai/artifact/6ThQ7KTG8djxUFBkF8zqPn), revisão de
 02/11/2026). Os valores usados estão copiados abaixo, para o repositório não depender do artefato. Se o design system
 mudar, esta seção é atualizada primeiro.
@@ -379,10 +379,7 @@ calcula o nível final, exibindo a faixa de risco.
 | **D-4** | Pacote e conta do Google Play | Pacote `dev.derossi.wyw` (domínio derossi.dev; não depende da conta e é definitivo após a primeira publicação). A conta de desenvolvedor depende do D-U-N-S, previsto para daqui a no mínimo 30 dias: M3 e M4 seguem com APK de teste; M5 aguarda a conta. |
 | **D-5** | "Ventos Costeiros" do INMET | Entra em IND-VENTO só quando o ponto avaliado está dentro do polígono do aviso (a faixa litorânea definida pelo INMET), e não apenas no município. |
 | **D-6** | Design system do app | Segue o Contexto v8 (5.6), com o nome WYW em texto e o ícone de raio na nuvem (5.7). Vermelho (`risco-vida`) e amarelo (`alerta-icone`), proibidos no design system, são uma exceção só para comunicar risco, porque REQ-APP-30 os exige. O app não usa as marcas da Contexto. |
-
-### Questões em aberto
-- **Q-6** O **site** também deve migrar para o design system Contexto v8 (fundo `ink`, EB Garamond e Inter, cantos
-  retos), ou só o app? Hoje o site usa o estilo Material atual.
+| **D-7** | Design system no site (Q-6) | Só o app segue o design system Contexto v8. O site mantém o estilo atual. |
 
 Novas dúvidas entram aqui como **Q-7** em diante, antes de virar código.
 
