@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Versão | 0.6 — M2 entregue |
+| Versão | 0.7 — proposta de hospedagem no AWS Lightsail (8.1) |
 | Data | 06/11/2026 |
 | Responsável | derossi research — [derossi.dev](https://derossi.dev) |
 | Repositório | `derossimolina/bulb-app` |
@@ -391,6 +391,55 @@ calcula o nível final, exibindo a faixa de risco.
 
 **Fluxo no app.** Tudo no aparelho: localização → MET + Open-Meteo + INMET → motor de risco → tela e notificação.
 
+### 8.1 Hospedagem: atual e proposta de migração para o AWS Lightsail
+
+O app Android não depende do servidor (REQ-APP-02); a hospedagem afeta só o site e a futura política de privacidade
+(`/privacy`, REQ-APP-40).
+
+**Hoje (Render Free).** Container Docker, 512 MB e 0,15 vCPU, região Oregon. O serviço **dorme após 15 minutos sem
+acesso** e a primeira visita espera a partida a frio (5 a 50 s); os caches em memória se perdem a cada parada. O IP de
+saída é **compartilhado** com outros serviços, o que causou os 429 do Open-Meteo (23/10/2026) e do Nominatim
+(02/11/2026) e motivou a restrição C-1.
+
+**Consumo medido no Render** (06/11/2026): **~77 MB de memória** com 2 workers do gunicorn; **~10 MB de tráfego em 30
+dias**. A página de resultados tem de 30 a 135 KB, e fontes, ícones e scripts de terceiros vêm de CDNs.
+
+**Dimensionamento no Lightsail** (preços oficiais de 06/11/2026, em USD por mês):
+
+| Componente | Memória estimada |
+|---|---|
+| Ubuntu 24.04 LTS (sistema) | 150–250 MB |
+| Docker | 50–80 MB |
+| App (gunicorn, 2 workers; medido) | ~80 MB, até ~120 MB em picos |
+| Caddy (HTTPS automático com Let's Encrypt) | 20–40 MB |
+| **Total** | **~300–490 MB** |
+
+| Opção | Preço | Recursos | Avaliação |
+|---|---|---|---|
+| **Instância Linux Micro-1GB (IPv4)** — **recomendada** | **$7** | 1 GB, 2 vCPU, 40 GB SSD, 2 TB de transferência (1 TB em São Paulo) | Folga de ~50% de memória; IP estático próprio; sempre ligada |
+| Instância Linux Nano-0.5GB (IPv4) | $5 | 0,5 GB, 2 vCPU, 20 GB SSD, 1 TB (0,5 TB em São Paulo) | Cabe, mas no limite: exige swap de 1 GB e pode travar em atualizações do sistema |
+| Serviço de containers Nano | $7 | 512 MB, 0,25 vCPU compartilhada, 500 GB | HTTPS e deploy de imagem gerenciados, sem SSH; a documentação não garante IP de saída próprio, então o risco dos 429 pode continuar |
+| Planos só IPv6 ($3,50 / $5) | — | — | **Inviáveis**: sem IPv4 de saída, o servidor não alcança APIs que só têm IPv4 |
+
+- **REQ-INFRA-01 🆕 (proposta)** Instância **Linux Micro-1GB** na região **South America (São Paulo), `sa-east-1`**
+  (menor latência para o Brasil; preço igual, com metade da franquia de transferência, muito acima do uso medido).
+- **REQ-INFRA-02 🆕** Ubuntu 24.04 LTS com Docker Compose: o container atual do app (`Dockerfile`, sem mudanças) e o
+  Caddy na frente, com HTTPS automático. Workers do gunicorn do tipo `gthread` (2 workers × 4 threads), porque as
+  requisições esperam APIs externas.
+- **REQ-INFRA-03 🆕** IP estático do Lightsail anexado (incluído no plano) e domínio próprio apontando para ele (Q-8).
+  Firewall do Lightsail: só 80 e 443 abertas; 22 restrita ao IP de quem administra.
+- **REQ-INFRA-04 🆕** Deploy pelo GitHub Actions a cada merge na `main` (build da imagem, envio ao GitHub Container
+  Registry e `docker compose pull && up -d` por SSH), mantendo o fluxo atual do Render.
+- **REQ-INFRA-05 🆕** Snapshots automáticos diários da instância (cobrados à parte pelo Lightsail) e alerta de CPU e
+  de status no próprio painel.
+- **AC-INFRA-01** Depois da migração: primeira visita em menos de 3 s (sem partida a frio, NFR-01), HTTPS válido no
+  domínio, e logs sem 429 das APIs de tempo por 7 dias.
+
+**Ganhos esperados:** fim da partida a frio; caches em memória persistentes; IP próprio (a restrição C-1 pode ser
+revista: o Open-Meteo e o Nominatim voltariam a ser viáveis no servidor, se for útil); dados no Brasil.
+**Custos e trabalho:** US$ 7/mês (US$ 84/ano) mais snapshots; manutenção do sistema operacional (atualizações de
+segurança automáticas com `unattended-upgrades`); configuração inicial de domínio, HTTPS e deploy.
+
 ---
 
 ## 9. Plano de entrega
@@ -403,6 +452,7 @@ calcula o nível final, exibindo a faixa de risco.
 | **M3** | App Android: telas, busca, risco com o app aberto, design system e ícone | APP-01…13, 21, 55, 56, 60, 61; DS-01…07 |
 | **M4** | Segundo plano, notificação de risco e de recomendação | APP-20, 22, 23, 30…34, 41 |
 | **M5** | Publicação no Google Play e política de privacidade — **bloqueado** até a conta de desenvolvedor (D-4) | APP-40 |
+| **INFRA** (proposta) | Migração do site para o AWS Lightsail (8.1) — aguarda decisão (Q-7, Q-8) | INFRA-01…05 |
 
 ---
 
@@ -419,7 +469,12 @@ calcula o nível final, exibindo a faixa de risco.
 | **D-8** | Design system no site | O site também segue o design system Contexto v8 (seção 5), mantendo o layout, as animações e as funcionalidades. |
 | **D-9** | Temas claro e escuro | Site e app têm os dois temas. O escuro é o "Padrão" do design system; o claro é derivado da mesma paleta (`ivory`, `ink`, `marmore`, `g3`, `g4`, acento `bronze`), com contraste medido. Padrão: preferência do sistema. |
 
-Novas dúvidas entram aqui como **Q-7** em diante, antes de virar código.
+### Questões em aberto
+- **Q-7** Migrar o site do Render Free para o AWS Lightsail (instância Micro-1GB em São Paulo, US$ 7/mês; 8.1)?
+- **Q-8** Qual domínio o WYW vai usar (por exemplo, `wyw.derossi.dev`)? Na instância do Lightsail, o HTTPS depende
+  de um domínio próprio; no Render, hoje, o endereço é `bulb-app.onrender.com`.
+
+Novas dúvidas entram aqui como **Q-9** em diante, antes de virar código.
 
 ## 11. Referências
 - Stull, R. (2011). Wet-Bulb Temperature from Relative Humidity and Air Temperature. *J. Appl. Meteor. Climatol.*
@@ -427,3 +482,5 @@ Novas dúvidas entram aqui como **Q-7** em diante, antes de virar código.
 - Taszarek, M. et al. (2020). Severe convective storms across Europe and the United States. *J. Climate* 33.
 - MET Norway Locationforecast 2.0 · Open-Meteo · INMET Alert-AS · Nominatim Usage Policy · Android notifications
   (custom layouts) e background location (Google Play policy).
+- AWS Lightsail: preços (aws.amazon.com/lightsail/pricing), planos ("Lightsail bundles") e regiões ("Regions and
+  Availability Zones in Lightsail"), consultados em 06/11/2026.
