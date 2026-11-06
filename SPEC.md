@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Versão | 0.7 — proposta de hospedagem no AWS Lightsail (8.1) |
+| Versão | 0.8 — migração para o AWS Lightsail decidida (D-10 a D-12) |
 | Data | 06/11/2026 |
 | Responsável | derossi research — [derossi.dev](https://derossi.dev) |
 | Repositório | `derossimolina/bulb-app` |
@@ -71,6 +71,12 @@ decimais (~1 km). O servidor não guarda buscas; os logs de acesso podem conter 
 ## 3. Requisitos — Site
 
 ### 3.1 Identidade
+- **REQ-WEB-04 🆕** Idioma padrão por domínio (D-12): sem escolha da pessoa (parâmetro `lang` ou sessão),
+  `clima.derossi.dev` abre em **português** e `weather.derossi.dev` em **inglês**; em outros endereços vale o idioma
+  do navegador. Cada página traz `<link rel="alternate" hreflang="pt" | "en" | "x-default">` apontando para o mesmo
+  caminho nos dois domínios e `<link rel="canonical">` para o domínio atual.
+  - **AC-WEB-04** Sem cookie de sessão, `https://weather.derossi.dev/?city=Porto+Alegre` mostra a página em inglês e
+    `https://clima.derossi.dev/?city=Porto+Alegre` em português; os dois têm os `hreflang` recíprocos.
 - **REQ-WEB-03 ✅** O visual do site segue a seção 5 (design system Contexto v8, temas claro e escuro), mantendo o
   layout, as animações e as funcionalidades descritas nesta seção.
 - **REQ-WEB-01 ✅** O nome do site DEVE ser **WYW** no título da página, no cabeçalho e no `<title>`.
@@ -391,7 +397,7 @@ calcula o nível final, exibindo a faixa de risco.
 
 **Fluxo no app.** Tudo no aparelho: localização → MET + Open-Meteo + INMET → motor de risco → tela e notificação.
 
-### 8.1 Hospedagem: atual e proposta de migração para o AWS Lightsail
+### 8.1 Hospedagem: migração para o AWS Lightsail (decidida, D-10)
 
 O app Android não depende do servidor (REQ-APP-02); a hospedagem afeta só o site e a futura política de privacidade
 (`/privacy`, REQ-APP-40).
@@ -421,19 +427,24 @@ dias**. A página de resultados tem de 30 a 135 KB, e fontes, ícones e scripts 
 | Serviço de containers Nano | $7 | 512 MB, 0,25 vCPU compartilhada, 500 GB | HTTPS e deploy de imagem gerenciados, sem SSH; a documentação não garante IP de saída próprio, então o risco dos 429 pode continuar |
 | Planos só IPv6 ($3,50 / $5) | — | — | **Inviáveis**: sem IPv4 de saída, o servidor não alcança APIs que só têm IPv4 |
 
-- **REQ-INFRA-01 🆕 (proposta)** Instância **Linux Micro-1GB** na região **South America (São Paulo), `sa-east-1`**
+- **REQ-INFRA-01 🆕** Instância **Linux Micro-1GB** na região **South America (São Paulo), `sa-east-1`**
   (menor latência para o Brasil; preço igual, com metade da franquia de transferência, muito acima do uso medido).
 - **REQ-INFRA-02 🆕** Ubuntu 24.04 LTS com Docker Compose: o container atual do app (`Dockerfile`, sem mudanças) e o
   Caddy na frente, com HTTPS automático. Workers do gunicorn do tipo `gthread` (2 workers × 4 threads), porque as
   requisições esperam APIs externas.
-- **REQ-INFRA-03 🆕** IP estático do Lightsail anexado (incluído no plano) e domínio próprio apontando para ele (Q-8).
+- **REQ-INFRA-03 🆕** IP estático do Lightsail anexado (incluído no plano). Os domínios **`clima.derossi.dev`** e
+  **`weather.derossi.dev`** (D-11) apontam para ele com registros A no DNS da Hostinger (servidores de nome
+  `dns-parking.com`, onde está o `derossi.dev`). O Caddy emite um certificado Let's Encrypt para cada domínio; `.dev`
+  exige HTTPS em todos os navegadores (HSTS pré-carregado) e não há registro CAA que impeça a emissão.
   Firewall do Lightsail: só 80 e 443 abertas; 22 restrita ao IP de quem administra.
 - **REQ-INFRA-04 🆕** Deploy pelo GitHub Actions a cada merge na `main` (build da imagem, envio ao GitHub Container
   Registry e `docker compose pull && up -d` por SSH), mantendo o fluxo atual do Render.
 - **REQ-INFRA-05 🆕** Snapshots automáticos diários da instância (cobrados à parte pelo Lightsail) e alerta de CPU e
   de status no próprio painel.
-- **AC-INFRA-01** Depois da migração: primeira visita em menos de 3 s (sem partida a frio, NFR-01), HTTPS válido no
-  domínio, e logs sem 429 das APIs de tempo por 7 dias.
+- **REQ-INFRA-06 🆕** Depois da migração, `bulb-app.onrender.com` redireciona (301) para `clima.derossi.dev`,
+  mantendo o caminho e os parâmetros, por pelo menos 30 dias; depois o serviço do Render é suspenso.
+- **AC-INFRA-01** Depois da migração: primeira visita em menos de 3 s (sem partida a frio, NFR-01), HTTPS válido nos
+  dois domínios, e logs sem 429 das APIs de tempo por 7 dias.
 
 **Ganhos esperados:** fim da partida a frio; caches em memória persistentes; IP próprio (a restrição C-1 pode ser
 revista: o Open-Meteo e o Nominatim voltariam a ser viáveis no servidor, se for útil); dados no Brasil.
@@ -452,7 +463,7 @@ segurança automáticas com `unattended-upgrades`); configuração inicial de do
 | **M3** | App Android: telas, busca, risco com o app aberto, design system e ícone | APP-01…13, 21, 55, 56, 60, 61; DS-01…07 |
 | **M4** | Segundo plano, notificação de risco e de recomendação | APP-20, 22, 23, 30…34, 41 |
 | **M5** | Publicação no Google Play e política de privacidade — **bloqueado** até a conta de desenvolvedor (D-4) | APP-40 |
-| **INFRA** (proposta) | Migração do site para o AWS Lightsail (8.1) — aguarda decisão (Q-7, Q-8) | INFRA-01…05 |
+| **INFRA** | Migração do site para o AWS Lightsail (8.1), domínios `clima.derossi.dev` e `weather.derossi.dev` com idioma por domínio | INFRA-01…06; WEB-04 |
 
 ---
 
@@ -468,13 +479,11 @@ segurança automáticas com `unattended-upgrades`); configuração inicial de do
 | **D-7** | Design system no site (Q-6) | ~~Só o app segue o design system.~~ Substituída por D-8. |
 | **D-8** | Design system no site | O site também segue o design system Contexto v8 (seção 5), mantendo o layout, as animações e as funcionalidades. |
 | **D-9** | Temas claro e escuro | Site e app têm os dois temas. O escuro é o "Padrão" do design system; o claro é derivado da mesma paleta (`ivory`, `ink`, `marmore`, `g3`, `g4`, acento `bronze`), com contraste medido. Padrão: preferência do sistema. |
+| **D-10** | Hospedagem (Q-7) | Migrar o site do Render Free para o AWS Lightsail, instância Micro-1GB em São Paulo (US$ 7/mês): o custo compensa pelo fim da partida a frio e pelo IP próprio. |
+| **D-11** | Domínios (Q-8) | `clima.derossi.dev` e `weather.derossi.dev`, os dois apontando para a instância. |
+| **D-12** | Idioma por domínio (Q-9) | `clima.derossi.dev` abre em português e `weather.derossi.dev` em inglês quando a pessoa não escolheu o idioma, com `hreflang` entre os dois (REQ-WEB-04). |
 
-### Questões em aberto
-- **Q-7** Migrar o site do Render Free para o AWS Lightsail (instância Micro-1GB em São Paulo, US$ 7/mês; 8.1)?
-- **Q-8** Qual domínio o WYW vai usar (por exemplo, `wyw.derossi.dev`)? Na instância do Lightsail, o HTTPS depende
-  de um domínio próprio; no Render, hoje, o endereço é `bulb-app.onrender.com`.
-
-Novas dúvidas entram aqui como **Q-9** em diante, antes de virar código.
+Novas dúvidas entram aqui como **Q-10** em diante, antes de virar código.
 
 ## 11. Referências
 - Stull, R. (2011). Wet-Bulb Temperature from Relative Humidity and Air Temperature. *J. Appl. Meteor. Climatol.*
