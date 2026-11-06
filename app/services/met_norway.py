@@ -70,8 +70,10 @@ def parse(raw, timezone, days=7):
         # Precipitação e símbolo do período seguinte; 1 h no início da série, 6 h depois
         period = data.get("next_1_hours") or data.get("next_6_hours") or {}
         period_details = period.get("details", {})
-        local = datetime.datetime.fromisoformat(item["time"].replace("Z", "+00:00")).astimezone(tz)
+        utc = datetime.datetime.fromisoformat(item["time"].replace("Z", "+00:00"))
+        local = utc.astimezone(tz)
         rows.append({
+            "utc": utc,
             "local": local,
             "temperature_2m": instant.get("air_temperature"),
             "relative_humidity_2m": instant.get("relative_humidity"),
@@ -96,8 +98,10 @@ def parse(raw, timezone, days=7):
     )}
     current["time"] = first["local"].strftime("%Y-%m-%dT%H:%M")
 
-    hourly_keys = ("temperature_2m", "relative_humidity_2m", "pressure_msl", "wind_speed_10m", "wind_direction_10m")
-    hourly = {"time": [r["local"].strftime("%Y-%m-%dT%H:%M") for r in rows]}
+    hourly_keys = ("temperature_2m", "relative_humidity_2m", "pressure_msl", "wind_speed_10m",
+                   "wind_direction_10m", "cloud_cover", "weather_code")
+    hourly = {"time": [r["local"].strftime("%Y-%m-%dT%H:%M") for r in rows],
+              "time_utc": [r["utc"].isoformat() for r in rows]}
     for key in hourly_keys:
         hourly[key] = [r[key] for r in rows]
 

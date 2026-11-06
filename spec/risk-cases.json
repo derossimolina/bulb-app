@@ -1,0 +1,115 @@
+{
+  "description": "Casos de teste do modelo de risco do WYW (SPEC.md, seção 4.6). Os motores em Python, JavaScript e Kotlin devem produzir o mesmo nível e os mesmos indicadores para cada caso.",
+  "schema": {
+    "open_meteo": "false quando os dados do Open-Meteo (rajada e tornado) não estão disponíveis; padrão true",
+    "hours": "horários h0 a h3. Campos: temp (°C), rh (%), tw (°C; se ausente, calculado de temp e rh), cloud (%), sun_up (bool), thunder (bool), wind_kmh, gust_kmh, tornado (very_low|low|moderate|high), alerts [{event, severity, inside_polygon}]",
+    "expected": "level (none|attention|life|extreme), indicators (IDs ativos em algum horário), heat_variant (sol|sombra), tornado_info (moderate), tornado_available (bool)"
+  },
+  "cases": [
+    {
+      "id": 1, "name": "Dia comum",
+      "hours": [{"temp": 30, "tw": 22, "cloud": 20, "sun_up": true, "wind_kmh": 20}],
+      "expected": {"level": "none", "indicators": []}
+    },
+    {
+      "id": 2, "name": "36 °C ao sol",
+      "hours": [{"temp": 36, "cloud": 20, "sun_up": true}],
+      "expected": {"level": "attention", "indicators": ["IND-CALOR"], "heat_variant": "sol"}
+    },
+    {
+      "id": 3, "name": "36 °C com céu encoberto",
+      "hours": [{"temp": 36, "cloud": 90, "sun_up": true}],
+      "expected": {"level": "none", "indicators": []}
+    },
+    {
+      "id": 4, "name": "39 °C ao sol: calor conta uma vez só",
+      "hours": [{"temp": 39, "cloud": 10, "sun_up": true}],
+      "expected": {"level": "attention", "indicators": ["IND-CALOR"], "heat_variant": "sombra"}
+    },
+    {
+      "id": 5, "name": "39 °C à noite",
+      "hours": [{"temp": 39, "cloud": 10, "sun_up": false}],
+      "expected": {"level": "attention", "indicators": ["IND-CALOR"], "heat_variant": "sombra"}
+    },
+    {
+      "id": 6, "name": "Bulbo úmido 31 °C e trovoada no mesmo horário",
+      "hours": [{"temp": 33, "tw": 31, "cloud": 90, "sun_up": true, "thunder": true}],
+      "expected": {"level": "life", "indicators": ["IND-TEMP", "IND-TW"]}
+    },
+    {
+      "id": 7, "name": "Bulbo úmido em h0 e trovoada só em h2",
+      "hours": [
+        {"temp": 33, "tw": 31, "cloud": 90, "sun_up": true},
+        {"temp": 32, "tw": 29, "cloud": 90, "sun_up": true},
+        {"temp": 30, "tw": 27, "cloud": 100, "sun_up": true, "thunder": true}
+      ],
+      "expected": {"level": "attention", "indicators": ["IND-TEMP", "IND-TW"]}
+    },
+    {
+      "id": 8, "name": "Rajada de 65 km/h com aviso de tempestade vigente",
+      "hours": [{"temp": 25, "tw": 20, "cloud": 100, "sun_up": true, "wind_kmh": 30, "gust_kmh": 65,
+                 "alerts": [{"event": "Tempestade", "severity": "Perigo Potencial"}]}],
+      "expected": {"level": "life", "indicators": ["IND-TEMP", "IND-VENTO"]}
+    },
+    {
+      "id": 9, "name": "Vento de 60 km/h exatos e trovoada",
+      "hours": [{"temp": 25, "tw": 20, "cloud": 100, "sun_up": true, "wind_kmh": 60, "thunder": true}],
+      "expected": {"level": "attention", "indicators": ["IND-TEMP"]}
+    },
+    {
+      "id": 10, "name": "Potencial de tornado alto só em h3",
+      "hours": [
+        {"temp": 28, "tw": 22, "cloud": 60, "sun_up": true, "tornado": "low"},
+        {"temp": 28, "tw": 22, "cloud": 60, "sun_up": true, "tornado": "low"},
+        {"temp": 28, "tw": 22, "cloud": 80, "sun_up": true, "tornado": "moderate"},
+        {"temp": 27, "tw": 22, "cloud": 90, "sun_up": true, "tornado": "high"}
+      ],
+      "expected": {"level": "extreme", "indicators": ["IND-TORNADO"]}
+    },
+    {
+      "id": 11, "name": "Tornado moderado e bulbo úmido 32 °C",
+      "hours": [{"temp": 34, "tw": 32, "cloud": 80, "sun_up": true, "tornado": "moderate"}],
+      "expected": {"level": "attention", "indicators": ["IND-TW"], "tornado_info": "moderate"}
+    },
+    {
+      "id": 12, "name": "Sem Open-Meteo: bulbo úmido 33 °C e trovoada",
+      "open_meteo": false,
+      "hours": [{"temp": 34, "tw": 33, "cloud": 90, "sun_up": true, "thunder": true}],
+      "expected": {"level": "life", "indicators": ["IND-TEMP", "IND-TW"], "tornado_available": false}
+    },
+    {
+      "id": 13, "name": "36 °C ao sol e bulbo úmido 31 °C",
+      "hours": [{"temp": 36, "tw": 31, "cloud": 20, "sun_up": true}],
+      "expected": {"level": "life", "indicators": ["IND-CALOR", "IND-TW"], "heat_variant": "sol"}
+    },
+    {
+      "id": 14, "name": "Ventos Costeiros fora do polígono e trovoada",
+      "hours": [{"temp": 25, "tw": 20, "cloud": 100, "sun_up": true, "thunder": true,
+                 "alerts": [{"event": "Ventos Costeiros", "severity": "Perigo", "inside_polygon": false}]}],
+      "expected": {"level": "attention", "indicators": ["IND-TEMP"]}
+    },
+    {
+      "id": 15, "name": "Ventos Costeiros dentro do polígono e trovoada",
+      "hours": [{"temp": 25, "tw": 20, "cloud": 100, "sun_up": true, "thunder": true,
+                 "alerts": [{"event": "Ventos Costeiros", "severity": "Perigo", "inside_polygon": true}]}],
+      "expected": {"level": "life", "indicators": ["IND-TEMP", "IND-VENTO"]}
+    },
+    {
+      "id": 16, "name": "Vendaval de Perigo Potencial não conta como vento forte",
+      "hours": [{"temp": 25, "tw": 20, "cloud": 100, "sun_up": true, "thunder": true,
+                 "alerts": [{"event": "Vendaval", "severity": "Perigo Potencial"}]}],
+      "expected": {"level": "attention", "indicators": ["IND-TEMP"]}
+    },
+    {
+      "id": 17, "name": "Vendaval de Grande Perigo e bulbo úmido 31 °C",
+      "hours": [{"temp": 33, "tw": 31, "cloud": 100, "sun_up": true,
+                 "alerts": [{"event": "Vendaval", "severity": "Grande Perigo"}]}],
+      "expected": {"level": "life", "indicators": ["IND-TW", "IND-VENTO"]}
+    },
+    {
+      "id": 18, "name": "Bulbo úmido calculado a partir de temperatura e umidade (34 °C, 85 %)",
+      "hours": [{"temp": 34, "rh": 85, "cloud": 100, "sun_up": true, "thunder": true}],
+      "expected": {"level": "life", "indicators": ["IND-TEMP", "IND-TW"]}
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{# Faixa de risco à vida (SPEC.md REQ-WEB-40 a 44 e seção 4.5) #}
+{% set risk = weather.risk %}
+{% if risk %}
+{% set severe = risk.level in ('life', 'extreme') %}
+<div class="risk-banner risk-banner-{{ risk.level }}" role="{{ 'alert' if severe else 'status' }}">
+    <div class="risk-banner-head">
+        {% if severe %}
+        <i class="fas fa-exclamation-triangle risk-banner-icon" aria-hidden="true"></i>
+        {% if risk.level == 'extreme' %}<span class="risk-tornado" title="{{ _('Tornado') }}" aria-hidden="true">🌪️</span>{% endif %}
+        <strong class="risk-banner-title">{{ _('Risk to your life!') }}</strong>
+        {% elif risk.level == 'attention' %}
+        <i class="fas fa-exclamation-circle risk-banner-icon" aria-hidden="true"></i>
+        <strong class="risk-banner-title">{{ _('Attention') }}</strong>
+        {% else %}
+        <i class="fas fa-check-circle risk-banner-icon" aria-hidden="true"></i>
+        <strong class="risk-banner-title">{{ _('No risk identified in the next 3 hours') }}</strong>
+        {% endif %}
+        {% if risk.tornado_info == 'moderate' %}
+        <span class="risk-info-tornado" title="{{ _('Moderate possibility of a tornado') }}">🌪️ {{ _('Moderate possibility of a tornado') }}</span>
+        {% endif %}
+    </div>
+
+    {% if risk.lines %}
+    <ul class="risk-banner-lines">
+        {% for line in risk.lines %}<li>{{ line }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+    {% if risk.recommendation %}
+    <p class="risk-banner-recommendation">{{ risk.recommendation }}</p>
+    {% endif %}
+
+    <p class="risk-banner-note">
+        {% if not risk.tornado_available %}{{ _('Tornado indicator unavailable at the moment.') }} {% endif %}
+        {{ _('This indicator does not replace alerts from the authorities and Civil Defense.') }}
+    </p>
+</div>
+{% endif %}

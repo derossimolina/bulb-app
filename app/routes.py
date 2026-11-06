@@ -4,7 +4,7 @@ from flask import Blueprint, current_app, redirect, render_template, request, se
 from flask_babel import gettext as _
 
 from . import get_locale
-from .services import forecast, geocoding, inmet
+from .services import forecast, geocoding, inmet, risk_window
 from .services.http import ServiceError
 
 bp = Blueprint("main", __name__)
@@ -41,6 +41,10 @@ def index():
         weather["current"]["alerts"] = by_date.get(today, [])
         for day in weather["daily"][1:]:
             day["alerts"] = by_date.get(day["date"], [])
+
+    # Nível de risco à vida nas próximas 3 horas (SPEC.md seção 4)
+    weather["risk"] = risk_window.assess(weather, city["latitude"], city["longitude"],
+                                         alerts["alerts"] if alerts else ())
 
     return render_template("index.html", query=query, city=city, weather=weather, alerts=alerts)
 

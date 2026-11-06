@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Versão | 0.3 — design system do app (5.6, 5.7) |
+| Versão | 0.4 — M1 entregue |
 | Data | 06/11/2026 |
 | Responsável | derossi research — [derossi.dev](https://derossi.dev) |
 | Repositório | `derossimolina/bulb-app` |
@@ -71,8 +71,8 @@ decimais (~1 km). O servidor não guarda buscas; os logs de acesso podem conter 
 ## 3. Requisitos — Site
 
 ### 3.1 Identidade
-- **REQ-WEB-01 🔄** O nome do site DEVE ser **WYW** no título da página, no cabeçalho e no `<title>`.
-- **REQ-WEB-02 🔄** O rodapé DEVE trazer "Copyright 2025-6 **derossi research**", com o link para
+- **REQ-WEB-01 ✅** O nome do site DEVE ser **WYW** no título da página, no cabeçalho e no `<title>`.
+- **REQ-WEB-02 ✅** O rodapé DEVE trazer "Copyright 2025-6 **derossi research**", com o link para
   `https://derossi.dev`.
   - **AC-WEB-02** O rodapé contém um `<a href="https://derossi.dev">` cujo texto inclui "derossi research".
 
@@ -102,14 +102,14 @@ decimais (~1 km). O servidor não guarda buscas; os logs de acesso podem conter 
   instruções.
 
 ### 3.5 Risco à vida
-- **REQ-WEB-40 🆕** Acima dos cards, o site DEVE mostrar o **nível de risco** do local (seção 4), calculado com os
+- **REQ-WEB-40 ✅** Acima dos cards, o site DEVE mostrar o **nível de risco** do local (seção 4), calculado com os
   dados do servidor mais os do Open-Meteo obtidos pelo navegador.
-- **REQ-WEB-41 🆕** Com nível **Risco à sua vida** ou **Extremo**, a faixa DEVE ter **fundo vermelho**, **ícone de
+- **REQ-WEB-41 ✅** Com nível **Risco à sua vida** ou **Extremo**, a faixa DEVE ter **fundo vermelho**, **ícone de
   alerta amarelo**, o título "**Risco à sua vida!**" e, abaixo, a descrição de cada indicador ativo (seção 4.5).
 - **REQ-WEB-42 🆕** Com o indicador de tornado ativo, a faixa DEVE mostrar o **ícone de tornado**.
-- **REQ-WEB-43 🆕** Toda exibição de risco DEVE trazer o aviso: "*Este indicador não substitui os alertas das
+- **REQ-WEB-43 ✅** Toda exibição de risco DEVE trazer o aviso: "*Este indicador não substitui os alertas das
   autoridades e da Defesa Civil.*"
-- **REQ-WEB-44 🆕** Se o navegador não conseguir os dados do Open-Meteo, o risco é calculado sem os indicadores
+- **REQ-WEB-44 ✅** Se o navegador não conseguir os dados do Open-Meteo, o risco é calculado sem os indicadores
   de tornado e rajadas, e a faixa informa: "Indicador de tornado indisponível no momento".
 
 ---
@@ -341,12 +341,14 @@ mudar, esta seção é atualizada primeiro.
 ```
 bulb-app/
 ├── app/                  site Flask (servidor)
-│   ├── meteo/risk.py     motor de risco (Python)            🆕
+│   ├── meteo/risk.py     motor de risco (Python)            ✅
+│   ├── meteo/sun.py      elevação do sol (NOAA)             ✅
+│   ├── services/risk_window.py  janela h0–h3 (MET + INMET)  ✅
 │   └── static/risk.js    complemento no navegador: Open-Meteo, rajadas, tornado,
 │                         busca de endereço (Nominatim)      🆕
 ├── android/              app Kotlin                         🆕
 │   └── …/risk/           motor de risco (Kotlin)
-├── spec/risk-cases.json  casos de teste compartilhados       🆕
+├── spec/risk-cases.json  casos de teste compartilhados       ✅
 └── SPEC.md
 ```
 
@@ -362,7 +364,7 @@ calcula o nível final, exibindo a faixa de risco.
 
 | Marco | Conteúdo | Requisitos |
 |---|---|---|
-| **M1** | Nome WYW, rodapé derossi research, motor de risco em Python + `risk-cases.json`, faixa de risco (sem tornado/rajadas) | WEB-01, 02, 40, 41, 43; seção 4 |
+| **M1** ✅ | Nome WYW, rodapé derossi research, motor de risco em Python + `risk-cases.json`, faixa de risco (sem tornado/rajadas) | WEB-01, 02, 40, 41, 43, 44; seção 4 |
 | **M2** | Complemento no navegador: rajadas, tornado, busca de endereço | WEB-11, 22, 42, 44 |
 | **M3** | App Android: telas, busca, risco com o app aberto, design system e ícone | APP-01…13, 21, 50…55, 60, 61 |
 | **M4** | Segundo plano, notificação de risco e de recomendação | APP-20, 22, 23, 30…34, 41 |

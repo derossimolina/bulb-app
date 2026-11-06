@@ -159,10 +159,12 @@ def get_alerts_for_city(city_name, state, latitude, longitude):
     matches = []
     for period, alert in active:
         geocodes = {g.strip() for g in str(alert.get("geocodes", "")).split(",")}
-        if ibge_code and ibge_code in geocodes:
-            matches.append(_format_alert(period, alert))
-        elif not ibge_code and point_in_geojson(longitude, latitude, alert.get("poligono")):
-            matches.append(_format_alert(period, alert))
+        inside = point_in_geojson(longitude, latitude, alert.get("poligono"))
+        if (ibge_code and ibge_code in geocodes) or (not ibge_code and inside):
+            formatted = _format_alert(period, alert)
+            # Usado em "Ventos Costeiros", que só vale dentro da faixa do aviso (SPEC.md D-5)
+            formatted["inside_polygon"] = inside
+            matches.append(formatted)
 
     matches.sort(key=lambda a: (a["start"] or "", -a["severity_rank"]))
     return {"alerts": matches, "ibge_code": ibge_code, "available": True, "portal": INMET_PORTAL_URL}
