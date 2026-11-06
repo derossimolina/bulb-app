@@ -3,8 +3,8 @@
 {% set r = c.wet_bulb_risk %}
 <section class="section-block">
     <h2>
-        {{ _('Results for') }} {{ city.name }}{% if city.state %}, {{ city.state }}{% endif %}
-        <img src="https://flagcdn.com/w40/{{ city.country_code|lower }}.png" alt="{{ city.country }}" class="flag">
+        {{ _('Results for') }} <span class="place-name">{{ city.name }}{% if city.state %}, {{ city.state }}{% endif %}</span>
+        {% if city.country_code %}<img src="https://flagcdn.com/w40/{{ city.country_code|lower }}.png" alt="{{ city.country or city.country_code }}" class="flag">{% endif %}
     </h2>
 
     {% include "partials/_risk.html" %}
@@ -47,8 +47,13 @@
         <div class="md-card stat">
             <span class="stat-label">{{ _('Wind') }}</span>
             <span class="stat-value"><i class="fa-solid fa-wind" aria-hidden="true"></i> {{ c.wind_kmh }} km/h</span>
+            {# Rajadas: preenchidas pelo navegador com o Open-Meteo (REQ-WEB-22); sem o dado, ficam ocultas #}
+            <span class="md-muted gust-current" hidden></span>
         </div>
     </div>
+
+    {# Dados para o complemento no navegador (static/wyw.js): rajadas, tornado e risco final #}
+    <script type="application/json" class="wyw-data">{{ client|tojson }}</script>
 
     {% if alerts is not none and not alerts.available %}
     <p class="md-muted small"><i class="fa-solid fa-plug" aria-hidden="true"></i> {{ _('INMET alert service is unavailable right now.') }}</p>

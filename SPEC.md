@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Versão | 0.5 — design system no site, temas claro e escuro |
+| Versão | 0.6 — M2 entregue |
 | Data | 06/11/2026 |
 | Responsável | derossi research — [derossi.dev](https://derossi.dev) |
 | Repositório | `derossimolina/bulb-app` |
@@ -81,8 +81,10 @@ decimais (~1 km). O servidor não guarda buscas; os logs de acesso podem conter 
 ### 3.2 Busca
 - **REQ-WEB-10 ✅** Busca por cidade, aceitando a região depois da vírgula: país, estado ou UF (`Santa Maria, RS`).
   Entre cidades com o mesmo nome, vence a mais populosa.
-- **REQ-WEB-11 🆕** Busca por **endereço** (rua, número, bairro). O navegador consulta o Nominatim (C-1) e envia
-  ao servidor só `lat`, `lon` (C-2) e um rótulo para exibição. Se o Nominatim não encontrar o endereço ou falhar, a
+- **REQ-WEB-11 ✅** Busca por **endereço** (rua, número, bairro). O navegador consulta o Nominatim (C-1) quando o
+  texto tem número ou começa com um tipo de logradouro ("Rua", "Av." etc.) e envia ao servidor só `lat`, `lon`
+  arredondados (C-2), a cidade, a UF e o país. O endereço aparece só no título, montado no navegador; não vai à
+  URL nem ao servidor. Se o Nominatim não encontrar o endereço ou falhar, a
   busca usa a de cidades (REQ-WEB-10).
   - **AC-WEB-11a** "Av. Ipiranga 6681, Porto Alegre" mostra o risco para essa coordenada, com o rótulo do endereço.
   - **AC-WEB-11b** Com o Nominatim fora do ar, "Porto Alegre" continua funcionando pela busca de cidades.
@@ -94,7 +96,7 @@ decimais (~1 km). O servidor não guarda buscas; os logs de acesso podem conter 
   pressão (alta ≥ 1020 hPa, baixa ≤ 1008 hPa) e vento.
 - **REQ-WEB-21 ✅** Previsão de 7 dias em lista expansível: mín./máx., condição, chuva (mm), umidade, pressão com
   tendência, vento máximo e bulbo úmido máximo.
-- **REQ-WEB-22 🆕** Os cards de vento (atual e diário) DEVEM mostrar também as **rajadas**, obtidas do Open-Meteo
+- **REQ-WEB-22 ✅** Os cards de vento (atual e diário) DEVEM mostrar também as **rajadas**, obtidas do Open-Meteo
   pelo navegador (C-1). Sem esse dado, o campo não aparece.
 
 ### 3.4 Avisos oficiais
@@ -108,7 +110,7 @@ decimais (~1 km). O servidor não guarda buscas; os logs de acesso podem conter 
   dados do servidor mais os do Open-Meteo obtidos pelo navegador.
 - **REQ-WEB-41 ✅** Com nível **Risco à sua vida** ou **Extremo**, a faixa DEVE ter **fundo vermelho**, **ícone de
   alerta amarelo**, o título "**Risco à sua vida!**" e, abaixo, a descrição de cada indicador ativo (seção 4.5).
-- **REQ-WEB-42 🆕** Com o indicador de tornado ativo, a faixa DEVE mostrar o **ícone de tornado**.
+- **REQ-WEB-42 ✅** Com o indicador de tornado ativo, a faixa DEVE mostrar o **ícone de tornado**.
 - **REQ-WEB-43 ✅** Toda exibição de risco DEVE trazer o aviso: "*Este indicador não substitui os alertas das
   autoridades e da Defesa Civil.*"
 - **REQ-WEB-44 ✅** Se o navegador não conseguir os dados do Open-Meteo, o risco é calculado sem os indicadores
@@ -360,7 +362,8 @@ os requisitos exclusivos do app.
 - **NFR-03** Acessibilidade: faixa de risco com contraste AA, ícones com texto alternativo e tipbox acessível por
   teclado.
 - **NFR-04** Testes: `pytest` no site; testes unitários (JUnit) do modelo de risco no app; os três motores de risco
-  passam em `spec/risk-cases.json`.
+  passam em `spec/risk-cases.json`. O motor em JavaScript roda no Node dentro do `pytest`
+  (`tests/test_risk_js.py`), que confere nível, indicadores e frases contra o motor em Python.
 - **NFR-05** Logs: erros de serviços externos registrados com código HTTP e corpo resumido.
 
 ---
@@ -373,8 +376,9 @@ bulb-app/
 │   ├── meteo/risk.py     motor de risco (Python)            ✅
 │   ├── meteo/sun.py      elevação do sol (NOAA)             ✅
 │   ├── services/risk_window.py  janela h0–h3 (MET + INMET)  ✅
-│   └── static/risk.js    complemento no navegador: Open-Meteo, rajadas, tornado,
-│                         busca de endereço (Nominatim)      🆕
+│   ├── static/risk.js    motor de risco (JavaScript)        ✅
+│   └── static/wyw.js     complemento no navegador: Open-Meteo (rajadas, tornado),
+│                         busca de endereço (Nominatim)      ✅
 ├── android/              app Kotlin                         🆕
 │   └── …/risk/           motor de risco (Kotlin)
 ├── spec/risk-cases.json  casos de teste compartilhados       ✅
@@ -395,7 +399,7 @@ calcula o nível final, exibindo a faixa de risco.
 |---|---|---|
 | **M1** ✅ | Nome WYW, rodapé derossi research, motor de risco em Python + `risk-cases.json`, faixa de risco (sem tornado/rajadas) | WEB-01, 02, 40, 41, 43, 44; seção 4 |
 | **DS** ✅ | Design system Contexto v8 no site, temas claro e escuro, ícones no lugar de emoji | WEB-03; DS-01…07 |
-| **M2** | Complemento no navegador: rajadas, tornado, busca de endereço | WEB-11, 22, 42, 44 |
+| **M2** ✅ | Complemento no navegador: rajadas, tornado, busca de endereço | WEB-11, 22, 42, 44 |
 | **M3** | App Android: telas, busca, risco com o app aberto, design system e ícone | APP-01…13, 21, 55, 56, 60, 61; DS-01…07 |
 | **M4** | Segundo plano, notificação de risco e de recomendação | APP-20, 22, 23, 30…34, 41 |
 | **M5** | Publicação no Google Play e política de privacidade — **bloqueado** até a conta de desenvolvedor (D-4) | APP-40 |

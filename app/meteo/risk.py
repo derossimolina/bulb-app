@@ -176,3 +176,33 @@ def heat_recommendation(result):
     if entry["variant"] == "sombra":
         return _l("Unhealthy heat even in the shade: if you are outdoors, go to a cool or air-conditioned place.")
     return _l("If you are outdoors and in the sun, get out of the sun and look for shade or a cool place.")
+
+
+def client_strings():
+    """
+    Textos traduzidos para o motor em JavaScript (app/static/risk.js), com os
+    mesmos marcadores "%(nome)s" usados em describe() e heat_recommendation().
+    """
+    from flask_babel import gettext as _
+
+    return {
+        "at": _("at %(hour)s"),
+        "between": _("between %(start)s and %(end)s"),
+        "tornado": _("Possibility of a tornado %(when)s"),
+        "wet_bulb": _("Wet bulb temperature up to %(value)s °C %(when)s"),
+        "heat": _("Air temperature up to %(value)s °C %(when)s"),
+        "storm_alert": _("Thunderstorm expected %(when)s (INMET alert: %(severity)s)"),
+        "storm": _("Thunderstorm expected %(when)s"),
+        "wind": _("Wind up to %(value)s km/h %(when)s"),
+        "wind_alert": _("Strong wind %(when)s (INMET alert: %(alert)s)"),
+        "heat_shade": _("Unhealthy heat even in the shade: if you are outdoors, go to a cool or air-conditioned place."),
+        "heat_sun": _("If you are outdoors and in the sun, get out of the sun and look for shade or a cool place."),
+        "life": _("Risk to your life!"),
+        "attention": _("Attention"),
+        "none": _("No risk identified in the next 3 hours"),
+        "moderate_tornado": _("Moderate possibility of a tornado"),
+        "tornado_unavailable": _("Tornado indicator unavailable at the moment."),
+        "disclaimer": _("This indicator does not replace alerts from the authorities and Civil Defense."),
+        "tornado_icon": _("Tornado"),
+        "gusts": _("Gusts up to %(value)s km/h"),
+    }

@@ -30,7 +30,7 @@
     {% endif %}
 
     <p class="risk-banner-note">
-        {% if not risk.tornado_available %}{{ _('Tornado indicator unavailable at the moment.') }} {% endif %}
+        {% if not risk.tornado_available %}<span class="tornado-note">{{ _('Tornado indicator unavailable at the moment.') }}</span> {% endif %}
         {{ _('This indicator does not replace alerts from the authorities and Civil Defense.') }}
     </p>
 </div>

@@ -18,13 +18,20 @@ def index():
         return redirect(url_for("main.index", city=request.form.get("city", "")))
 
     query = (request.args.get("city") or "").strip()
-    if not query:
+    has_coordinates = request.args.get("lat") and request.args.get("lon")
+    if not query and not has_coordinates:
         return render_template("index.html")
 
     try:
-        city = geocoding.find_city(query, get_locale())
+        if has_coordinates:
+            # Busca por endereço: o navegador já geocodificou (SPEC.md REQ-WEB-11)
+            city = geocoding.place_from_coordinates(
+                request.args["lat"], request.args["lon"], query,
+                request.args.get("state", ""), request.args.get("cc", ""))
+        else:
+            city = geocoding.find_city(query, get_locale())
         weather = forecast.get_weather(city["latitude"], city["longitude"], city["timezone"])
-    except geocoding.CityNotFound:
+    except (geocoding.CityNotFound, ValueError):
         return render_template("index.html", query=query,
                                error=_("City not found. Try adding the country code, e.g. \"Paris, FR\"."))
     except ServiceError as exc:
@@ -46,7 +53,8 @@ def index():
     weather["risk"] = risk_window.assess(weather, city["latitude"], city["longitude"],
                                          alerts["alerts"] if alerts else ())
 
-    return render_template("index.html", query=query, city=city, weather=weather, alerts=alerts)
+    client = risk_window.client_data(city, weather)
+    return render_template("index.html", query=query, city=city, weather=weather, alerts=alerts, client=client)
 
 
 @bp.route("/change-language")
