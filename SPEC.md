@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Versão | 0.2 — decisões D-1 a D-5 incorporadas |
+| Versão | 0.3 — design system do app (5.6, 5.7) |
 | Data | 06/11/2026 |
 | Responsável | derossi research — [derossi.dev](https://derossi.dev) |
 | Repositório | `derossimolina/bulb-app` |
@@ -263,6 +263,65 @@ primeiro plano e mídia, o que não se aplica aqui.
 - **REQ-APP-41 🆕** Até a conta do Google Play existir, o app é distribuído como APK de teste (assinado com a
   chave de upload definitiva, guardada fora do repositório).
 
+
+### 5.6 Design system do app
+O app (e só o app; o site mantém o estilo atual, D-7) segue o design system **Contexto v8** (artefato "Contexto" no Claude,
+[claude.ai/artifact/6ThQ7KTG8djxUFBkF8zqPn](https://claude.ai/artifact/6ThQ7KTG8djxUFBkF8zqPn), revisão de
+02/11/2026). Os valores usados estão copiados abaixo, para o repositório não depender do artefato. Se o design system
+mudar, esta seção é atualizada primeiro.
+
+- **REQ-APP-50 🆕 Base visual.** Tema escuro único (o design system tem só o tema "Padrão"), sem cores dinâmicas do
+  Android (Material You desligado):
+
+  | Token | Valor | Uso no app |
+  |---|---|---|
+  | `ink` | `#0f0e0d` | Fundo de todas as telas |
+  | `ivory` | `#fafaf9` | Texto principal, nome WYW, valores (18,46:1 sobre `ink`) |
+  | `g1` | `#d6d4cf` | Texto de apoio (13,02:1) |
+  | `g2` | `#a6a39c` | Metadados: horário, fonte dos dados (7,66:1) |
+  | `g3` | `#6b6862` | Bordas de cards e divisórias (3,47:1) |
+  | `g4` | `#3a3835` | Faixas: barra inferior de navegação, cabeçalho do dia aberto |
+  | `hair` | `#c8c5be` | Filetes finos |
+  | `ouro` | `#c9964a` | Acento: filete sob o nome WYW, item ativo, raio do ícone (7,30:1) |
+
+- **REQ-APP-51 🆕 Tipografia** (fontes SIL OFL, embutidas no app):
+  - **EB Garamond SemiBold**: nome WYW e títulos de tela, em frase normal (não caixa alta).
+  - **Inter**: todo o resto (valores, rótulos, textos), com algarismos tabulares nos números.
+  - **Chapéu**: Inter 500, caixa alta, tracking 0,28em, para rótulos de card ("AGORA", "BULBO ÚMIDO").
+  - Sem emoji na interface; os ícones de tempo são desenhados (5.7).
+- **REQ-APP-52 🆕 Forma.** Cantos retos (`reto`, 0px) em cards, faixas e botões; raio de 8px só em pílulas
+  (etiquetas de nível de aviso). Cards sem sombra: fundo `ink` com borda de 1px `g3`. Margem lateral de 16dp no
+  celular.
+- **REQ-APP-53 🆕 Nome.** "WYW" escrito em texto (EB Garamond SemiBold, `ivory`), sem logo. Abaixo, "Weather is
+  your Weather" no estilo chapéu, em `g2`. O app não usa marcas da Contexto (wordmark `contexto`, símbolo `{c}`,
+  tagline) nem as cores da derossi.dev; o crédito "derossi research" aparece só na tela Sobre, em texto.
+- **REQ-APP-54 🆕 Cores de risco (exceção semântica, D-6).** O design system proíbe vermelho e amarelo puro como
+  cor de marca. No WYW, eles são permitidos **apenas para comunicar risco**, nunca como decoração:
+
+  | Token WYW | Valor | Uso | Contraste |
+  |---|---|---|---|
+  | `risco-vida` | `#b3261e` | Fundo da faixa e da notificação "Risco à sua vida!" e do card de bulbo úmido no nível Extremo | `ivory` sobre ele: 6,26:1 |
+  | `alerta-icone` | `#f5c518` | Ícone de alerta sobre `risco-vida` | 4,01:1 (ícone, mínimo 3:1) |
+  | `atencao` | `#e8a64f` (= `ambar`) | Faixa "Atenção" e card de bulbo úmido no nível Alerta | `ink` sobre ele: 9,18:1 |
+  | `perigo` | `#7a4a22` (= `bronze`) | Card de bulbo úmido no nível Perigo | `ivory` sobre ele: 7,10:1 |
+
+  Bulbo úmido no nível Normal usa o card padrão, sem cor. `risco-vida` nunca aparece como texto, borda ou ícone
+  sobre `ink` (2,95:1, abaixo do mínimo de 3:1).
+- **REQ-APP-55 🆕 Notificação.** A área de conteúdo usa `risco-vida` de fundo, `alerta-icone` no ícone e `ivory` no
+  texto. Se o layout de notificação não aceitar as fontes embutidas, usa a fonte do sistema.
+
+### 5.7 Ícone e ilustrações
+- **REQ-APP-60 🆕 Ícone do app.** Um **raio no meio de uma nuvem**, em ícone adaptativo:
+  - camada de fundo: `ink` chapado;
+  - camada da frente: nuvem em contorno ou preenchimento `ivory` e raio em `ouro`, centralizados na área segura
+    (66dp de 108dp);
+  - camada monocromática (ícones temáticos do Android 13+): a mesma silhueta, nuvem e raio vazado;
+  - sem texto e sem as marcas da Contexto.
+- **REQ-APP-61 🆕 Ícones de tempo e de aviso.** Traço único em `ivory`, cantos retos, no mesmo desenho do ícone do
+  app; tornado em `ivory` e, na faixa de risco, `alerta-icone`. Os ícones dos avisos do INMET continuam sendo os
+  oficiais, enviados pelo próprio INMET.
+- **AC-APP-60** Na tela inicial do Android 12, o ícone mostra a nuvem com o raio sobre fundo escuro e fica
+  legível nas máscaras circular, quadrada e "squircle".
 ---
 
 ## 6. Requisitos não funcionais
@@ -305,7 +364,7 @@ calcula o nível final, exibindo a faixa de risco.
 |---|---|---|
 | **M1** | Nome WYW, rodapé derossi research, motor de risco em Python + `risk-cases.json`, faixa de risco (sem tornado/rajadas) | WEB-01, 02, 40, 41, 43; seção 4 |
 | **M2** | Complemento no navegador: rajadas, tornado, busca de endereço | WEB-11, 22, 42, 44 |
-| **M3** | App Android: telas, busca, risco com o app aberto | APP-01…13, 21 |
+| **M3** | App Android: telas, busca, risco com o app aberto, design system e ícone | APP-01…13, 21, 50…55, 60, 61 |
 | **M4** | Segundo plano, notificação de risco e de recomendação | APP-20, 22, 23, 30…34, 41 |
 | **M5** | Publicação no Google Play e política de privacidade — **bloqueado** até a conta de desenvolvedor (D-4) | APP-40 |
 
@@ -319,8 +378,10 @@ calcula o nível final, exibindo a faixa de risco.
 | **D-3** | Calor ao sol e à sombra | Formam um único indicador, IND-CALOR. Sozinho, gera Atenção com recomendação ("se estiver ao ar livre e ao sol, saia"); nunca gera Risco à sua vida por si só. Bulbo úmido segue separado. |
 | **D-4** | Pacote e conta do Google Play | Pacote `dev.derossi.wyw` (domínio derossi.dev; não depende da conta e é definitivo após a primeira publicação). A conta de desenvolvedor depende do D-U-N-S, previsto para daqui a no mínimo 30 dias: M3 e M4 seguem com APK de teste; M5 aguarda a conta. |
 | **D-5** | "Ventos Costeiros" do INMET | Entra em IND-VENTO só quando o ponto avaliado está dentro do polígono do aviso (a faixa litorânea definida pelo INMET), e não apenas no município. |
+| **D-6** | Design system do app | Segue o Contexto v8 (5.6), com o nome WYW em texto e o ícone de raio na nuvem (5.7). Vermelho (`risco-vida`) e amarelo (`alerta-icone`), proibidos no design system, são uma exceção só para comunicar risco, porque REQ-APP-30 os exige. O app não usa as marcas da Contexto. |
+| **D-7** | Design system no site (Q-6) | Só o app segue o design system Contexto v8. O site mantém o estilo atual. |
 
-Novas dúvidas entram aqui como **Q-6** em diante, antes de virar código.
+Novas dúvidas entram aqui como **Q-7** em diante, antes de virar código.
 
 ## 10. Referências
 - Stull, R. (2011). Wet-Bulb Temperature from Relative Humidity and Air Temperature. *J. Appl. Meteor. Climatol.*
