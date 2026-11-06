@@ -46,7 +46,7 @@ def build_current(data):
     temp = current.get("temperature_2m")
     humidity = current.get("relative_humidity_2m")
     wet_bulb = calculate_wet_bulb(temp, humidity)
-    condition, emoji = wmo.describe(current.get("weather_code"))
+    condition, icon = wmo.describe(current.get("weather_code"))
     return {
         "time": current.get("time"),
         "temperature": _round(temp, 1),
@@ -57,7 +57,7 @@ def build_current(data):
         "wind_kmh": _kmh(current.get("wind_speed_10m")),
         "cloud_cover": current.get("cloud_cover"),
         "condition": condition,
-        "emoji": emoji,
+        "icon": icon,
         "wet_bulb": wet_bulb,
         "wet_bulb_risk": wet_bulb_risk(wet_bulb),
     }
@@ -80,12 +80,12 @@ def build_daily(data):
                      for h in hours]
         wet_bulbs = [w for w in wet_bulbs if w is not None]
         wet_bulb_max = max(wet_bulbs) if wet_bulbs else None
-        condition, emoji = wmo.describe(col("weather_code", i))
+        condition, icon = wmo.describe(col("weather_code", i))
 
         forecast.append({
             "date": datetime.date.fromisoformat(date_str),
             "condition": condition,
-            "emoji": emoji,
+            "icon": icon,
             "temp_max": _round(col("temperature_2m_max", i), 1),
             "temp_min": _round(col("temperature_2m_min", i), 1),
             "humidity_mean": _round(col("relative_humidity_2m_mean", i)),

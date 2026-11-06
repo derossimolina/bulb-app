@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-06 15:00-0300\n"
+"POT-Creation-Date: 2026-11-06 15:40-0300\n"
 "PO-Revision-Date: 2025-01-23 17:22-0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: es <LL@li.org>\n"
@@ -145,115 +145,115 @@ msgstr "¡Alerta! Busca un lugar fresco."
 msgid "Normal temperature."
 msgstr "Temperatura normal."
 
-#: app/meteo/wmo.py:5
+#: app/meteo/wmo.py:10
 msgid "Clear sky"
 msgstr "Cielo despejado"
 
-#: app/meteo/wmo.py:6
+#: app/meteo/wmo.py:11
 msgid "Mainly clear"
 msgstr "Mayormente despejado"
 
-#: app/meteo/wmo.py:7
+#: app/meteo/wmo.py:12
 msgid "Partly cloudy"
 msgstr "Parcialmente nublado"
 
-#: app/meteo/wmo.py:8
+#: app/meteo/wmo.py:13
 msgid "Overcast"
 msgstr "Cubierto"
 
-#: app/meteo/wmo.py:9
+#: app/meteo/wmo.py:14
 msgid "Fog"
 msgstr "Niebla"
 
-#: app/meteo/wmo.py:10
+#: app/meteo/wmo.py:15
 msgid "Depositing rime fog"
 msgstr "Niebla con escarcha"
 
-#: app/meteo/wmo.py:11
+#: app/meteo/wmo.py:16
 msgid "Light drizzle"
 msgstr "Llovizna ligera"
 
-#: app/meteo/wmo.py:12
+#: app/meteo/wmo.py:17
 msgid "Moderate drizzle"
 msgstr "Llovizna moderada"
 
-#: app/meteo/wmo.py:13
+#: app/meteo/wmo.py:18
 msgid "Dense drizzle"
 msgstr "Llovizna densa"
 
-#: app/meteo/wmo.py:14
+#: app/meteo/wmo.py:19
 msgid "Light freezing drizzle"
 msgstr "Llovizna helada ligera"
 
-#: app/meteo/wmo.py:15
+#: app/meteo/wmo.py:20
 msgid "Dense freezing drizzle"
 msgstr "Llovizna helada densa"
 
-#: app/meteo/wmo.py:16
+#: app/meteo/wmo.py:21
 msgid "Slight rain"
 msgstr "Lluvia ligera"
 
-#: app/meteo/wmo.py:17
+#: app/meteo/wmo.py:22
 msgid "Moderate rain"
 msgstr "Lluvia moderada"
 
-#: app/meteo/wmo.py:18
+#: app/meteo/wmo.py:23
 msgid "Heavy rain"
 msgstr "Lluvia fuerte"
 
-#: app/meteo/wmo.py:19
+#: app/meteo/wmo.py:24
 msgid "Light freezing rain"
 msgstr "Lluvia helada ligera"
 
-#: app/meteo/wmo.py:20
+#: app/meteo/wmo.py:25
 msgid "Heavy freezing rain"
 msgstr "Lluvia helada fuerte"
 
-#: app/meteo/wmo.py:21
+#: app/meteo/wmo.py:26
 msgid "Slight snowfall"
 msgstr "Nevada ligera"
 
-#: app/meteo/wmo.py:22
+#: app/meteo/wmo.py:27
 msgid "Moderate snowfall"
 msgstr "Nevada moderada"
 
-#: app/meteo/wmo.py:23
+#: app/meteo/wmo.py:28
 msgid "Heavy snowfall"
 msgstr "Nevada fuerte"
 
-#: app/meteo/wmo.py:24
+#: app/meteo/wmo.py:29
 msgid "Snow grains"
 msgstr "Granos de nieve"
 
-#: app/meteo/wmo.py:25
+#: app/meteo/wmo.py:30
 msgid "Slight rain showers"
 msgstr "Chubascos ligeros"
 
-#: app/meteo/wmo.py:26
+#: app/meteo/wmo.py:31
 msgid "Moderate rain showers"
 msgstr "Chubascos moderados"
 
-#: app/meteo/wmo.py:27
+#: app/meteo/wmo.py:32
 msgid "Violent rain showers"
 msgstr "Chubascos violentos"
 
-#: app/meteo/wmo.py:28
+#: app/meteo/wmo.py:33
 msgid "Slight snow showers"
 msgstr "Chubascos de nieve ligeros"
 
-#: app/meteo/wmo.py:29
+#: app/meteo/wmo.py:34
 msgid "Heavy snow showers"
 msgstr "Chubascos de nieve fuertes"
 
-#: app/meteo/wmo.py:30
+#: app/meteo/wmo.py:35
 msgid "Thunderstorm"
 msgstr "Tormenta"
 
-#: app/meteo/wmo.py:31
+#: app/meteo/wmo.py:36
 msgid "Thunderstorm with slight hail"
 msgstr "Tormenta con granizo ligero"
 
-#: app/meteo/wmo.py:32
+#: app/meteo/wmo.py:37
 msgid "Thunderstorm with heavy hail"
 msgstr "Tormenta con granizo fuerte"
 
@@ -262,21 +262,25 @@ msgstr "Tormenta con granizo fuerte"
 msgid "%(hour)s:00"
 msgstr "%(hour)s:00"
 
-#: app/templates/base.html:39
+#: app/templates/base.html:40
+msgid "Switch between light and dark theme"
+msgstr "Alternar entre tema claro y oscuro"
+
+#: app/templates/base.html:56
 msgid "Weather data:"
 msgstr "Datos meteorológicos:"
 
-#: app/templates/base.html:40
+#: app/templates/base.html:57
 msgid "Official alerts:"
 msgstr "Avisos oficiales:"
 
-#: app/templates/base.html:46
+#: app/templates/base.html:63
 msgid "We use cookies to ensure you get the best experience on our website."
 msgstr ""
 "Utilizamos cookies para garantizar que obtenga la mejor experiencia en "
 "nuestro sitio web."
 
-#: app/templates/base.html:47
+#: app/templates/base.html:64
 msgid "Accept"
 msgstr "Aceptar"
 

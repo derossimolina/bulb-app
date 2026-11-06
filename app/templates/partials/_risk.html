@@ -6,7 +6,7 @@
     <div class="risk-banner-head">
         {% if severe %}
         <i class="fas fa-exclamation-triangle risk-banner-icon" aria-hidden="true"></i>
-        {% if risk.level == 'extreme' %}<span class="risk-tornado" title="{{ _('Tornado') }}" aria-hidden="true">🌪️</span>{% endif %}
+        {% if risk.level == 'extreme' %}<i class="fa-solid fa-tornado risk-tornado" title="{{ _('Tornado') }}" aria-hidden="true"></i>{% endif %}
         <strong class="risk-banner-title">{{ _('Risk to your life!') }}</strong>
         {% elif risk.level == 'attention' %}
         <i class="fas fa-exclamation-circle risk-banner-icon" aria-hidden="true"></i>
@@ -16,7 +16,7 @@
         <strong class="risk-banner-title">{{ _('No risk identified in the next 3 hours') }}</strong>
         {% endif %}
         {% if risk.tornado_info == 'moderate' %}
-        <span class="risk-info-tornado" title="{{ _('Moderate possibility of a tornado') }}">🌪️ {{ _('Moderate possibility of a tornado') }}</span>
+        <span class="risk-info-tornado"><i class="fa-solid fa-tornado" aria-hidden="true"></i> {{ _('Moderate possibility of a tornado') }}</span>
         {% endif %}
     </div>
 

@@ -5,7 +5,7 @@
 {% block content %}
 <form method="GET" action="{{ url_for('main.index') }}" class="search-form">
     <div class="input-field">
-        <label for="city" class="active">{{ _('City:') }}</label>
+        <label for="city">{{ _('City:') }}</label>
         <input type="text" id="city" name="city" value="{{ query or '' }}"
                placeholder="{{ _('Enter city name') }}" required minlength="2">
     </div>
@@ -18,7 +18,7 @@
 {# Resultados: substituídos via fetch na busca e animados como se saíssem de baixo do campo #}
 <div id="results" class="results {% if error or weather %}animate{% endif %}" aria-live="polite">
     {% if error %}
-    <div class="card-panel red lighten-2"><i class="fas fa-exclamation-circle"></i> {{ error }}</div>
+    <div class="notice notice-error" role="alert"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i> {{ error }}</div>
     {% endif %}
 
     {% if weather %}

@@ -5,8 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}WYW{% endblock %}</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <meta name="color-scheme" content="light dark">
+    <script>
+        // Aplica o tema salvo antes de desenhar a página (sem "piscar" o tema errado)
+        try {
+            var savedTheme = localStorage.getItem('wyw-theme');
+            if (savedTheme === 'light' || savedTheme === 'dark') document.documentElement.setAttribute('data-theme', savedTheme);
+        } catch (e) {}
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
@@ -17,13 +27,20 @@
                 <h1>WYW</h1>
                 <p class="brand-tagline">Weather is your Weather</p>
             </div>
-            <div class="lang-switch" role="navigation" aria-label="Language selection">
-                {% for code, flag, label in [('en', 'us', 'English'), ('pt', 'br', 'Português'), ('es', 'es', 'Español')] %}
-                <a href="{{ url_for('main.change_language', lang=code) }}"
-                   class="lang-btn {% if get_locale() == code %}active{% endif %}" title="{{ label }}">
-                    <img src="https://flagcdn.com/w20/{{ flag }}.png" alt="{{ label }}" width="20" height="15">
-                </a>
-                {% endfor %}
+            <div class="header-tools">
+                <div class="lang-switch" role="navigation" aria-label="Language selection">
+                    {% for code, flag, label in [('en', 'us', 'English'), ('pt', 'br', 'Português'), ('es', 'es', 'Español')] %}
+                    <a href="{{ url_for('main.change_language', lang=code) }}"
+                       class="lang-btn {% if get_locale() == code %}active{% endif %}" title="{{ label }}">
+                        <img src="https://flagcdn.com/w20/{{ flag }}.png" alt="{{ label }}" width="20" height="15">
+                    </a>
+                    {% endfor %}
+                </div>
+                <button type="button" class="theme-btn" id="theme-toggle"
+                        aria-label="{{ _('Switch between light and dark theme') }}" title="{{ _('Switch between light and dark theme') }}">
+                    <i class="fa-solid fa-moon" aria-hidden="true"></i>
+                    <i class="fa-solid fa-sun" aria-hidden="true"></i>
+                </button>
             </div>
         </header>
 
@@ -55,6 +72,16 @@
         if (document.cookie.indexOf('cookies_accepted=true') !== -1) {
             document.getElementById('cookie-consent').style.display = 'none';
         }
+
+        // Tema claro/escuro: alterna e salva a escolha; sem escolha, segue o sistema (REQ-DS-01)
+        document.getElementById('theme-toggle').addEventListener('click', function () {
+            var root = document.documentElement;
+            var current = root.getAttribute('data-theme') ||
+                (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            var next = current === 'dark' ? 'light' : 'dark';
+            root.setAttribute('data-theme', next);
+            try { localStorage.setItem('wyw-theme', next); } catch (e) {}
+        });
 
         // Abre/fecha os dias da previsão (delegação: funciona também após trocar os resultados)
         document.addEventListener('click', function (event) {
