@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-06 15:00-0300\n"
+"POT-Creation-Date: 2026-11-06 15:40-0300\n"
 "PO-Revision-Date: 2025-01-23 17:22-0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: pt <LL@li.org>\n"
@@ -143,115 +143,115 @@ msgstr "Alerta! Procure um lugar fresco."
 msgid "Normal temperature."
 msgstr "Temperatura normal."
 
-#: app/meteo/wmo.py:5
+#: app/meteo/wmo.py:10
 msgid "Clear sky"
 msgstr "Céu limpo"
 
-#: app/meteo/wmo.py:6
+#: app/meteo/wmo.py:11
 msgid "Mainly clear"
 msgstr "Predominantemente limpo"
 
-#: app/meteo/wmo.py:7
+#: app/meteo/wmo.py:12
 msgid "Partly cloudy"
 msgstr "Parcialmente nublado"
 
-#: app/meteo/wmo.py:8
+#: app/meteo/wmo.py:13
 msgid "Overcast"
 msgstr "Nublado"
 
-#: app/meteo/wmo.py:9
+#: app/meteo/wmo.py:14
 msgid "Fog"
 msgstr "Nevoeiro"
 
-#: app/meteo/wmo.py:10
+#: app/meteo/wmo.py:15
 msgid "Depositing rime fog"
 msgstr "Nevoeiro com geada"
 
-#: app/meteo/wmo.py:11
+#: app/meteo/wmo.py:16
 msgid "Light drizzle"
 msgstr "Garoa fraca"
 
-#: app/meteo/wmo.py:12
+#: app/meteo/wmo.py:17
 msgid "Moderate drizzle"
 msgstr "Garoa moderada"
 
-#: app/meteo/wmo.py:13
+#: app/meteo/wmo.py:18
 msgid "Dense drizzle"
 msgstr "Garoa intensa"
 
-#: app/meteo/wmo.py:14
+#: app/meteo/wmo.py:19
 msgid "Light freezing drizzle"
 msgstr "Garoa congelante fraca"
 
-#: app/meteo/wmo.py:15
+#: app/meteo/wmo.py:20
 msgid "Dense freezing drizzle"
 msgstr "Garoa congelante intensa"
 
-#: app/meteo/wmo.py:16
+#: app/meteo/wmo.py:21
 msgid "Slight rain"
 msgstr "Chuva fraca"
 
-#: app/meteo/wmo.py:17
+#: app/meteo/wmo.py:22
 msgid "Moderate rain"
 msgstr "Chuva moderada"
 
-#: app/meteo/wmo.py:18
+#: app/meteo/wmo.py:23
 msgid "Heavy rain"
 msgstr "Chuva forte"
 
-#: app/meteo/wmo.py:19
+#: app/meteo/wmo.py:24
 msgid "Light freezing rain"
 msgstr "Chuva congelante fraca"
 
-#: app/meteo/wmo.py:20
+#: app/meteo/wmo.py:25
 msgid "Heavy freezing rain"
 msgstr "Chuva congelante forte"
 
-#: app/meteo/wmo.py:21
+#: app/meteo/wmo.py:26
 msgid "Slight snowfall"
 msgstr "Neve fraca"
 
-#: app/meteo/wmo.py:22
+#: app/meteo/wmo.py:27
 msgid "Moderate snowfall"
 msgstr "Neve moderada"
 
-#: app/meteo/wmo.py:23
+#: app/meteo/wmo.py:28
 msgid "Heavy snowfall"
 msgstr "Neve forte"
 
-#: app/meteo/wmo.py:24
+#: app/meteo/wmo.py:29
 msgid "Snow grains"
 msgstr "Grãos de neve"
 
-#: app/meteo/wmo.py:25
+#: app/meteo/wmo.py:30
 msgid "Slight rain showers"
 msgstr "Pancadas de chuva fracas"
 
-#: app/meteo/wmo.py:26
+#: app/meteo/wmo.py:31
 msgid "Moderate rain showers"
 msgstr "Pancadas de chuva moderadas"
 
-#: app/meteo/wmo.py:27
+#: app/meteo/wmo.py:32
 msgid "Violent rain showers"
 msgstr "Pancadas de chuva fortes"
 
-#: app/meteo/wmo.py:28
+#: app/meteo/wmo.py:33
 msgid "Slight snow showers"
 msgstr "Pancadas de neve fracas"
 
-#: app/meteo/wmo.py:29
+#: app/meteo/wmo.py:34
 msgid "Heavy snow showers"
 msgstr "Pancadas de neve fortes"
 
-#: app/meteo/wmo.py:30
+#: app/meteo/wmo.py:35
 msgid "Thunderstorm"
 msgstr "Trovoada"
 
-#: app/meteo/wmo.py:31
+#: app/meteo/wmo.py:36
 msgid "Thunderstorm with slight hail"
 msgstr "Trovoada com granizo fraco"
 
-#: app/meteo/wmo.py:32
+#: app/meteo/wmo.py:37
 msgid "Thunderstorm with heavy hail"
 msgstr "Trovoada com granizo forte"
 
@@ -260,21 +260,25 @@ msgstr "Trovoada com granizo forte"
 msgid "%(hour)s:00"
 msgstr "%(hour)sh"
 
-#: app/templates/base.html:39
+#: app/templates/base.html:40
+msgid "Switch between light and dark theme"
+msgstr "Alternar entre tema claro e escuro"
+
+#: app/templates/base.html:56
 msgid "Weather data:"
 msgstr "Dados meteorológicos:"
 
-#: app/templates/base.html:40
+#: app/templates/base.html:57
 msgid "Official alerts:"
 msgstr "Avisos oficiais:"
 
-#: app/templates/base.html:46
+#: app/templates/base.html:63
 msgid "We use cookies to ensure you get the best experience on our website."
 msgstr ""
 "Usamos cookies para garantir que você tenha a melhor experiência em nosso "
 "site."
 
-#: app/templates/base.html:47
+#: app/templates/base.html:64
 msgid "Accept"
 msgstr "Aceitar"
 

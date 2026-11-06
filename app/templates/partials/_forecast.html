@@ -14,12 +14,12 @@
                     <small>{{ day.date|dateformat("d MMM") }}</small>
                 </span>
                 <span class="day-icons">
-                    <span class="day-emoji" title="{{ day.condition }}">{{ day.emoji }}</span>
+                    <span class="day-emoji" title="{{ day.condition }}"><i class="fa-solid fa-{{ day.icon }}" aria-hidden="true"></i></span>
                     {% if day.alerts %}<span class="day-alerts">{% for a in day.alerts %}{{ alert_icon(a, focusable=False) }}{% endfor %}</span>{% endif %}
                 </span>
                 <span class="day-condition">{{ day.condition }}</span>
                 <span class="day-rain" title="{{ _('Rain') }}">
-                    {% if day.precipitation %}💧 {{ day.precipitation }} mm{% endif %}
+                    {% if day.precipitation %}<i class="fa-solid fa-droplet" aria-hidden="true"></i> {{ day.precipitation }} mm{% endif %}
                 </span>
                 <span class="day-temps">
                     <span class="t-min">{{ day.temp_min|round|int }}°</span>
@@ -36,18 +36,18 @@
                 <div class="day-panel-inner">
                     <div class="tiles">
                         <div class="tile">
-                            <span class="tile-label">💧 {{ _('Humidity') }}</span>
+                            <span class="tile-label"><i class="fa-solid fa-droplet" aria-hidden="true"></i> {{ _('Humidity') }}</span>
                             <span class="tile-value">{{ day.humidity_mean }}%</span>
                             <span class="tile-sub">{{ day.humidity_min }}–{{ day.humidity_max }}%</span>
                             <span class="meter"><span style="width: {{ day.humidity_mean or 0 }}%"></span></span>
                         </div>
                         <div class="tile">
-                            <span class="tile-label">🌧️ {{ _('Rain') }}</span>
+                            <span class="tile-label"><i class="fa-solid fa-cloud-rain" aria-hidden="true"></i> {{ _('Rain') }}</span>
                             <span class="tile-value">{% if day.precipitation is not none %}{{ day.precipitation }} <small>mm</small>{% else %}–{% endif %}</span>
                         </div>
                         {% if day.pressure %}
                         <div class="tile" title="{{ day.pressure.hint }}">
-                            <span class="tile-label">🧭 {{ _('Pressure') }}</span>
+                            <span class="tile-label"><i class="fa-solid fa-gauge" aria-hidden="true"></i> {{ _('Pressure') }}</span>
                             <span class="tile-value">
                                 <span class="pressure-badge pressure-{{ day.pressure.key }}">{{ day.pressure.symbol }}</span>
                                 {{ day.pressure.value|round|int }} <small>hPa</small>
@@ -57,7 +57,7 @@
                         </div>
                         {% endif %}
                         <div class="tile">
-                            <span class="tile-label">💨 {{ _('Max wind') }}</span>
+                            <span class="tile-label"><i class="fa-solid fa-wind" aria-hidden="true"></i> {{ _('Max wind') }}</span>
                             <span class="tile-value">{% if day.wind_max_kmh is not none %}{{ day.wind_max_kmh }} <small>km/h</small>{% else %}–{% endif %}</span>
                         </div>
                         {% if day.alerts %}
@@ -67,7 +67,7 @@
                         </div>
                         {% endif %}
                         <div class="tile">
-                            <span class="tile-label">🌡️ {{ _('Wet bulb max') }}</span>
+                            <span class="tile-label"><i class="fa-solid fa-temperature-half" aria-hidden="true"></i> {{ _('Wet bulb max') }}</span>
                             <span class="tile-value"><span class="dot dot-{{ day.wet_bulb_risk.color }}"></span>{{ day.wet_bulb_max }}°C</span>
                             <span class="tile-sub">{{ day.wet_bulb_risk.message }}</span>
                         </div>
