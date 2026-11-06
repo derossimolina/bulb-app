@@ -1,4 +1,4 @@
-# Wet Bulb Temperature Calculator
+# WYW — Weather is your Weather
 
 ## Purpose
 A web tool that calculates the **wet bulb temperature** for any city from real-time weather data, and shows a
@@ -10,6 +10,9 @@ the human body can no longer cool itself (Sherwood & Huber, 2010).
 
 ## Features
 - **Current conditions**: temperature, feels-like, relative humidity, dew point, sea-level pressure and wind.
+- **Risk to life** in the next 3 hours (`SPEC.md`, section 4): heat, wet bulb temperature, thunderstorms, strong
+  wind and tornado indicators; two of them in the same hour (or a tornado) show a red "Risk to your life!" banner.
+  Shared test cases in `spec/risk-cases.json`. It does not replace alerts from the authorities and Civil Defense.
 - **Wet bulb temperature** (Stull, 2011) with heat-stress risk levels, now and as a daily maximum in the forecast.
 - **7-day forecast**: min/max temperature, mean/min/max relative humidity, rain amount and maximum wind.
 - **Pressure index**: **A** high pressure (≥ 1020 hPa), **B** low pressure (≤ 1008 hPa), and trend vs. the previous day.

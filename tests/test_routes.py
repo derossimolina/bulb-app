@@ -30,7 +30,7 @@ def client(monkeypatch):
 def test_home(client):
     response = client.get("/")
     assert response.status_code == 200
-    assert b"Wet Bulb Temperature Calculator" in response.data
+    assert b"<h1>WYW</h1>" in response.data
 
 
 def test_city_forecast_with_alerts(client):

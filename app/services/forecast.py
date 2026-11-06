@@ -109,4 +109,5 @@ def get_weather(latitude, longitude, timezone="auto"):
         "current": build_current(data),
         "daily": build_daily(data),
         "timezone": data.get("timezone"),
+        "hourly": data.get("hourly", {}),
     }

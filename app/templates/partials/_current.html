@@ -7,6 +7,8 @@
         <img src="https://flagcdn.com/w40/{{ city.country_code|lower }}.png" alt="{{ city.country }}" class="flag">
     </h2>
 
+    {% include "partials/_risk.html" %}
+
     <div class="current-grid">
         <div class="md-card current-main">
             <span class="stat-label">{{ _('Now') }}</span>

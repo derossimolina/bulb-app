@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{{ _('Wet Bulb Temperature') }}{% endblock %}</title>
+    <title>{% block title %}WYW{% endblock %}</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -13,7 +13,10 @@
 <body>
     <main class="container">
         <header class="app-header">
-            <h1>{{ _('Wet Bulb Temperature Calculator') }}</h1>
+            <div class="brand">
+                <h1>WYW</h1>
+                <p class="brand-tagline">Weather is your Weather</p>
+            </div>
             <div class="lang-switch" role="navigation" aria-label="Language selection">
                 {% for code, flag, label in [('en', 'us', 'English'), ('pt', 'br', 'Português'), ('es', 'es', 'Español')] %}
                 <a href="{{ url_for('main.change_language', lang=code) }}"
@@ -27,7 +30,7 @@
         {% block content %}{% endblock %}
 
         <footer>
-            <p><a href="https://derossi.dev">Copyright 2025-6 J. de Rossi Molina Ltda</a></p>
+            <p>Copyright 2025-6 <a href="https://derossi.dev">derossi research</a></p>
             <div class="social">
                 <a href="https://github.com/jeronimo-molina" target="_blank" rel="noopener"><i class="fab fa-github"></i> GitHub</a>
                 <a href="https://www.linkedin.com/in/molinajeronimo" target="_blank" rel="noopener"><i class="fab fa-linkedin"></i> LinkedIn</a>
