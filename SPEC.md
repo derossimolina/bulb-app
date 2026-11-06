@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Versão | 0.8 — migração para o AWS Lightsail decidida (D-10, D-11) |
+| Versão | 0.8 — migração para o AWS Lightsail decidida (D-10 a D-12) |
 | Data | 06/11/2026 |
 | Responsável | derossi research — [derossi.dev](https://derossi.dev) |
 | Repositório | `derossimolina/bulb-app` |
@@ -71,6 +71,12 @@ decimais (~1 km). O servidor não guarda buscas; os logs de acesso podem conter 
 ## 3. Requisitos — Site
 
 ### 3.1 Identidade
+- **REQ-WEB-04 🆕** Idioma padrão por domínio (D-12): sem escolha da pessoa (parâmetro `lang` ou sessão),
+  `clima.derossi.dev` abre em **português** e `weather.derossi.dev` em **inglês**; em outros endereços vale o idioma
+  do navegador. Cada página traz `<link rel="alternate" hreflang="pt" | "en" | "x-default">` apontando para o mesmo
+  caminho nos dois domínios e `<link rel="canonical">` para o domínio atual.
+  - **AC-WEB-04** Sem cookie de sessão, `https://weather.derossi.dev/?city=Porto+Alegre` mostra a página em inglês e
+    `https://clima.derossi.dev/?city=Porto+Alegre` em português; os dois têm os `hreflang` recíprocos.
 - **REQ-WEB-03 ✅** O visual do site segue a seção 5 (design system Contexto v8, temas claro e escuro), mantendo o
   layout, as animações e as funcionalidades descritas nesta seção.
 - **REQ-WEB-01 ✅** O nome do site DEVE ser **WYW** no título da página, no cabeçalho e no `<title>`.
@@ -457,7 +463,7 @@ segurança automáticas com `unattended-upgrades`); configuração inicial de do
 | **M3** | App Android: telas, busca, risco com o app aberto, design system e ícone | APP-01…13, 21, 55, 56, 60, 61; DS-01…07 |
 | **M4** | Segundo plano, notificação de risco e de recomendação | APP-20, 22, 23, 30…34, 41 |
 | **M5** | Publicação no Google Play e política de privacidade — **bloqueado** até a conta de desenvolvedor (D-4) | APP-40 |
-| **INFRA** | Migração do site para o AWS Lightsail (8.1), domínios `clima.derossi.dev` e `weather.derossi.dev` | INFRA-01…06 |
+| **INFRA** | Migração do site para o AWS Lightsail (8.1), domínios `clima.derossi.dev` e `weather.derossi.dev` com idioma por domínio | INFRA-01…06; WEB-04 |
 
 ---
 
@@ -475,12 +481,7 @@ segurança automáticas com `unattended-upgrades`); configuração inicial de do
 | **D-9** | Temas claro e escuro | Site e app têm os dois temas. O escuro é o "Padrão" do design system; o claro é derivado da mesma paleta (`ivory`, `ink`, `marmore`, `g3`, `g4`, acento `bronze`), com contraste medido. Padrão: preferência do sistema. |
 | **D-10** | Hospedagem (Q-7) | Migrar o site do Render Free para o AWS Lightsail, instância Micro-1GB em São Paulo (US$ 7/mês): o custo compensa pelo fim da partida a frio e pelo IP próprio. |
 | **D-11** | Domínios (Q-8) | `clima.derossi.dev` e `weather.derossi.dev`, os dois apontando para a instância. |
-
-### Questões em aberto
-- **Q-9** Os dois domínios mostram o mesmo site. Proposta: `clima.derossi.dev` abre em português e
-  `weather.derossi.dev` em inglês quando a pessoa ainda não escolheu o idioma, com `<link rel="alternate" hreflang>`
-  entre eles para os buscadores não tratarem as páginas como duplicadas. Ou um dos domínios deve só redirecionar
-  para o outro?
+| **D-12** | Idioma por domínio (Q-9) | `clima.derossi.dev` abre em português e `weather.derossi.dev` em inglês quando a pessoa não escolheu o idioma, com `hreflang` entre os dois (REQ-WEB-04). |
 
 Novas dúvidas entram aqui como **Q-10** em diante, antes de virar código.
 
