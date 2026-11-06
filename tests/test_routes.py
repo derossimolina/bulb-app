@@ -1,3 +1,5 @@
+import re
+
 import pytest
 
 from app import create_app
@@ -41,8 +43,11 @@ def test_city_forecast_with_alerts(client):
     assert "Trovoada" in html               # pior condição do dia 30
     assert "risk-normal" in html            # cor do card de bulbo úmido
     assert "Avisos meteorológicos do INMET" not in html
+    # Sem o Open-Meteo (que só o navegador consulta), nada de tornado ou rajadas no HTML visível;
+    # os textos traduzidos para o navegador ficam no JSON de <script>
+    visible = re.sub(r"<script.*?</script>", "", html, flags=re.S)
     for removed in ("Tornado", "Rajadas", "None"):
-        assert removed not in html
+        assert removed not in visible
 
 
 def _section(html, start, end):

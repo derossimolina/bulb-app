@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-06 15:40-0300\n"
+"POT-Creation-Date: 2026-11-06 16:15-0300\n"
 "PO-Revision-Date: 2025-01-23 17:22-0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: pt <LL@li.org>\n"
@@ -18,16 +18,16 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app/routes.py:29
+#: app/routes.py:36
 msgid "City not found. Try adding the country code, e.g. \"Paris, FR\"."
 msgstr ""
 "Cidade não encontrada. Tente adicionar o código do país, ex.: \"Paris, FR\"."
 
-#: app/routes.py:33
+#: app/routes.py:40
 msgid "Weather service unavailable. Please try again later."
 msgstr "Serviço meteorológico indisponível. Tente novamente mais tarde."
 
-#: app/meteo/indices.py:15 app/templates/partials/_forecast.html:82
+#: app/meteo/indices.py:15 app/templates/partials/_forecast.html:83
 msgid "High pressure"
 msgstr "Alta pressão"
 
@@ -35,7 +35,7 @@ msgstr "Alta pressão"
 msgid "Stable weather, few clouds"
 msgstr "Tempo estável, poucas nuvens"
 
-#: app/meteo/indices.py:18 app/templates/partials/_forecast.html:84
+#: app/meteo/indices.py:18 app/templates/partials/_forecast.html:85
 msgid "Low pressure"
 msgstr "Baixa pressão"
 
@@ -43,7 +43,7 @@ msgstr "Baixa pressão"
 msgid "Unstable weather, clouds and rain likely"
 msgstr "Tempo instável, nuvens e chuva prováveis"
 
-#: app/meteo/indices.py:21 app/templates/partials/_forecast.html:83
+#: app/meteo/indices.py:21 app/templates/partials/_forecast.html:84
 msgid "Normal pressure"
 msgstr "Pressão normal"
 
@@ -63,52 +63,52 @@ msgstr "Caindo"
 msgid "Steady"
 msgstr "Estável"
 
-#: app/meteo/risk.py:137
+#: app/meteo/risk.py:137 app/meteo/risk.py:189
 #, python-format
 msgid "at %(hour)s"
 msgstr "às %(hour)s"
 
-#: app/meteo/risk.py:138
+#: app/meteo/risk.py:138 app/meteo/risk.py:190
 #, python-format
 msgid "between %(start)s and %(end)s"
 msgstr "entre %(start)s e %(end)s"
 
-#: app/meteo/risk.py:150
+#: app/meteo/risk.py:150 app/meteo/risk.py:191
 #, python-format
 msgid "Possibility of a tornado %(when)s"
 msgstr "Possibilidade de tornado %(when)s"
 
-#: app/meteo/risk.py:152
+#: app/meteo/risk.py:152 app/meteo/risk.py:192
 #, python-format
 msgid "Wet bulb temperature up to %(value)s °C %(when)s"
 msgstr "Bulbo úmido de até %(value)s °C %(when)s"
 
-#: app/meteo/risk.py:155
+#: app/meteo/risk.py:155 app/meteo/risk.py:193
 #, python-format
 msgid "Air temperature up to %(value)s °C %(when)s"
 msgstr "Temperatura do ar de até %(value)s °C %(when)s"
 
-#: app/meteo/risk.py:159
+#: app/meteo/risk.py:159 app/meteo/risk.py:194
 #, python-format
 msgid "Thunderstorm expected %(when)s (INMET alert: %(severity)s)"
 msgstr "Tempestade prevista %(when)s (aviso INMET: %(severity)s)"
 
-#: app/meteo/risk.py:162
+#: app/meteo/risk.py:162 app/meteo/risk.py:195
 #, python-format
 msgid "Thunderstorm expected %(when)s"
 msgstr "Tempestade prevista %(when)s"
 
-#: app/meteo/risk.py:165
+#: app/meteo/risk.py:165 app/meteo/risk.py:196
 #, python-format
 msgid "Wind up to %(value)s km/h %(when)s"
 msgstr "Vento de até %(value)s km/h %(when)s"
 
-#: app/meteo/risk.py:167
+#: app/meteo/risk.py:167 app/meteo/risk.py:197
 #, python-format
 msgid "Strong wind %(when)s (INMET alert: %(alert)s)"
 msgstr "Vento forte %(when)s (aviso INMET: %(alert)s)"
 
-#: app/meteo/risk.py:177
+#: app/meteo/risk.py:177 app/meteo/risk.py:198
 msgid ""
 "Unhealthy heat even in the shade: if you are outdoors, go to a cool or air-"
 "conditioned place."
@@ -116,13 +116,49 @@ msgstr ""
 "Calor insalubre mesmo à sombra: se estiver ao ar livre, procure um lugar "
 "fresco ou com ar condicionado."
 
-#: app/meteo/risk.py:178
+#: app/meteo/risk.py:178 app/meteo/risk.py:199
 msgid ""
 "If you are outdoors and in the sun, get out of the sun and look for shade or"
 " a cool place."
 msgstr ""
 "Se estiver ao ar livre e ao sol, saia do sol e procure sombra ou um lugar "
 "fresco."
+
+#: app/meteo/risk.py:200 app/templates/partials/_risk.html:10
+msgid "Risk to your life!"
+msgstr "Risco à sua vida!"
+
+#: app/meteo/risk.py:201 app/templates/partials/_risk.html:13
+msgid "Attention"
+msgstr "Atenção"
+
+#: app/meteo/risk.py:202 app/templates/partials/_risk.html:16
+msgid "No risk identified in the next 3 hours"
+msgstr "Sem risco identificado nas próximas 3 horas"
+
+#: app/meteo/risk.py:203 app/templates/partials/_risk.html:19
+msgid "Moderate possibility of a tornado"
+msgstr "Possibilidade moderada de tornado"
+
+#: app/meteo/risk.py:204 app/templates/partials/_risk.html:33
+msgid "Tornado indicator unavailable at the moment."
+msgstr "Indicador de tornado indisponível no momento."
+
+#: app/meteo/risk.py:205 app/templates/partials/_risk.html:34
+msgid ""
+"This indicator does not replace alerts from the authorities and Civil "
+"Defense."
+msgstr ""
+"Este indicador não substitui os alertas das autoridades e da Defesa Civil."
+
+#: app/meteo/risk.py:206 app/templates/partials/_risk.html:9
+msgid "Tornado"
+msgstr "Tornado"
+
+#: app/meteo/risk.py:207
+#, python-format
+msgid "Gusts up to %(value)s km/h"
+msgstr "Rajadas de até %(value)s km/h"
 
 #: app/meteo/wetbulb.py:31
 msgid "Life risk! Seek an air-conditioned place immediately!"
@@ -268,17 +304,21 @@ msgstr "Alternar entre tema claro e escuro"
 msgid "Weather data:"
 msgstr "Dados meteorológicos:"
 
-#: app/templates/base.html:57
+#: app/templates/base.html:58
+msgid "Addresses:"
+msgstr "Endereços:"
+
+#: app/templates/base.html:59
 msgid "Official alerts:"
 msgstr "Avisos oficiais:"
 
-#: app/templates/base.html:63
+#: app/templates/base.html:65
 msgid "We use cookies to ensure you get the best experience on our website."
 msgstr ""
 "Usamos cookies para garantir que você tenha a melhor experiência em nosso "
 "site."
 
-#: app/templates/base.html:64
+#: app/templates/base.html:66
 msgid "Accept"
 msgstr "Aceitar"
 
@@ -378,7 +418,7 @@ msgstr "Pressão"
 msgid "Wind"
 msgstr "Vento"
 
-#: app/templates/partials/_current.html:54
+#: app/templates/partials/_current.html:59
 msgid "INMET alert service is unavailable right now."
 msgstr "O serviço de avisos do INMET está indisponível no momento."
 
@@ -403,45 +443,14 @@ msgstr "Umidade"
 msgid "Max wind"
 msgstr "Vento máx."
 
-#: app/templates/partials/_forecast.html:65
+#: app/templates/partials/_forecast.html:66
 msgid "INMET alerts"
 msgstr "Avisos do INMET"
 
-#: app/templates/partials/_forecast.html:70
+#: app/templates/partials/_forecast.html:71
 msgid "Wet bulb max"
 msgstr "Bulbo úmido máx."
 
-#: app/templates/partials/_forecast.html:85
+#: app/templates/partials/_forecast.html:86
 msgid "trend vs. previous day"
 msgstr "tendência em relação ao dia anterior"
-
-#: app/templates/partials/_risk.html:9
-msgid "Tornado"
-msgstr "Tornado"
-
-#: app/templates/partials/_risk.html:10
-msgid "Risk to your life!"
-msgstr "Risco à sua vida!"
-
-#: app/templates/partials/_risk.html:13
-msgid "Attention"
-msgstr "Atenção"
-
-#: app/templates/partials/_risk.html:16
-msgid "No risk identified in the next 3 hours"
-msgstr "Sem risco identificado nas próximas 3 horas"
-
-#: app/templates/partials/_risk.html:19
-msgid "Moderate possibility of a tornado"
-msgstr "Possibilidade moderada de tornado"
-
-#: app/templates/partials/_risk.html:33
-msgid "Tornado indicator unavailable at the moment."
-msgstr "Indicador de tornado indisponível no momento."
-
-#: app/templates/partials/_risk.html:34
-msgid ""
-"This indicator does not replace alerts from the authorities and Civil "
-"Defense."
-msgstr ""
-"Este indicador não substitui os alertas das autoridades e da Defesa Civil."

@@ -54,6 +54,8 @@
             </div>
             <p class="sources">
                 {{ _('Weather data:') }} <a href="https://www.met.no/en" target="_blank" rel="noopener">MET Norway</a> (CC BY 4.0)
+                · <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> (CC BY 4.0)
+                · {{ _('Addresses:') }} © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>
                 · {{ _('Official alerts:') }} <a href="https://avisos.inmet.gov.br" target="_blank" rel="noopener">INMET</a>
             </p>
         </footer>
@@ -64,6 +66,8 @@
         <button class="btn" onclick="acceptCookies()">{{ _('Accept') }}</button>
     </div>
 
+    <script src="{{ url_for('static', filename='risk.js') }}"></script>
+    <script src="{{ url_for('static', filename='wyw.js') }}"></script>
     <script>
         function acceptCookies() {
             document.cookie = "cookies_accepted=true; path=/; max-age=" + 60 * 60 * 24 * 365;
@@ -163,21 +167,30 @@
                 event.preventDefault();
                 var city = form.elements.city.value.trim();
                 if (city.length < 2) return;
-                var url = form.action + '?' + new URLSearchParams({ city: city });
                 var button = form.querySelector('button');
                 button.classList.add('loading');
                 button.disabled = true;
                 results.classList.add('leaving');
 
-                fetch(url, { headers: { 'X-Requested-With': 'fetch' } })
+                // Endereço → Nominatim (no navegador); cidade → busca do servidor (REQ-WEB-11)
+                var target = { url: form.action + '?' + new URLSearchParams({ city: city }), label: null };
+                (window.WYW ? window.WYW.resolve(city, form.action) : Promise.resolve(target))
+                    .then(function (resolved) {
+                        target = resolved;
+                        return fetch(target.url, { headers: { 'X-Requested-With': 'fetch' } });
+                    })
                     .then(function (response) { return response.text(); })
                     .then(function (html) {
                         var page = new DOMParser().parseFromString(html, 'text/html');
                         var fresh = page.getElementById('results');
                         results.innerHTML = fresh ? fresh.innerHTML : '';
                         document.title = page.title;
-                        history.pushState({ city: city }, '', url);
+                        // O endereço só aparece no título; a URL leva coordenada arredondada e cidade (C-2)
+                        var place = results.querySelector('.place-name');
+                        if (target.label && place) place.textContent = target.label;
+                        history.pushState({ city: city }, '', target.url);
                         play();
+                        if (window.WYW) window.WYW.enhance(results);
                     })
                     .catch(function () { form.submit(); })
                     .then(function () {
@@ -188,6 +201,9 @@
 
             window.addEventListener('popstate', function () { location.reload(); });
         })();
+
+        // Página aberta direto com resultados: completa rajadas, tornado e risco
+        if (window.WYW) window.WYW.enhance(document);
     </script>
 </body>
 

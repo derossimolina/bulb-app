@@ -84,3 +84,28 @@ def test_page_header_and_footer(monkeypatch):
     html = _client(monkeypatch).get("/?lang=pt").get_data(as_text=True)
     assert "<title>WYW</title>" in html and "<h1>WYW</h1>" in html
     assert '<a href="https://derossi.dev">derossi research</a>' in html
+
+
+def _client_data(html):
+    import json
+    raw = html.split('<script type="application/json" class="wyw-data">', 1)[1].split("</script>", 1)[0]
+    return json.loads(raw)
+
+
+def test_address_search_by_coordinates(monkeypatch):
+    """REQ-WEB-11: o navegador geocodifica o endereço e manda só coordenada arredondada e cidade (C-2)."""
+    client = _client(monkeypatch)
+    html = client.get("/?lat=-30.02771&lon=-51.22874&city=Porto+Alegre&state=Rio+Grande+do+Sul&cc=br&lang=pt"
+                      ).get_data(as_text=True)
+    assert 'class="place-name">Porto Alegre, Rio Grande do Sul</span>' in html
+    data = _client_data(html)
+    assert (data["lat"], data["lon"], data["timezone"]) == (-30.03, -51.23, "America/Sao_Paulo")
+    assert data["hours"][0]["time_utc"] == "2026-11-06T15:00:00+00:00"
+    assert data["strings"]["life"] == "Risco à sua vida!"
+    assert data["strings"]["gusts"] == "Rajadas de até %(value)s km/h"
+    assert len(data["days"]) >= 1
+
+
+def test_invalid_coordinates_show_not_found(monkeypatch):
+    html = _client(monkeypatch).get("/?lat=999&lon=0&city=X&lang=pt").get_data(as_text=True)
+    assert "Cidade não encontrada" in html

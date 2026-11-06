@@ -59,6 +59,7 @@
                         <div class="tile">
                             <span class="tile-label"><i class="fa-solid fa-wind" aria-hidden="true"></i> {{ _('Max wind') }}</span>
                             <span class="tile-value">{% if day.wind_max_kmh is not none %}{{ day.wind_max_kmh }} <small>km/h</small>{% else %}–{% endif %}</span>
+                            <span class="tile-sub gust-day" data-date="{{ day.date.isoformat() }}" hidden></span>
                         </div>
                         {% if day.alerts %}
                         <div class="tile tile-alerts">

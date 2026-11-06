@@ -5,6 +5,8 @@ O Nominatim (OpenStreetMap) foi testado e abandonado: ele bloqueia o IP de saíd
 compartilhado do plano Free do Render (429 em todas as buscas de produção em
 02/11/2026), e cada tentativa recusada atrasava o carregamento da cidade.
 """
+from tzfpy import get_tz
+
 from .http import get_json, ttl_cache
 from .text import normalize
 
@@ -23,6 +25,26 @@ BR_STATES = {
 
 class CityNotFound(Exception):
     pass
+
+
+def place_from_coordinates(latitude, longitude, name="", state="", country_code=""):
+    """
+    Local vindo da busca por endereço (Nominatim, consultado pelo navegador; SPEC.md REQ-WEB-11).
+    O servidor recebe só a coordenada arredondada (C-2) e a cidade; o endereço fica no navegador.
+    """
+    latitude, longitude = float(latitude), float(longitude)
+    if not (-90 <= latitude <= 90 and -180 <= longitude <= 180):
+        raise CityNotFound(f"{latitude},{longitude}")
+    latitude, longitude = round(latitude, 2), round(longitude, 2)
+    return {
+        "name": name.strip()[:80],
+        "latitude": latitude,
+        "longitude": longitude,
+        "country": "",
+        "country_code": country_code.strip().upper()[:2],
+        "state": state.strip()[:80],
+        "timezone": get_tz(longitude, latitude) or "UTC",
+    }
 
 
 def parse_query(query):

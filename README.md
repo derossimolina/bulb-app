@@ -9,12 +9,13 @@ The wet bulb temperature is an important measure for assessing thermal comfort a
 the human body can no longer cool itself (Sherwood & Huber, 2010).
 
 ## Features
-- **Current conditions**: temperature, feels-like, relative humidity, dew point, sea-level pressure and wind.
+- **Current conditions**: temperature, feels-like, relative humidity, dew point, sea-level pressure, wind and gusts.
 - **Risk to life** in the next 3 hours (`SPEC.md`, section 4): heat, wet bulb temperature, thunderstorms, strong
   wind and tornado indicators; two of them in the same hour (or a tornado) show a red "Risk to your life!" banner.
   Shared test cases in `spec/risk-cases.json`. It does not replace alerts from the authorities and Civil Defense.
 - **Wet bulb temperature** (Stull, 2011) with heat-stress risk levels, now and as a daily maximum in the forecast.
-- **7-day forecast**: min/max temperature, mean/min/max relative humidity, rain amount and maximum wind.
+- **7-day forecast**: min/max temperature, mean/min/max relative humidity, rain amount, maximum wind and gusts.
+- **Search** by city (`Santa Maria, RS`) or by street address (`Av. Ipiranga 6681, Porto Alegre`).
 - **Pressure index**: **A** high pressure (≥ 1020 hPa), **B** low pressure (≤ 1008 hPa), and trend vs. the previous day.
 - **INMET alerts** (Brazil only), matched to the city by IBGE code (with a fallback to the alert polygon):
   today's alerts appear in the "Now" card with their severity tag; alerts for other days appear as icons on that
@@ -26,13 +27,16 @@ the human body can no longer cool itself (Sherwood & Huber, 2010).
 |------|--------|--------------|
 | Forecast and current weather | [MET Norway](https://api.met.no/weatherapi/locationforecast/2.0/documentation) — Locationforecast 2.0 (CC BY 4.0) | No (identifying User-Agent) |
 | City search | [Open-Meteo Geocoding](https://open-meteo.com/en/docs/geocoding-api) (GeoNames) | No |
+| Wind gusts and tornado potential (CAPE, lifted index, upper-level wind) | [Open-Meteo Forecast](https://open-meteo.com/), **called by the browser** | No |
+| Address search | [Nominatim](https://nominatim.org/) (OpenStreetMap), **called by the browser** | No |
 | Official alerts | [INMET](https://avisos.inmet.gov.br) — `apiprevmet3.inmet.gov.br/avisos/ativos` | No |
 | Municipality codes | [IBGE](https://servicodados.ibge.gov.br/api/docs/localidades) (bundled in `app/data/`) | No |
 
-Open-Meteo is no longer used for weather data (only for city search): its free tier is limited per IP, and on Render's free plan the
-outbound IP is shared with other services, which caused `429 Too Many Requests` errors in production.
-Wind gusts are not shown because MET Norway only provides them for Scandinavia; INMET station data (which has
-gusts) requires an access token.
+The server never calls the Open-Meteo forecast or Nominatim: both limit requests per IP, and on Render's free plan
+the outbound IP is shared with other services, which caused `429 Too Many Requests` errors in production. The
+browser calls them from the visitor's own IP (`app/static/wyw.js`) and recomputes the risk level with the
+JavaScript engine (`app/static/risk.js`). The server only receives rounded coordinates (about 1 km), never the
+street address. INMET station data (which has measured gusts) requires an access token and is not used.
 
 ## Project structure
 ```

@@ -52,14 +52,15 @@ def build_hours(hourly, latitude, longitude, alerts=(), now=None):
         code = col("weather_code", i)
         hours.append({
             "label": _("%(hour)s:00", hour=local.hour),
+            "time_utc": start.isoformat(),
             "temp": col("temperature_2m", i),
             "rh": col("relative_humidity_2m", i),
             "cloud": col("cloud_cover", i),
             "sun_up": is_sun_up(latitude, longitude, start),
             "thunder": code is not None and code in risk.THUNDER_CODES,
             "wind_kmh": wind * MS_TO_KMH if wind is not None else None,
-            "gust_kmh": None,     # Open-Meteo, pelo navegador (M2)
-            "tornado": None,      # Open-Meteo, pelo navegador (M2)
+            "gust_kmh": None,     # completado pelo navegador com o Open-Meteo (static/wyw.js)
+            "tornado": None,      # idem
             "alerts": [
                 {"event": a["event"], "severity": a["severity"], "inside_polygon": a.get("inside_polygon", False)}
                 for a, period in periods
@@ -77,9 +78,24 @@ def assess(weather, latitude, longitude, alerts=(), now=None):
     hours = build_hours(weather.get("hourly", {}), latitude, longitude, alerts, now)
     if not hours:
         return None
-    # Até o M2, rajadas e tornado (Open-Meteo pelo navegador) não estão disponíveis
+    # O servidor não consulta o Open-Meteo (SPEC.md C-1): sem rajadas nem tornado aqui. O navegador
+    # completa esses dados e recalcula o nível com static/risk.js; sem ele, vale este resultado.
     result = risk.evaluate(hours, open_meteo=False)
     result["lines"] = risk.describe(result, hours)
     result["recommendation"] = risk.heat_recommendation(result)
     result["window"] = (hours[0]["label"], hours[-1]["label"])
+    result["hours"] = hours
     return result
+
+
+def client_data(city, weather):
+    """Dados para o complemento no navegador (static/wyw.js): coordenadas, janela e textos."""
+    risk_result = weather.get("risk") or {}
+    return {
+        "lat": round(city["latitude"], 2),     # SPEC.md C-2
+        "lon": round(city["longitude"], 2),
+        "timezone": city.get("timezone") or "UTC",
+        "hours": risk_result.get("hours", []),
+        "days": [day["date"].isoformat() for day in weather.get("daily", [])],
+        "strings": risk.client_strings(),
+    }
