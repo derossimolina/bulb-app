@@ -1,5 +1,8 @@
 # WYW — Weather is your Weather
 
+**Project documents:** [`SPEC.md`](SPEC.md) (requirements and decisions) · [`NOTES.md`](NOTES.md) (current state,
+decisions and how to resume) · [`PLAN.md`](PLAN.md) (next phases, step by step).
+
 ## Purpose
 A web tool that calculates the **wet bulb temperature** for any city from real-time weather data, and shows a
 **7-day forecast** with relative humidity and high/low pressure systems. For Brazilian cities it also shows the
