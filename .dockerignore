@@ -27,3 +27,8 @@ scripts
 .claude
 .pytest_cache
 messages.pot
+deploy
+.github
+.venv
+*.md
+spec

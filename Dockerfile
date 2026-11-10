@@ -10,7 +10,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app ./app
 COPY wsgi.py .
 
-RUN useradd --create-home appuser
+# /data: volume do banco e da base de IPs no Lightsail (SPEC.md REQ-INFRA-07)
+RUN useradd --create-home appuser && install -d -o appuser -g appuser /data
 USER appuser
 
 # O Render define a porta em $PORT; localmente usa 5000
