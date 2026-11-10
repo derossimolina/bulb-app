@@ -1,161 +1,149 @@
-# WYW — Plano de continuação
+# WYW — Plano de lançamento
 
-Plano a partir de **07/11/2026**, depois dos marcos M1, DS e M2. Os requisitos (`REQ-…`) e critérios de aceite
-(`AC-…`) estão no [`SPEC.md`](SPEC.md); o estado e as decisões, no [`NOTES.md`](NOTES.md).
+Plano de **10/11/2026 (terça)** para pôr o WYW à venda até **13/11/2026 (sexta)**. Os requisitos (`REQ-…`) e os
+critérios de aceite (`AC-…`) estão no [`SPEC.md`](SPEC.md), seção 12 (lançamento) e seção 8.1 (hospedagem); o
+estado anterior do projeto está no [`NOTES.md`](NOTES.md).
 
-**Como trabalhar (vale para todas as fases):** cada mudança começa pelo `SPEC.md` quando altera comportamento; cada
-fase vai num branch próprio e num PR para a `main`; os testes (`pytest`) passam antes de qualquer merge; ao terminar
-um requisito, o status dele no spec muda de 🆕 para ✅.
+**Como trabalhar:** uma tarefa (T-…) por branch e por PR para a `main`; cada tarefa começa pelos testes; o `pytest`
+passa antes de qualquer merge; ao terminar um requisito, o status dele no spec muda de 🆕 para ✅.
 
-## Visão geral
+## Onde estamos
 
-| Fase | Entrega | Depende de | Situação |
+| Pronto | Falta para vender |
+|---|---|
+| Site com busca, faixa de risco, previsão e avisos do INMET | Geolocalização (IP e aparelho) |
+| Motor de risco em Python e JavaScript, com casos compartilhados | Tornado e rajadas calculados no servidor |
+| Design system, três idiomas, temas claro e escuro | Contas, locais salvos, pagamento, alertas |
+| Spec, notas e decisões D-1 a D-13 | Hospedagem no Lightsail, domínios, páginas legais |
+
+O app Android (M3 a M5) fica para depois do lançamento: não há código e a conta do Google Play depende do D-U-N-S.
+
+## O que só você pode fazer
+
+Estas ações envolvem contas, dinheiro e chaves. Começar **hoje**, porque algumas têm espera.
+
+| # | Ação | Até | Por que cedo |
 |---|---|---|---|
-| **0** | Ambiente no Arch Linux (HefOS) | — | A fazer |
-| **1** | **INFRA**: site no AWS Lightsail com `clima.` e `weather.derossi.dev` | Fase 0, conta AWS, DNS na Hostinger | A fazer |
-| **2** | **M3**: app Android com o app aberto | Fase 0, celular Android 12+ | A fazer |
-| **3** | **M4**: verificação em segundo plano e notificações | Fase 2 | A fazer |
-| **4** | **M5**: publicação no Google Play | Fases 1 a 3, D-U-N-S e conta de desenvolvedor | Bloqueada |
+| H-1 | Responder Q-10 a Q-15 do `SPEC.md` (preço, Open-Meteo, e-mail, limite de locais, razão social) | Ter | Sem resposta, vale a proposta do spec |
+| H-2 | Ativar a conta do **Stripe** para cobrança real (dados da empresa e conta bancária) | Ter | A verificação pode levar dias |
+| H-3 | Criar a instância no **Lightsail** (Micro-1GB, Ubuntu 24.04, São Paulo), IP estático e firewall | Qua, manhã | Tudo depende dela |
+| H-4 | Na **Hostinger**: registros A de `clima` e `weather`; depois, SPF, DKIM e DMARC do provedor de e-mail | Qua, manhã | Propagação de DNS |
+| H-5 | Contratar o plano comercial do **Open-Meteo** e criar a conta do provedor de **e-mail** | Qua | Chaves para o servidor |
+| H-6 | Criar o robô do **Telegram** no BotFather | Qui | 5 minutos |
+| H-7 | Gravar as chaves em `/opt/wyw/.env` na instância e nos segredos do GitHub | Qua e Qui | As chaves não passam pelo chat nem pelo repositório |
+| H-8 | Testar num Android e num iPhone reais (AC-ALERTA-03, AC-GEO-02) | Sex, manhã | Web Push só se prova no aparelho |
+| H-9 | Fazer uma assinatura real com o próprio cartão e cancelar | Sex, meio-dia | Prova do fluxo de cobrança |
+| H-10 | Levar os textos de `/terms` e `/privacy` a uma pessoa habilitada | Antes de 20/11 | Data da primeira cobrança real (REQ-LEGAL-04) |
 
-As fases 1 e 2 são independentes e podem andar em paralelo. A política de privacidade (`/privacy`, exigida na fase 4)
-entra na fase 1, já no novo domínio.
+## Tarefas de código
 
----
+"Modelo" indica com qual modelo vale a pena fazer cada tarefa (critério na seção seguinte).
 
-## Fase 0 — Ambiente no Arch Linux
+| # | Tarefa | Requisitos | Modelo | Dia |
+|---|---|---|---|---|
+| T-01 | `/healthz`, gunicorn `gthread`, `ProxyFix`, variável `REDIRECT_TO` | INFRA-02, 06 | Sonnet | Ter |
+| T-02 | Idioma por domínio, `hreflang` e `canonical` | WEB-04 | Sonnet | Ter |
+| T-03 | `deploy/docker-compose.yml` (`app`, `worker`, `caddy`, volume), `Caddyfile`, GitHub Actions | INFRA-02, 04, 07 | Sonnet | Ter |
+| T-04 | Primeiro deploy no Lightsail e conferência de AC-INFRA-01 e AC-WEB-04 | INFRA-01…05 | Sonnet, com você | Qua |
+| T-05 | Local pelo IP (base DB-IP, crédito na tela Sobre) | GEO-01, 03, 04 | Sonnet | Qua |
+| T-06 | Botão "Usar minha localização" em `wyw.js` | GEO-02, 03 | Sonnet | Qua |
+| T-07 | Classificador de tornado em Python e cliente do Open-Meteo no servidor, com chave | ALERTA-02 | Sonnet | Qua |
+| T-08 | Banco SQLite: esquema de 12.7 e camada de acesso | 12.7 | Sonnet | Qua |
+| T-09 | Entrar por e-mail (link de uso único), sessão, CSRF, limite de tentativas, envio de e-mail | CONTA-01…03 | Sonnet, revisão forte | Qua |
+| T-10 | Página `/conta` e locais salvos | CONTA-04…06 | Sonnet | Qui |
+| T-11 | **Motor de alertas**: ciclo do verificador, regra de não repetição, fonte fora do ar, batimento | ALERTA-01, 03, 04, 07, 09 | Modelo mais forte | Qui |
+| T-12 | Canal e-mail e texto do alerta nos três idiomas | ALERTA-05, 06 | Sonnet | Qui |
+| T-13 | Manifesto, *service worker*, Web Push (VAPID) e instrução para iPhone | PWA-01…03 | Sonnet | Qui |
+| T-14 | Stripe: Checkout, webhook, portal e situação da conta | PAG-01…04 | Sonnet, revisão forte | Qui |
+| T-15 | Páginas `/precos`, `/terms` e `/privacy` (pt e en) | PAG-05, LEGAL-01…03 | Sonnet para as páginas; texto legal revisado | Qui |
+| T-16 | Canal Telegram (robô, vínculo e webhook) | ALERTA-06 | Sonnet | Qui |
+| T-17 | Alerta de teste na conta | ALERTA-08 | Sonnet | Qui |
+| T-18 | Traduções pt e es das telas novas (`pybabel`) | REQ-WEB existentes | Sonnet | Sex |
+| T-19 | Revisão de segurança e de código de tudo que entrou | NFR-06, 08 | Modelo mais forte | Sex |
+| T-20 | Atualizar `README.md`, `NOTES.md` e os status no `SPEC.md` | — | Sonnet | Sex |
 
-1. **Pacotes:** `sudo pacman -S --needed git github-cli python nodejs docker docker-compose` e
-   `sudo systemctl enable --now docker`; adicionar o usuário ao grupo `docker`.
-2. **Projeto:** `gh auth login` e `git clone https://github.com/derossimolina/bulb-app.git ~/projects/bulb-app`.
-3. **Python:** `python -m venv .venv && .venv/bin/pip install -r requirements-dev.txt`.
-4. **Conferir:** `.venv/bin/pytest` com **84 testes passando** (o Node precisa estar no `PATH` para
-   `tests/test_risk_js.py`).
-5. **Rodar o site localmente:** `.venv/bin/python wsgi.py` e abrir http://localhost:5000.
-6. **Histórico do Claude Code (opcional):** copiar o `.jsonl` e a pasta de anexos de `claude-sessions` para
-   `~/.claude/projects/-home-<usuário>-projects-bulb-app/` e usar `/resume` dentro do projeto.
-7. **Acessos:** login no Render (painel ou conector) e, para a fase 1, na AWS (`aws login` ou credenciais de um
-   usuário IAM com acesso ao Lightsail).
+## O que fazer com o Sonnet 5.5
 
-**Pronto quando:** testes passando e site abrindo em `localhost:5000`.
+O Sonnet dá conta de quase todo o código deste plano, porque as tarefas são pequenas, seguem padrões conhecidos
+(Flask, SQLite, Stripe Checkout, Web Push) e têm requisito e critério de aceite escritos. Ele rende mais quando
+recebe **uma tarefa por sessão**, com o número da tarefa, os requisitos e a instrução de escrever os testes antes.
 
----
+Pedido modelo:
 
-## Fase 1 — INFRA: migração para o AWS Lightsail
+> Implemente a tarefa T-05 do `PLAN.md`, seguindo os requisitos REQ-GEO-01, 03 e 04 do `SPEC.md`. Escreva os testes
+> primeiro, sem acesso à rede. Trabalhe num branch próprio e abra um PR para a `main`.
 
-Requisitos: REQ-INFRA-01 a 06, REQ-WEB-04 · Aceite: AC-INFRA-01, AC-WEB-04 · Branch sugerido: `feat/infra-lightsail`.
+**Fica bem no Sonnet 5.5** (18 das 20 tarefas, duas delas com revisão): infraestrutura em arquivos, rotas e páginas, geolocalização, banco,
+conta, canais de envio, integração com o Stripe seguindo a documentação, traduções e documentação.
 
-### 1.1 Código no repositório (antes de criar qualquer recurso pago)
-1. **Idioma por domínio (REQ-WEB-04):** em `get_locale()`, sem `lang` nem sessão, `clima.derossi.dev` → `pt` e
-   `weather.derossi.dev` → `en`; em `base.html`, `<link rel="alternate" hreflang="pt|en|x-default">` e
-   `<link rel="canonical">`. Testes com `Host` simulado.
-2. **Política de privacidade:** rota `/privacy` (pt, en, es) dizendo o que é coletado (nada armazenado; coordenada
-   arredondada; Nominatim e Open-Meteo chamados pelo navegador; localização do app fica no aparelho). Base para o
-   REQ-APP-40.
-3. **Gunicorn `gthread`** (REQ-INFRA-02): `--worker-class gthread --workers 2 --threads 4` no `Dockerfile`.
-4. **Rota de saúde** `/healthz` (resposta simples, sem chamar APIs) para o monitoramento.
-5. **`deploy/docker-compose.yml`:** serviço `app` (imagem do GHCR, `SECRET_KEY` de um arquivo `.env` no servidor) e
-   serviço `caddy` (portas 80/443, volume para os certificados).
-6. **`deploy/Caddyfile`:** `clima.derossi.dev, weather.derossi.dev { reverse_proxy app:5000 }`, com HTTPS automático.
-7. **GitHub Actions (REQ-INFRA-04):** a cada merge na `main`, rodar o `pytest`, construir a imagem, enviar ao GitHub
-   Container Registry e, por SSH, executar `docker compose pull && docker compose up -d` na instância. Segredos no
-   GitHub: chave SSH, IP e usuário.
-8. **Redirecionamento do Render (REQ-INFRA-06):** variável `REDIRECT_TO` que, quando definida, faz o app responder
-   301 para o mesmo caminho e parâmetros em `https://clima.derossi.dev`.
-9. Atualizar `README.md` e `SPEC.md`.
+**Vale um modelo mais forte:**
+- **T-11, o motor de alertas.** É a parte que não pode errar: uma regra de repetição mal feita gera alerta em
+  dobro ou, pior, silêncio durante um risco real. Projete e revise com o modelo mais forte; o Sonnet pode escrever
+  os testes a partir de AC-ALERTA-01 e 02.
+- **T-19, a revisão final**, com `/security-review` e `/code-review` sobre o conjunto.
+- **Revisão de T-09 e T-14.** O Sonnet implementa; outra sessão revisa o login e o webhook do Stripe, que são os
+  dois pontos onde uma falha vira conta invadida ou assinatura grátis.
+- **Diagnóstico de problemas em produção** que resistam a uma primeira tentativa.
 
-### 1.2 Recursos na AWS (com a conta do usuário; custo a partir daqui)
-1. Criar a instância **Linux Micro-1GB (IPv4)**, **Ubuntu 24.04 LTS**, região **São Paulo (`sa-east-1`)**.
-2. Criar e anexar um **IP estático**.
-3. Firewall do Lightsail: 80 e 443 abertas; 22 só para o IP de quem administra.
-4. Na instância: Docker com o plugin Compose, `unattended-upgrades`, usuário de deploy e a chave SSH do GitHub
-   Actions; criar `/opt/wyw/.env` com uma `SECRET_KEY` nova.
-5. Ativar **snapshots automáticos diários** e os alertas de CPU e status (REQ-INFRA-05).
+**Não é trabalho para modelo nenhum:** as ações H-1 a H-10, a decisão de preço e a validação jurídica dos textos.
 
-### 1.3 DNS na Hostinger
-1. Criar os registros **A** `clima` e `weather` apontando para o IP estático (TTL curto, por exemplo 300 s, durante a
-   migração).
-2. Esperar a propagação (`dig clima.derossi.dev`) antes do primeiro deploy, para o Caddy conseguir os certificados.
+## Cronograma
 
-### 1.4 Primeiro deploy e verificação
-1. Disparar o workflow (ou rodar o compose à mão na primeira vez).
-2. Verificar AC-INFRA-01: HTTPS válido nos dois domínios; primeira visita em menos de 3 s; logs sem `429` por 7 dias.
-3. Verificar AC-WEB-04: `weather` em inglês e `clima` em português, com `hreflang` recíprocos.
-4. Testar busca por cidade, por endereço e a faixa de risco em produção, como nos marcos anteriores.
+### Terça, 10/11 — decidir e destravar
+- Você: H-1 e H-2.
+- Código: T-01, T-02, T-03 (tudo que não custa dinheiro nem depende de conta).
 
-### 1.5 Saída do Render
-1. Definir `REDIRECT_TO` no Render e conferir o 301 de `bulb-app.onrender.com`.
-2. Depois de 30 dias, suspender o serviço do Render.
-3. Opcional: rever a restrição C-1, já que a instância tem IP próprio.
+**Pronto quando:** os três PRs estão na `main` e o Stripe está em análise.
 
-**Pronto quando:** AC-INFRA-01 e AC-WEB-04 atendidos e REQ-INFRA-01 a 06 e REQ-WEB-04 marcados como ✅.
+### Quarta, 11/11 — site no ar no endereço novo, com geolocalização
+- Você, de manhã: H-3, H-4, H-5 e a primeira parte de H-7.
+- Código: T-04 logo que o DNS propagar; em paralelo, T-05, T-06, T-07, T-08; à tarde, T-09.
 
----
+**Pronto quando:** `https://clima.derossi.dev` abre em menos de 3 s já no local do visitante, e é possível entrar por
+e-mail.
 
-## Fase 2 — M3: app Android com o app aberto
+### Quinta, 12/11 — o produto pago
+- Você: H-6 e o resto de H-7 (chaves de teste do Stripe, VAPID, Telegram).
+- Código, nesta ordem: T-10, T-11, T-12, T-14, T-13, T-15, T-17, T-16.
 
-Requisitos: REQ-APP-01 a 13, 21, 55, 56, 60, 61 e REQ-DS-01 a 07 · Branch sugerido: `feat/m3-android`.
+**Pronto quando:** em produção, com o Stripe em modo de teste, uma conta assina, salva um local e recebe o alerta de
+teste por e-mail e por push.
 
-1. **Build no Docker:** `android/Dockerfile` com JDK 17, Android command-line tools, plataforma e build-tools da
-   versão exigida pelo Google Play, e o Gradle Wrapper. Comando único para gerar o APK de debug. (No Arch também é
-   possível instalar o SDK direto com o pacote `android-sdk` do AUR.)
-2. **Projeto Kotlin** em `android/`: Jetpack Compose, `minSdk 31`, pacote `dev.derossi.wyw`, idiomas pt, en e es.
-3. **Design system (seção 5):** tema claro e escuro com os tokens da Contexto, EB Garamond e Inter embutidas,
-   cantos retos, Material You desligado; tema segue o sistema, com opção na tela Sobre (REQ-APP-56).
-4. **Ícone adaptativo (REQ-APP-60):** nuvem `ivory` com raio `ouro` sobre `ink`, com camada monocromática.
-5. **Dados no aparelho (REQ-APP-02):** clientes do MET Norway, Open-Meteo e INMET, tabela IBGE embutida, cache de
-   15 min (previsão) e 10 min (avisos).
-6. **Motor de risco em Kotlin:** tradução do `app/meteo/risk.py` e do classificador de tornado do `static/risk.js`;
-   testes JUnit lendo `spec/risk-cases.json` (os mesmos 18 casos) e conferindo as frases.
-7. **Telas:** Início (risco do local atual e cards), Busca (endereço pelo `Geocoder`, cidades pelo Open-Meteo),
-   Previsão de 7 dias e Sobre (fontes, aviso sobre as autoridades, privacidade e créditos).
-8. **Localização com o app aberto:** permissão aproximada; sem permissão de segundo plano, avisar que só avalia com o
-   app aberto (REQ-APP-21).
-9. **Teste num celular Android 12+:** instalar o APK (`adb install` ou cópia do arquivo) e conferir as telas, os dois
-   temas e a faixa de risco.
+### Sexta, 13/11 — conferir e abrir
+- Manhã: H-8, T-18, T-19, correções.
+- **12h, decisão de lançar.** Critérios: AC-PAG-01, AC-ALERTA-01 e 02 passando; alerta de teste recebido em
+  aparelho real; `/terms`, `/privacy` e `/precos` publicados; batimento do verificador em dia.
+- Tarde: trocar para as chaves reais do Stripe, H-9, ligar o redirecionamento do Render (REQ-INFRA-06), T-20 e
+  anunciar.
 
-**Pronto quando:** APK de debug instalado e funcionando no celular, testes JUnit passando nos casos compartilhados.
+Como a assinatura começa com 7 dias grátis, **a primeira cobrança real só acontece em 20/11**. Essa semana serve para
+corrigir o que aparecer com os primeiros usuários e para a leitura jurídica (H-10).
 
----
+## Se o prazo apertar
 
-## Fase 3 — M4: segundo plano e notificações
+Cortar nesta ordem, sem mexer no resto:
 
-Requisitos: REQ-APP-20, 22, 23, 30 a 34 e 41 · Aceite: AC-APP-30 · Branch sugerido: `feat/m4-notificacoes`.
+1. Telegram (T-16).
+2. Plano anual (fica só o mensal).
+3. Espanhol nas telas novas (ficam em português e inglês).
+4. Local pelo IP (T-05); o botão de localização do aparelho continua.
+5. Opção de receber o nível Atenção.
 
-1. **Permissão de segundo plano em duas etapas** (REQ-APP-20): tela explicando o motivo antes do pedido do sistema.
-2. **`WorkManager` a cada 30 min** com rede disponível (REQ-APP-22): localização aproximada → dados → motor de risco.
-3. **Notificação "Risco à sua vida!"** (REQ-APP-30, 31, 55): layout próprio com `DecoratedCustomViewStyle`, área
-   vermelha, ícone de alerta amarelo, descrição dos indicadores e aviso sobre as autoridades; canal de importância
-   alta, sem som próprio, sem tela cheia.
-4. **Notificação de recomendação** para calor (REQ-APP-34), no estilo padrão.
-5. **Sem repetição** (REQ-APP-32): só notificar de novo se mudarem os indicadores, se o nível subir ou após 3 h;
-   remover quando o risco acabar. Tocar abre a tela de início (REQ-APP-33).
-6. **APK de teste assinado** com a chave de upload definitiva, guardada fora do repositório (REQ-APP-41).
-7. **Testar AC-APP-30** num Android 12, simulando bulbo úmido de 32 °C e trovoada; conferir o consumo de bateria.
+**Não se corta:** Lightsail e domínio, entrar por e-mail, Stripe, alerta por e-mail, alerta de teste, batimento,
+termos e privacidade. Web Push é meta do lançamento; se falhar só no iPhone, lança com Android e a instrução de usar
+e-mail ou Telegram.
 
-**Pronto quando:** AC-APP-30 atendido e uma semana de uso real sem notificações repetidas ou perdidas.
+Se o Stripe não ativar a tempo, o site abre na sexta com cadastro e teste grátis, e a cobrança é ligada quando a
+conta for aprovada.
 
----
+## Depois do lançamento
 
-## Fase 4 — M5: publicação no Google Play (bloqueada)
+| Fase | Entrega | Situação |
+|---|---|---|
+| Semana 1 | Acompanhar entregas de alerta, spam, cancelamentos; leitura jurídica (H-10) | Até 20/11 |
+| Render | Suspender o serviço 30 dias depois do redirecionamento | Dezembro |
+| **M3** | App Android com o app aberto (REQ-APP-01 a 13) | A fazer |
+| **M4** | Segundo plano e notificações no app (REQ-APP-20 a 34) | Depende do M3 |
+| **M5** | Publicação no Google Play | Bloqueada pelo D-U-N-S |
 
-Requisito: REQ-APP-40. **Desbloqueia quando** o D-U-N-S sair e a conta de desenvolvedor (organização) for criada.
-
-1. Criar a conta no Google Play Console e o app `dev.derossi.wyw`.
-2. Publicar a política de privacidade (já pronta na fase 1, em `clima.derossi.dev/privacy`).
-3. Preencher o formulário de segurança de dados e a declaração de localização em segundo plano, com o vídeo
-   demonstrando o recurso.
-4. Gerar o AAB de release assinado e passar pelo teste interno e depois pelo teste fechado.
-5. Rever os termos de uso do Open-Meteo e do Nominatim antes de publicar (ver riscos no `NOTES.md`).
-6. Publicar em produção.
-
-**Pronto quando:** app disponível na loja e REQ-APP-40 marcado como ✅.
-
----
-
-## Checklist rápido para retomar
-
-- [ ] Fase 0 concluída (testes passando no Arch).
-- [ ] Decidir por onde começar: fase 1 (INFRA) ou fase 2 (M3).
-- [ ] Para a fase 1: conta AWS pronta e acesso ao painel de DNS da Hostinger.
-- [ ] Para a fase 2: celular Android 12+ com depuração USB.
-- [ ] Acompanhar o D-U-N-S para desbloquear a fase 4.
+O detalhamento de M3 a M5 está na versão anterior deste arquivo (commit `6ec6e40`).
