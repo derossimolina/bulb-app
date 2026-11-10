@@ -6,6 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}WYW{% endblock %}</title>
     <meta name="color-scheme" content="light dark">
+    {% set links = alternate_links() -%}
+    <link rel="canonical" href="{{ links.canonical }}">
+    {% for lang, href in links.languages -%}
+    <link rel="alternate" hreflang="{{ lang }}" href="{{ href }}">
+    {% endfor -%}
+    <link rel="alternate" hreflang="x-default" href="{{ links.default }}">
     <script>
         // Aplica o tema salvo antes de desenhar a página (sem "piscar" o tema errado)
         try {
