@@ -9,7 +9,7 @@ services:
     dockerContext: .
     branch: main
     autoDeploy: true
-    healthCheckPath: /
+    healthCheckPath: /healthz
     envVars:
       - key: LC_ALL
         value: en_US.UTF-8
