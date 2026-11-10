@@ -1,0 +1,8 @@
+# HTTPS automático (Let's Encrypt), um certificado por domínio (SPEC.md REQ-INFRA-03).
+# O Caddy já envia X-Forwarded-For, -Proto e -Host; o app confia em um salto (TRUSTED_PROXIES=1).
+
+clima.derossi.dev, weather.derossi.dev {
+	encode zstd gzip
+	header Strict-Transport-Security "max-age=31536000"
+	reverse_proxy app:5000
+}

@@ -2,8 +2,9 @@
 import logging
 from urllib.parse import urlencode
 
-from flask import Flask, request, session
+from flask import Flask, redirect, request, session
 from flask_babel import Babel
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .config import Config
 
@@ -48,7 +49,18 @@ def create_app(config_object=Config):
     app = Flask(__name__)
     app.config.from_object(config_object)
 
+    proxies = app.config["TRUSTED_PROXIES"]
+    if proxies:
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=proxies, x_proto=proxies, x_host=proxies)
+
     Babel(app, locale_selector=get_locale)
+
+    @app.before_request
+    def redirect_to_new_address():
+        target = app.config["REDIRECT_TO"].rstrip("/")
+        if target and request.endpoint != "main.healthz":
+            query = request.query_string.decode()
+            return redirect(target + request.path + ("?" + query if query else ""), code=301)
 
     @app.context_processor
     def inject_locale():

@@ -1,0 +1,96 @@
+# Testa em todo PR; na main, constrói a imagem, envia ao GitHub Container Registry e atualiza a instância
+# do Lightsail por SSH (SPEC.md REQ-INFRA-04). Configuração em deploy/README.md.
+name: Deploy
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  IMAGE: ghcr.io/derossimolina/bulb-app
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"   # a mesma do Dockerfile
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - uses: actions/setup-node@v4   # tests/test_risk_js.py roda o motor de risco em JavaScript
+        with:
+          node-version: "22"
+      - run: pip install -r requirements-dev.txt
+      - run: pytest
+
+  build:
+    if: github.event_name != 'pull_request'
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:${{ github.sha }}
+
+  deploy:
+    # Só roda depois que a instância existir: defina a variável DEPLOY_ENABLED=true no repositório.
+    if: github.event_name != 'pull_request' && vars.DEPLOY_ENABLED == 'true'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    env:
+      TARGET: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Chave e identidade do servidor
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+      - name: Envia o Compose e o Caddyfile
+        run: scp deploy/docker-compose.yml deploy/Caddyfile "$TARGET:/opt/wyw/"
+      - name: Atualiza os containers
+        run: |
+          # O token dura só este job; serve para a instância baixar a imagem sem guardar credencial
+          printf '%s' "${{ secrets.GITHUB_TOKEN }}" | ssh "$TARGET" \
+            "docker login ghcr.io -u '${{ github.actor }}' --password-stdin"
+          ssh "$TARGET" "cd /opt/wyw \
+            && export WYW_IMAGE_TAG='${{ github.sha }}' \
+            && docker compose pull \
+            && docker compose up -d --remove-orphans \
+            && docker logout ghcr.io \
+            && docker image prune -f"
+      - name: Confere a rota de saúde
+        run: |
+          for attempt in 1 2 3 4 5 6; do
+            curl --fail --silent --max-time 10 https://clima.derossi.dev/healthz && exit 0
+            sleep 10
+          done
+          echo "O site não respondeu em /healthz depois do deploy" >&2
+          exit 1

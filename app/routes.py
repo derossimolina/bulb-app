@@ -57,6 +57,12 @@ def index():
     return render_template("index.html", query=query, city=city, weather=weather, alerts=alerts, client=client)
 
 
+@bp.route("/healthz")
+def healthz():
+    # Para o monitoramento: não chama serviços externos (SPEC.md 8.1)
+    return "ok", 200, {"Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store"}
+
+
 @bp.route("/change-language")
 def change_language():
     lang = request.args.get("lang")

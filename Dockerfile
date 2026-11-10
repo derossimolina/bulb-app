@@ -10,10 +10,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app ./app
 COPY wsgi.py .
 
-RUN useradd --create-home appuser
+# /data: volume do banco e da base de IPs no Lightsail (SPEC.md REQ-INFRA-07)
+RUN useradd --create-home appuser && install -d -o appuser -g appuser /data
 USER appuser
 
 # O Render define a porta em $PORT; localmente usa 5000
 ENV PORT=5000
 EXPOSE 5000
-CMD ["sh", "-c", "exec gunicorn --bind 0.0.0.0:${PORT} --workers 2 --timeout 60 --access-logfile - wsgi:app"]
+CMD ["sh", "-c", "exec gunicorn --bind 0.0.0.0:${PORT} --worker-class gthread --workers 2 --threads 4 --timeout 60 --access-logfile - wsgi:app"]

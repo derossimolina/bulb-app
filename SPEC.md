@@ -5,8 +5,8 @@
 
 | | |
 |---|---|
-| Versão | 0.8 — migração para o AWS Lightsail decidida (D-10 a D-12) |
-| Data | 06/11/2026 |
+| Versão | 0.9 — lançamento comercial: geolocalização e assinatura WYW Alerta (seção 12, D-13) |
+| Data | 10/11/2026 |
 | Responsável | derossi research — [derossi.dev](https://derossi.dev) |
 | Repositório | `derossimolina/bulb-app` |
 
@@ -31,9 +31,11 @@ ela está.
 |---|---|---|
 | Site (Flask) | Em produção em `bulb-app.onrender.com` | `app/` |
 | App Android (Kotlin) | Novo | `android/` |
-| Casos de teste do risco, compartilhados | Novo | `spec/risk-cases.json` |
+| Casos de teste do risco, compartilhados | Em uso | `spec/risk-cases.json` |
+| **WYW Alerta** (assinatura de alertas pelo site) | Novo, lançamento em 13/11/2026 | seção 12 |
 
-**Fora do escopo desta versão:** iOS, contas de usuário, histórico de buscas no servidor, alertas sonoros próprios.
+**Fora do escopo desta versão:** app iOS nativo, histórico de buscas no servidor, alertas sonoros próprios, anúncios,
+plano para empresas, SMS e WhatsApp. Contas de usuário passam a existir, só para o WYW Alerta (seção 12).
 
 ### 1.3 Glossário
 | Termo | Significado |
@@ -464,6 +466,7 @@ segurança automáticas com `unattended-upgrades`); configuração inicial de do
 | **M4** | Segundo plano, notificação de risco e de recomendação | APP-20, 22, 23, 30…34, 41 |
 | **M5** | Publicação no Google Play e política de privacidade — **bloqueado** até a conta de desenvolvedor (D-4) | APP-40 |
 | **INFRA** | Migração do site para o AWS Lightsail (8.1), domínios `clima.derossi.dev` e `weather.derossi.dev` com idioma por domínio | INFRA-01…06; WEB-04 |
+| **L1** | Lançamento comercial em 13/11/2026: geolocalização, contas, WYW Alerta, pagamento e páginas legais. Depende do INFRA e vem **antes** de M3 a M5 | seção 12 |
 
 ---
 
@@ -483,7 +486,21 @@ segurança automáticas com `unattended-upgrades`); configuração inicial de do
 | **D-11** | Domínios (Q-8) | `clima.derossi.dev` e `weather.derossi.dev`, os dois apontando para a instância. |
 | **D-12** | Idioma por domínio (Q-9) | `clima.derossi.dev` abre em português e `weather.derossi.dev` em inglês quando a pessoa não escolheu o idioma, com `hreflang` entre os dois (REQ-WEB-04). |
 
-Novas dúvidas entram aqui como **Q-10** em diante, antes de virar código.
+| **D-13** | Monetização (10/11/2026) | Site continua grátis e ganha geolocalização. A receita vem da assinatura **WYW Alerta**, cobrada pelo Stripe: alertas de risco por e-mail, Telegram e notificação no celular (Web Push) para os locais salvos da pessoa. Exige login por e-mail, verificador periódico no servidor e a migração para o Lightsail (seção 12). |
+
+### Questões em aberto
+Cada uma traz uma proposta. Enquanto não houver resposta, a seção 12 foi escrita com a proposta.
+
+| ID | Questão | Proposta |
+|---|---|---|
+| **Q-10** | Preço e período de teste | R$ 9,90 por mês ou R$ 99 por ano, 7 dias grátis com cartão, só em reais no lançamento. |
+| **Q-11** | Licença do Open-Meteo (a API gratuita é só para uso não comercial) | Assinar o plano comercial e passar a chamá-lo do servidor, com chave. A alternativa é lançar os alertas sem tornado e rajadas. |
+| **Q-12** | Provedor de e-mail | Um provedor transacional com ativação imediata (por exemplo, Resend). O Amazon SES começa em modo restrito e a liberação pode não sair até sexta. |
+| **Q-13** | Limite de locais salvos por assinante | 5. |
+| **Q-14** | Quem vende | Razão social, CNPJ e e-mail de contato que aparecem nos termos, na política de privacidade e no Stripe. |
+| **Q-15** | Repositório público sob GPLv3 | Manter público. Não impede a venda do serviço, mas o código pode ser copiado. |
+
+Novas dúvidas entram aqui como **Q-16** em diante, antes de virar código.
 
 ## 11. Referências
 - Stull, R. (2011). Wet-Bulb Temperature from Relative Humidity and Air Temperature. *J. Appl. Meteor. Climatol.*
@@ -493,3 +510,182 @@ Novas dúvidas entram aqui como **Q-10** em diante, antes de virar código.
   (custom layouts) e background location (Google Play policy).
 - AWS Lightsail: preços (aws.amazon.com/lightsail/pricing), planos ("Lightsail bundles") e regiões ("Regions and
   Availability Zones in Lightsail"), consultados em 06/11/2026.
+
+---
+
+## 12. Lançamento comercial — WYW Alerta (L1)
+
+Meta: site à venda em **sexta, 13/11/2026**. Decisão D-13; questões Q-10 a Q-15 na seção 10.
+
+### 12.1 Produto
+
+| | Grátis | WYW Alerta (pago) |
+|---|---|---|
+| Busca, faixa de risco, previsão de 7 dias, avisos do INMET | Sim | Sim |
+| Abrir já no local da pessoa (IP ou localização do aparelho) | Sim | Sim |
+| Locais salvos | — | Até 5 (Q-13) |
+| Alerta quando houver risco num local salvo | — | E-mail, Telegram e notificação no celular |
+| Verificação | Só com a página aberta | A cada 15 min, no servidor |
+
+A promessa do plano pago é uma só: **avisar a pessoa quando o risco aparecer onde ela está ou onde estão as pessoas
+de quem ela cuida, sem ela precisar abrir o site.**
+
+**Fora do L1:** app Android (M3 a M5 continuam valendo, depois do lançamento), anúncios, plano para empresas, SMS,
+WhatsApp, aviso de "risco encerrado", histórico de alertas na conta, outras moedas além do real.
+
+### 12.2 Geolocalização (grátis)
+
+- **REQ-GEO-01 🆕 Local pelo IP.** Ao abrir a página inicial sem busca, o servidor estima a cidade pelo IP e mostra o
+  resultado dela, com o rótulo "Localização aproximada pelo seu IP" e as ações "Usar minha localização" e "Trocar".
+  A consulta usa uma base local (DB-IP City Lite, CC BY 4.0, com o crédito exigido na tela Sobre), sem chamar
+  serviço externo. O IP real vem do cabeçalho do proxy (Caddy), com `ProxyFix` limitado a um salto.
+- **REQ-GEO-02 🆕 Local pelo aparelho.** O botão "Usar minha localização" chama `navigator.geolocation`. O navegador
+  arredonda a coordenada para 2 casas (C-2), obtém o nome da cidade pelo Nominatim (C-1) e segue o fluxo de
+  coordenadas que já existe (REQ-WEB-11). A permissão só é pedida depois do toque no botão.
+- **REQ-GEO-03 🆕 Falhas.** IP privado, fora da base ou permissão negada: a página inicial aparece como hoje, com o
+  campo de busca, sem mensagem de erro bloqueante.
+- **REQ-GEO-04 🆕 Privacidade.** O IP não é gravado em banco nem associado à conta. A coordenada do aparelho só chega
+  ao servidor arredondada.
+- **AC-GEO-01** Com `X-Forwarded-For` de um IP de Porto Alegre, `GET /` mostra a faixa de risco de Porto Alegre e o
+  rótulo de localização aproximada. Com IP `10.0.0.1`, mostra a página inicial vazia.
+- **AC-GEO-02** No celular, tocar em "Usar minha localização" e permitir mostra o risco do local, e a URL enviada ao
+  servidor tem `lat` e `lon` com no máximo 2 casas decimais.
+
+### 12.3 Site instalável e notificação no celular
+
+- **REQ-PWA-01 🆕** `manifest.webmanifest` (nome WYW, cores `ink` e `ivory`, ícone de REQ-APP-60 em 192 e 512 px e
+  versão mascarável) e um *service worker* em `/sw.js` que trata `push` e `notificationclick`. Sem cache offline de
+  previsão: dado de risco velho é pior que nenhum.
+- **REQ-PWA-02 🆕** Web Push com chaves VAPID. A inscrição do aparelho é enviada ao servidor só por quem está logado.
+  No iPhone, a página da conta explica que é preciso "Adicionar à Tela de Início" antes de ativar (iOS 16.4 ou mais
+  novo).
+- **REQ-PWA-03 🆕** A notificação traz o título "Risco à sua vida!" (ou "Atenção"), as linhas de indicadores de 4.5,
+  o nome do local e, ao toque, abre o site nesse local. Usa o som e a vibração padrão do sistema (como REQ-APP-31).
+
+### 12.4 Conta
+
+- **REQ-CONTA-01 🆕 Entrar por e-mail, sem senha.** A pessoa informa o e-mail e recebe um link assinado, válido por
+  15 minutos e de uso único. A resposta da tela é a mesma exista ou não a conta.
+- **REQ-CONTA-02 🆕 Sessão.** Cookie `Secure`, `HttpOnly`, `SameSite=Lax`, com 30 dias. Todo formulário com `POST`
+  tem proteção contra CSRF.
+- **REQ-CONTA-03 🆕 Limite de tentativas.** No máximo 5 pedidos de link por hora por e-mail e por IP.
+- **REQ-CONTA-04 🆕 Página `/conta`.** Situação da assinatura, locais salvos, canais ativos, opção de receber também
+  o nível Atenção (desligada por padrão), botão "Enviar alerta de teste", link para o portal do Stripe e "Excluir
+  minha conta".
+- **REQ-CONTA-05 🆕 Locais salvos.** Até 5, cada um com rótulo ("Casa", "Mãe"), coordenada arredondada (C-2),
+  cidade, UF, país, código IBGE e fuso. Um local é salvo a partir de um resultado de busca ou da localização do
+  aparelho.
+- **REQ-CONTA-06 🆕 Exclusão.** "Excluir minha conta" cancela a assinatura no Stripe e apaga e-mail, locais, canais e
+  estado de alertas na hora.
+- **AC-CONTA-01** Um link usado pela segunda vez, ou depois de 15 minutos, não abre sessão e leva à tela de entrada.
+
+### 12.5 Pagamento
+
+- **REQ-PAG-01 🆕** Stripe Checkout em modo assinatura, com dois preços (mensal e anual, Q-10) e 7 dias de teste. Os
+  identificadores dos preços e as chaves ficam em variáveis de ambiente, nunca no repositório.
+- **REQ-PAG-02 🆕** O estado da assinatura vem **só** do webhook do Stripe, com a assinatura do evento conferida e
+  cada evento processado uma única vez (identificador guardado). Eventos tratados: `checkout.session.completed`,
+  `customer.subscription.updated`, `customer.subscription.deleted` e `invoice.payment_failed`.
+- **REQ-PAG-03 🆕** Recebem alertas as contas em teste, ativas ou com pagamento em nova tentativa. Assinatura
+  cancelada ou não paga para os alertas e mantém a conta e os locais.
+- **REQ-PAG-04 🆕** Trocar cartão, mudar de plano e cancelar acontecem no portal do cliente do Stripe.
+- **REQ-PAG-05 🆕** Página `/precos` (`/pricing` em inglês) com o que é grátis, o que é pago, o preço, o teste de 7
+  dias, o direito de arrependimento e o aviso de REQ-WEB-43.
+- **AC-PAG-01** No modo de teste do Stripe: assinar com o cartão de teste leva a conta a "em teste" em até 1 minuto;
+  cancelar pelo portal leva a "cancelada" e os alertas param no ciclo seguinte; reenviar o mesmo evento não muda
+  nada.
+
+### 12.6 Alertas
+
+- **REQ-ALERTA-01 🆕 Verificador.** Um processo separado do site (serviço `worker` no Docker Compose, mesma imagem)
+  roda a cada 15 minutos e avalia todos os locais ativos de contas com direito a alerta. Locais com a mesma
+  coordenada arredondada são consultados uma vez só.
+- **REQ-ALERTA-02 🆕 Modelo completo no servidor.** O verificador usa o modelo da seção 4 inteiro, com tornado e
+  rajadas. Para isso o classificador de tornado (4.4), hoje só em `risk.js`, ganha uma versão em Python que passa
+  nos casos de `spec/risk-cases.json`, e o Open-Meteo passa a ser chamado do servidor com a chave do plano comercial
+  (Q-11). A restrição C-1 deixa de valer para o Open-Meteo no Lightsail; o Nominatim continua só no navegador.
+- **REQ-ALERTA-03 🆕 Quando avisar.** Nível **Risco à sua vida** ou **Extremo**: sempre, em todos os canais ativos
+  da conta. Nível **Atenção**: só para quem ligou a opção.
+- **REQ-ALERTA-04 🆕 Sem repetição** (mesma regra de REQ-APP-32). Para o mesmo local, só avisar de novo se o conjunto
+  de indicadores mudar, se o nível subir ou depois de 3 horas. O estado fica no banco, por local.
+- **REQ-ALERTA-05 🆕 Conteúdo.** Título do nível, nome do local, descrição dos indicadores (4.5), avisos do INMET
+  vigentes, o aviso sobre as autoridades (REQ-WEB-43), link para o site nesse local e link para gerenciar ou
+  cancelar os alertas. No idioma da conta.
+- **REQ-ALERTA-06 🆕 Canais.** E-mail (sempre ativo, é o próprio login), Web Push (12.3) e Telegram: um robô do WYW,
+  ligado à conta por um link `t.me/<robô>?start=<código>`; o webhook do Telegram confere o cabeçalho secreto.
+  A falha de um canal não impede os outros; inscrição de push expirada (404 ou 410) é removida.
+- **REQ-ALERTA-07 🆕 Fonte fora do ar.** Sem MET Norway, o local é pulado no ciclo e o erro é registrado. Sem
+  Open-Meteo, o risco é avaliado sem tornado e rajadas e a mensagem diz "indicador de tornado indisponível" (como
+  REQ-WEB-44). Nunca se envia alerta com dado de mais de 1 hora.
+- **REQ-ALERTA-08 🆕 Alerta de teste.** O botão da conta envia, na hora, uma mensagem marcada como "TESTE" a todos
+  os canais ativos e mostra o resultado de cada um.
+- **REQ-ALERTA-09 🆕 Batimento.** O verificador grava a hora de cada ciclo completo. `/healthz` responde 503 quando o
+  último ciclo tem mais de 30 minutos, para um monitor externo avisar quem administra.
+- **AC-ALERTA-01** Com dados simulados (Tw 32 °C e trovoada em h1) num local salvo de conta ativa: um ciclo envia
+  um alerta por canal ativo, com as duas linhas de indicadores e o aviso sobre as autoridades; o ciclo seguinte não
+  envia nada; trocar a trovoada por rajada de 70 km/h envia de novo.
+- **AC-ALERTA-02** A mesma simulação numa conta cancelada não envia nada.
+- **AC-ALERTA-03** Num Android e num iPhone reais, o alerta de teste chega por push, e-mail e Telegram em menos de
+  1 minuto.
+
+### 12.7 Dados guardados
+
+SQLite em volume do Docker na instância (modo WAL), com cópia diária do arquivo além do snapshot (REQ-INFRA-05).
+
+| Tabela | Conteúdo |
+|---|---|
+| `user` | e-mail, idioma, cliente e situação no Stripe, fim do período, opção "Atenção" |
+| `location` | conta, rótulo, lat/lon com 2 casas, cidade, UF, país, IBGE, fuso |
+| `channel` | conta, tipo (push ou Telegram), endereço da inscrição ou do chat |
+| `alert_state` | por local: nível, indicadores e hora do último aviso |
+| `stripe_event` | identificadores de eventos já processados |
+| `login_token` | códigos de entrada já usados, até expirarem |
+
+Não se guardam: IP, endereço digitado, coordenada exata, dados de cartão (ficam no Stripe) nem o texto dos alertas
+enviados.
+
+### 12.8 Páginas legais e conformidade
+
+- **REQ-LEGAL-01 🆕** `/privacy` em português e inglês: o que é coletado (12.7), para quê, com quem é compartilhado
+  (Stripe, provedor de e-mail, Telegram, serviços de push do navegador, AWS), por quanto tempo, como excluir e o
+  contato do responsável (Q-14). Atende também REQ-APP-40.
+- **REQ-LEGAL-02 🆕** `/terms` em português e inglês: o serviço é informativo e não substitui a Defesa Civil nem as
+  autoridades; a entrega do alerta depende de terceiros e não é garantida; preço, renovação, cancelamento e
+  arrependimento em 7 dias com reembolso integral; quem vende (Q-14).
+- **REQ-LEGAL-03 🆕** O aceite dos termos é registrado no checkout. Créditos das fontes na tela Sobre: MET Norway
+  (CC BY 4.0), Open-Meteo, INMET, OpenStreetMap e DB-IP.
+- **REQ-LEGAL-04 🆕** Os textos legais DEVEM ser lidos por uma pessoa habilitada antes da primeira cobrança real
+  (20/11/2026, fim do primeiro período de teste). Vender alerta de risco à vida traz responsabilidade que um aviso
+  no rodapé não elimina.
+
+### 12.9 Operação
+
+- **NFR-06 🆕** Segredos (Stripe, VAPID, Telegram, e-mail, Open-Meteo, `SECRET_KEY`) só em `/opt/wyw/.env` na
+  instância e nos segredos do GitHub Actions.
+- **NFR-07 🆕** Um alerta sai em até 20 minutos depois de a condição entrar na janela de risco.
+- **NFR-08 🆕** Testes: tudo de 12.2 a 12.6 coberto por `pytest` sem rede (Stripe, e-mail, push e Telegram
+  simulados); os ACs com aparelho real são conferidos à mão e anotados no PR.
+- **REQ-INFRA-07 🆕** O Compose passa a ter três serviços (`app`, `worker`, `caddy`) e um volume para o banco e a
+  base de IPs. O plano Micro-1GB continua suficiente.
+
+### 12.10 Custos recorrentes (a confirmar na contratação)
+
+| Item | Valor |
+|---|---|
+| AWS Lightsail Micro-1GB | US$ 7 por mês, mais snapshots |
+| Open-Meteo, plano comercial | da ordem de € 29 por mês na última consulta; confirmar no site |
+| Provedor de e-mail | plano gratuito deve bastar no início; confirmar limites |
+| Stripe | taxa por transação; sem mensalidade |
+| Telegram, Web Push, DB-IP Lite | sem custo |
+
+Estimativa: o custo fixo se paga com algo entre 25 e 30 assinantes mensais, dependendo do câmbio e das taxas.
+
+### 12.11 Riscos do lançamento
+
+| Risco | Efeito | Resposta |
+|---|---|---|
+| Ativação da conta Stripe demora | Sem cobrança na sexta | Começar hoje. Se não sair, lançar com lista de espera e teste grátis, e ligar a cobrança quando ativar. |
+| Alerta falso ou alerta que não chega | Perda de confiança; risco jurídico | Mesma regra testada do site, alerta de teste, batimento, termos claros, primeira cobrança só em 20/11. |
+| Web Push no iPhone | Canal não funciona para parte das pessoas | Instrução de instalação; e-mail e Telegram cobrem. |
+| E-mail caindo em spam | Alerta não visto | SPF, DKIM e DMARC no `derossi.dev` antes do lançamento. |
+| Prazo | Entrega incompleta | Ordem de corte definida no `PLAN.md`. |
