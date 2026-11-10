@@ -1,0 +1,48 @@
+# WYW no AWS Lightsail (SPEC.md 8.1, REQ-INFRA-02 e 07).
+# Fica em /opt/wyw na instância, ao lado do Caddyfile e do .env (ver deploy/README.md).
+#
+# O serviço "worker" (verificador de alertas, REQ-ALERTA-01) entra junto com o código dele, na tarefa T-11.
+
+services:
+  app:
+    image: ghcr.io/derossimolina/bulb-app:${WYW_IMAGE_TAG:-latest}
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      PORT: "5000"
+      TRUSTED_PROXIES: "1"   # só o Caddy fica à frente do app
+    volumes:
+      - wyw-data:/data
+    expose:
+      - "5000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/healthz', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    logging: &logging
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data        # certificados do Let's Encrypt: não apagar
+      - caddy-config:/config
+    logging: *logging
+
+volumes:
+  wyw-data:
+  caddy-data:
+  caddy-config:
