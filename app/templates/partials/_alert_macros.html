@@ -5,7 +5,7 @@
 {% macro alert_icon(a, show_tag=False, focusable=True) %}
 <span class="alert-badge"{% if focusable %} tabindex="0" role="button"{% endif %} style="--alert-color: {{ a.color or '#999' }}"
       aria-label="{{ a.event }} — {{ a.severity }}">
-    {% if a.icon %}<img src="{{ a.icon }}" alt="" class="alert-badge-icon">{% else %}<i class="fas fa-exclamation-triangle alert-badge-icon"></i>{% endif %}
+    {% if a.icon %}<img src="{{ a.icon }}" alt="" class="alert-badge-icon">{% else %}{{ icon('triangle-alert', 'alert-badge-icon') }}{% endif %}
     {% if show_tag %}<span class="alert-tag">{{ a.severity }}</span>{% endif %}
     <span class="tip-content" hidden>
         <span class="tip-title">

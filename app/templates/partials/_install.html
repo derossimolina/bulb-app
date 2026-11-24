@@ -1,0 +1,17 @@
+{# Cartão "Instale o app" (PWA): aparece por JS (static/wyw.js) só quando o navegador permite instalar,
+   ou no iPhone com as instruções; some no app já instalado ou depois de "Agora não". #}
+<div class="notice notice-info install-card" id="install-card" role="region" aria-label="{{ _('Install the app') }}" hidden>
+    {{ icon('smartphone') }}
+    <div>
+        <p><strong>{{ _('Install WYW on your phone.') }}</strong>
+           {{ _('The Android app is not available yet: this web app opens from your home screen and works in full screen, like an app.') }}</p>
+        <ol class="install-steps" data-platform="ios" hidden>
+            <li>{{ _('In Safari, tap Share') }} {{ icon('share') }}</li>
+            <li>{{ _('Choose “Add to Home Screen”') }} {{ icon('square-plus') }}</li>
+        </ol>
+        <div class="notice-actions">
+            <button type="button" class="btn-secondary" id="install-btn" hidden>{{ icon('download') }} {{ _('Install app') }}</button>
+            <button type="button" class="btn-text" id="install-dismiss">{{ _('Not now') }}</button>
+        </div>
+    </div>
+</div>

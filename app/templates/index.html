@@ -7,18 +7,20 @@
     <div class="input-field">
         <label for="city">{{ _('City:') }}</label>
         <input type="text" id="city" name="city" value="{{ query or '' }}"
-               placeholder="{{ _('Enter city name') }}" required minlength="2">
+               placeholder="{{ _('Enter city name') }}" required minlength="2" autocomplete="address-level2">
     </div>
     <button type="submit" class="btn">
-        <span class="btn-spinner" aria-hidden="true"></span>
-        <span>{{ _('Get Wet Bulb Temperature') }}</span>
+        <span class="btn-label">{{ _('Get Wet Bulb Temperature') }}</span>
+        <span class="btn-dots" aria-hidden="true"><i></i><i></i><i></i></span>
     </button>
 </form>
+
+{% include "partials/_install.html" %}
 
 {# Resultados: substituídos via fetch na busca e animados como se saíssem de baixo do campo #}
 <div id="results" class="results {% if error or weather %}animate{% endif %}" aria-live="polite">
     {% if error %}
-    <div class="notice notice-error" role="alert"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i> {{ error }}</div>
+    <div class="notice notice-error" role="alert">{{ icon('circle-x') }} <p>{{ error }}</p></div>
     {% endif %}
 
     {% if weather %}

@@ -73,7 +73,7 @@ def test_page_shows_red_life_risk_banner(monkeypatch):
     html = _client(monkeypatch).get("/?city=Porto+Alegre&lang=pt").get_data(as_text=True)
     banner = html[html.index("risk-banner"):html.index('class="current-grid"')]
     assert "risk-banner-life" in banner
-    assert "Risco à sua vida!" in banner and "fa-exclamation-triangle" in banner
+    assert "Risco à sua vida!" in banner and "icons.svg#triangle-alert" in banner
     assert "Tempestade prevista às 13h" in banner
     assert "Este indicador não substitui os alertas das autoridades e da Defesa Civil." in banner
     assert "Indicador de tornado indisponível no momento." in banner
@@ -83,7 +83,7 @@ def test_page_shows_red_life_risk_banner(monkeypatch):
 def test_page_header_and_footer(monkeypatch):
     html = _client(monkeypatch).get("/?lang=pt").get_data(as_text=True)
     assert "<title>WYW</title>" in html and "<h1>WYW</h1>" in html
-    assert '<a href="https://derossi.dev">derossi research</a>' in html
+    assert "J. de Rossi Molina Ltda" in html and "brand/jeronimo-lockup-principal.svg" in html
 
 
 def _client_data(html):

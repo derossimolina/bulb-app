@@ -9,11 +9,14 @@
 
     {% include "partials/_risk.html" %}
 
+    {# Alerta de tornado dos próximos 7 dias: preenchido pelo navegador com o Open-Meteo (static/wyw.js) #}
+    <div class="tornado-alert" aria-live="polite" hidden></div>
+
     <div class="current-grid">
         <div class="md-card current-main">
             <span class="stat-label">{{ _('Now') }}</span>
             <div class="current-main-body">
-                <div class="current-emoji" title="{{ c.condition }}"><i class="fa-solid fa-{{ c.icon }}" aria-hidden="true"></i></div>
+                <div class="current-emoji" title="{{ c.condition }}">{{ icon(c.icon) }}</div>
                 <div>
                     <div class="current-temp">{{ c.temperature }}°C</div>
                     <div class="current-desc">{{ c.condition }}</div>
@@ -29,12 +32,12 @@
 
         <div class="md-card stat wet-bulb-card risk-{{ r.key }}">
             <span class="stat-label">{{ _('Wet Bulb Temperature:') }}</span>
-            <span class="stat-value"><i class="fas {{ r.icon }}"></i> {{ c.wet_bulb }}°C</span>
+            <span class="stat-value">{{ icon(r.icon) }} {{ c.wet_bulb }}°C</span>
             <span class="risk-message">{{ r.message }}</span>
         </div>
         <div class="md-card stat">
             <span class="stat-label">{{ _('Relative humidity') }}</span>
-            <span class="stat-value"><i class="fa-solid fa-droplet" aria-hidden="true"></i> {{ c.humidity }}%</span>
+            <span class="stat-value">{{ icon('droplet') }} {{ c.humidity }}%</span>
             <span class="md-muted">{{ _('Dew point') }} {{ c.dew_point }}°C</span>
         </div>
         {% if c.pressure %}
@@ -46,7 +49,7 @@
         {% endif %}
         <div class="md-card stat">
             <span class="stat-label">{{ _('Wind') }}</span>
-            <span class="stat-value"><i class="fa-solid fa-wind" aria-hidden="true"></i> {{ c.wind_kmh }} km/h</span>
+            <span class="stat-value">{{ icon('wind') }} {{ c.wind_kmh }} km/h</span>
             {# Rajadas: preenchidas pelo navegador com o Open-Meteo (REQ-WEB-22); sem o dado, ficam ocultas #}
             <span class="md-muted gust-current" hidden></span>
         </div>
@@ -56,6 +59,6 @@
     <script type="application/json" class="wyw-data">{{ client|tojson }}</script>
 
     {% if alerts is not none and not alerts.available %}
-    <p class="md-muted small"><i class="fa-solid fa-plug" aria-hidden="true"></i> {{ _('INMET alert service is unavailable right now.') }}</p>
+    <p class="md-muted small">{{ icon('plug') }} {{ _('INMET alert service is unavailable right now.') }}</p>
     {% endif %}
 </section>

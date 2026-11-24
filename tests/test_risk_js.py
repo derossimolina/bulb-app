@@ -87,3 +87,40 @@ console.log(JSON.stringify({
     assert out["levels"] == ["very_low", "very_low", "low", "moderate", "high", "very_low"]
     assert out["shear"][0] == pytest.approx(20) and out["shear"][1] == pytest.approx(20) and out["shear"][2] is None
     assert out["tw"] == pytest.approx(13.7, abs=0.1)
+
+
+def _tornado_outlook(hourly, offset, now):
+    script = ("const r = require(process.argv[1]);"
+              "const a = JSON.parse(require('fs').readFileSync(0, 'utf8'));"
+              "process.stdout.write(JSON.stringify(r.tornadoOutlook(a.h, a.offset, a.now)));")
+    proc = subprocess.run([NODE, "-e", script, str(ROOT / "app" / "static" / "risk.js")],
+                          input=json.dumps({"h": hourly, "offset": offset, "now": now}),
+                          capture_output=True, text=True, encoding="utf-8", check=True)
+    return json.loads(proc.stdout)
+
+
+def test_tornado_outlook_by_local_day():
+    # 2026-11-25 15:00 UTC = 12:00 em Brasília (UTC-3); vento em m/s, como o Open-Meteo pedido por wyw.js
+    base = 1795618800
+    calm = {"cape": 50, "lifted_index": 2, "s850": 2, "s500": 3}
+    high = {"cape": 2500, "lifted_index": -6, "s850": 18, "s500": 35}       # WMAXSHEAR ≈ 2500, cisalhamento baixo ≈ 18
+    moderate = {"cape": 1500, "lifted_index": -2, "s850": 11, "s500": 25}   # ≈ 1400, ≈ 11, LI acima de −4
+    hours = [(-3600, high), (0, calm), (3600, high), (7200, high), (10800, calm), (86400, moderate), (90000, calm)]
+    h = {k: [] for k in ("time", "cape", "lifted_index", "wind_speed_10m", "wind_direction_10m", "wind_speed_850hPa",
+                         "wind_direction_850hPa", "wind_speed_500hPa", "wind_direction_500hPa")}
+    for dt, v in hours:
+        h["time"].append(base + dt)
+        h["cape"].append(v["cape"])
+        h["lifted_index"].append(v["lifted_index"])
+        h["wind_speed_10m"].append(2)
+        h["wind_direction_10m"].append(180)
+        h["wind_speed_850hPa"].append(v["s850"])
+        h["wind_direction_850hPa"].append(270)
+        h["wind_speed_500hPa"].append(v["s500"])
+        h["wind_direction_500hPa"].append(270)
+    out = _tornado_outlook(h, -10800, base)
+    # O horário já passado (11:00) fica de fora; o alto vai das 13:00 às 14:00 do dia 25
+    assert out == [
+        {"date": "2026-11-25", "level": "high", "start": 13, "end": 14},
+        {"date": "2026-11-26", "level": "moderate", "start": 12, "end": 12},
+    ]

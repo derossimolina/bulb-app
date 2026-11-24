@@ -23,6 +23,14 @@ the human body can no longer cool itself (Sherwood & Huber, 2010).
 - **INMET alerts** (Brazil only), matched to the city by IBGE code (with a fallback to the alert polygon):
   today's alerts appear in the "Now" card with their severity tag; alerts for other days appear as icons on that
   day of the forecast. Hovering (or tapping) an icon opens a tooltip with severity, period, risks and instructions.
+- **Tornado alert** for the next 7 days: high or moderate tornado potential (CAPE, lifted index and wind shear from
+  Open-Meteo) by day and time, with an icon on the day and a "Tornado potential" tile in the forecast.
+- **Installable web app** (PWA) for phones while the Android app is not available: manifest, service worker and an
+  "Install the app" card (Android/desktop prompt, iPhone instructions). Forecast and risk are never cached offline.
+- Responsive layout that uses the full width on desktops (current conditions and forecast side by side from 1200 px).
+- Design system of J. de Rossi Molina (v4.1.0, `derossimolina/design-system`), **jeronimo molina** brand: dark theme
+  as base, Manrope/Inter/JetBrains Mono, Lucide icons and the brand logo in the footer. Blue and red are used only
+  for temperatures and alerts.
 - Interface in English, Portuguese and Spanish.
 
 ## Data sources
@@ -34,6 +42,7 @@ the human body can no longer cool itself (Sherwood & Huber, 2010).
 | Address search | [Nominatim](https://nominatim.org/) (OpenStreetMap), **called by the browser** | No |
 | Official alerts | [INMET](https://avisos.inmet.gov.br) — `apiprevmet3.inmet.gov.br/avisos/ativos` | No |
 | Municipality codes | [IBGE](https://servicodados.ibge.gov.br/api/docs/localidades) (bundled in `app/data/`) | No |
+| Icons | [Lucide](https://lucide.dev) 0.460.0 (ISC), bundled as `app/static/icons.svg` | No |
 
 The server never calls the Open-Meteo forecast or Nominatim: both limit requests per IP, and on Render's free plan
 the outbound IP is shared with other services, which caused `429 Too Many Requests` errors in production. The
@@ -51,9 +60,9 @@ app/
   services/            # external APIs: geocoding, forecast (MET Norway), INMET alerts, HTTP/cache helpers
   data/                # bundled IBGE municipality table
   templates/           # base.html, index.html and partials/
-  static/              # CSS
+  static/              # CSS, JS (risk.js, wyw.js), service worker (sw.js), icon sprite, brand logo, PWA icons
   translations/        # pt and es catalogs
-scripts/               # manual API check, IBGE table updater, translation helper
+scripts/               # manual API check, IBGE table updater, translation helper, icon sprite and PWA icon builders
 tests/                 # pytest suite (no network access needed)
 wsgi.py                # entry point
 ```

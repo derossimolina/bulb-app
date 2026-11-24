@@ -205,4 +205,16 @@ def client_strings():
         "disclaimer": _("This indicator does not replace alerts from the authorities and Civil Defense."),
         "tornado_icon": _("Tornado"),
         "gusts": _("Gusts up to %(value)s km/h"),
+        # Alerta de tornado dos próximos 7 dias (static/wyw.js, SPEC.md 4.4)
+        "tornado_alert": _("Tornado alert:"),
+        "tornado_watch": _("Tornado watch:"),
+        "tornado_day_high": _("high possibility of a tornado on %(day)s %(when)s."),
+        "tornado_day_moderate": _("moderate possibility of a tornado on %(day)s %(when)s."),
+        "tornado_none": _("No tornado potential in the next 7 days."),
+        "tornado_method": _("Estimated from instability (CAPE, lifted index) and wind shear forecast by Open-Meteo. It is not an official warning."),
+        "tornado_level_very_low": _("Very low"),
+        "tornado_level_low": _("Low"),
+        "tornado_level_moderate": _("Moderate"),
+        "tornado_level_high": _("High"),
+        "tornado_potential": _("Tornado potential"),
     }
