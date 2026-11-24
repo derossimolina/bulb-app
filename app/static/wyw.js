@@ -181,7 +181,8 @@
         if (slot) {
             slot.textContent = '';
             if (warn.length) {
-                var box = el('div', 'notice ' + (high ? 'notice-alert tornado-high' : 'notice-alert'));
+                // Moderado ou alto: aviso em vermelho, para destacar
+                var box = el('div', 'notice notice-alert tornado-warn');
                 box.setAttribute('role', high ? 'alert' : 'status');
                 var icons = el('span', 'tornado-icons');
                 icons.appendChild(icon('triangle-alert'));

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('About wet bulb') }} · {{ super() }}{% endblock %}
+
+{% block content %}
+<article class="section-block about">
+    <p><a href="{{ url_for('main.index') }}" class="back-link">{{ icon('arrow-left') }} {{ _('See the weather forecast') }}</a></p>
+    <h2>{{ _('About wet bulb') }}</h2>
+
+    <h3>{{ _('What is Wet Bulb Temperature?') }}</h3>
+    <p>{% trans trimmed %}The wet bulb temperature is the temperature measured by a thermometer whose bulb (the sensitive part) is
+        wrapped in a wet cloth. This temperature reflects the amount of moisture in the air, as the evaporation of
+        water from the cloth cools the thermometer.{% endtrans %}</p>
+
+    <h3>{{ _('What is its use?') }}</h3>
+    <p>{% trans trimmed %}Wet bulb temperature is crucial for understanding thermal comfort in environments. When the relative humidity
+        is high, the evaporation of sweat from the human body decreases, making the perceived temperature feel
+        hotter. In extreme cases, when the wet bulb temperature is too high, the body may struggle to cool down
+        effectively, which can be dangerous.{% endtrans %}</p>
+    <p>{% trans trimmed %}Above about 35 °C of wet bulb temperature, sustained for hours, the human body can no longer lose
+        heat to the air, even in the shade and with water (Sherwood and Huber, 2010).{% endtrans %}</p>
+
+    <h3>{{ _('Risk levels used by WYW') }}</h3>
+    <table class="levels">
+        <thead><tr><th scope="col">{{ _('Wet bulb temperature') }}</th><th scope="col">{{ _('What to do') }}</th></tr></thead>
+        <tbody>
+        {% for level in levels %}
+        <tr class="level-{{ level.key }}">
+            <td class="num">{% if level.from is none %}&lt; {{ level.to }} °C{% elif level.to is none %}≥ {{ level.from }} °C{% else %}{{ level.from }}–{{ level.to }} °C{% endif %}</td>
+            <td>{{ level.message }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <p class="small md-muted">{{ _('Wet bulb temperature calculated with the Stull formula (2011), from air temperature and relative humidity.') }}</p>
+
+    <h3>{{ _('Reference') }}</h3>
+    <p>S.C. Sherwood, M. Huber, An adaptability limit to climate change due to heat stress, Proc. Natl. Acad. Sci. U.S.A.
+        107 (21) 9552-9555, <a href="https://doi.org/10.1073/pnas.0913352107">DOI: 10.1073/pnas.0913352107</a> (2010).</p>
+</article>
+{% endblock %}

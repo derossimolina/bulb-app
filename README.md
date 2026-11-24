@@ -31,6 +31,8 @@ the human body can no longer cool itself (Sherwood & Huber, 2010).
 - Design system of J. de Rossi Molina (v4.1.0, `derossimolina/design-system`), **jeronimo molina** brand: dark theme
   as base, Manrope/Inter/JetBrains Mono, Lucide icons and the brand logo in the footer. Blue and red are used only
   for temperatures and alerts.
+- "About wet bulb" page (`/sobre-bulbo-umido`), linked from the footer, with the risk levels table. The footer
+  also links the company site (jeronimo.caxias.br) and the brand's social media.
 - Interface in English, Portuguese and Spanish.
 
 ## Data sources
@@ -42,7 +44,7 @@ the human body can no longer cool itself (Sherwood & Huber, 2010).
 | Address search | [Nominatim](https://nominatim.org/) (OpenStreetMap), **called by the browser** | No |
 | Official alerts | [INMET](https://avisos.inmet.gov.br) — `apiprevmet3.inmet.gov.br/avisos/ativos` | No |
 | Municipality codes | [IBGE](https://servicodados.ibge.gov.br/api/docs/localidades) (bundled in `app/data/`) | No |
-| Icons | [Lucide](https://lucide.dev) 0.460.0 (ISC), bundled as `app/static/icons.svg` | No |
+| Icons | [Lucide](https://lucide.dev) 0.460.0 (ISC) and [Simple Icons](https://simpleicons.org) 13.21.0 (CC0), bundled as `app/static/icons.svg` | No |
 
 The server never calls the Open-Meteo forecast or Nominatim: both limit requests per IP, and on Render's free plan
 the outbound IP is shared with other services, which caused `429 Too Many Requests` errors in production. The

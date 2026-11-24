@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var VERSION = 'wyw-v1';
+var VERSION = 'wyw-v2';  // mude a cada versão do visual, para o app instalado baixar tudo de novo
 var SHELL = VERSION + '-shell';
 var PAGES = VERSION + '-pages';
 var PRECACHE = [

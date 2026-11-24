@@ -77,17 +77,33 @@
                 <img class="footer-logo footer-logo-light" src="{{ url_for('static', filename='brand/jeronimo-lockup-principal-claro.svg') }}"
                      alt="jeronimo molina" width="182" height="56">
             </a>
-            <p class="legal">© 2025–2026 J. de Rossi Molina Ltda</p>
-            <div class="social">
-                <a href="https://github.com/jeronimo-molina" target="_blank" rel="noopener">{{ icon('github') }} GitHub</a>
-                <a href="https://www.linkedin.com/in/molinajeronimo" target="_blank" rel="noopener">{{ icon('linkedin') }} LinkedIn</a>
+            <div class="footer-info">
+                <nav class="footer-nav" aria-label="{{ _('Site pages') }}">
+                    <a href="{{ url_for('main.about_wet_bulb') }}">{{ _('About wet bulb') }}</a>
+                    <a href="https://jeronimo.caxias.br" target="_blank" rel="noopener">{{ icon('globe') }} jeronimo.caxias.br</a>
+                </nav>
+                <p class="legal">© 2025–2026 J. de Rossi Molina Ltda</p>
             </div>
+            {# Redes da marca: ícone com nome acessível (alvo de 44 px) #}
+            <ul class="social" aria-label="{{ _('Social media') }}">
+                {% for brand, label, href in [
+                    ('instagram', 'Instagram', 'https://www.instagram.com/jderossimolina'),
+                    ('youtube', 'YouTube', 'https://www.youtube.com/@jderossimolina'),
+                    ('tiktok', 'TikTok', 'https://www.tiktok.com/@jderossimolina'),
+                    ('x', 'X', 'https://x.com/jdermolina'),
+                    ('facebook', 'Facebook', 'https://www.facebook.com/jderossimolina'),
+                    ('linkedin', 'LinkedIn', 'https://www.linkedin.com/in/molinajeronimo'),
+                    ('github', 'GitHub', 'https://github.com/jeronimo-molina')] %}
+                <li><a href="{{ href }}" target="_blank" rel="noopener me" title="{{ label }}">{{ icon('brand-' ~ brand, '', label) }}</a></li>
+                {% endfor %}
+            </ul>
             <p class="sources">
                 {{ _('Weather data:') }} <a href="https://www.met.no/en" target="_blank" rel="noopener">MET Norway</a> (CC BY 4.0)
                 · <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> (CC BY 4.0)
                 · {{ _('Addresses:') }} © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>
                 · {{ _('Official alerts:') }} <a href="https://avisos.inmet.gov.br" target="_blank" rel="noopener">INMET</a>
                 · {{ _('Icons:') }} <a href="https://lucide.dev" target="_blank" rel="noopener">Lucide</a> (ISC)
+                · <a href="https://simpleicons.org" target="_blank" rel="noopener">Simple Icons</a> (CC0)
             </p>
         </footer>
     </main>

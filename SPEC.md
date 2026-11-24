@@ -124,14 +124,14 @@ decimais (~1 km). O servidor não guarda buscas; os logs de acesso podem conter 
 - **REQ-WEB-44 ✅** Se o navegador não conseguir os dados do Open-Meteo, o risco é calculado sem os indicadores
   de tornado e rajadas, e a faixa informa: "Indicador de tornado indisponível no momento".
 - **REQ-WEB-45 ✅ Alerta de tornado (7 dias).** Abaixo da faixa de risco, o site mostra o potencial de tornado
-  (4.4) dos próximos 7 dias, calculado no navegador com o Open-Meteo, por dia local. Com potencial **alto** em
-  algum dia: aviso "**Alerta de tornado:**" com contorno vermelho (`quente`) e ícones ! e de tornado; só
-  **moderado**: aviso "**Atenção para tornado:**" em `alerta`. Cada dia vira uma linha com o dia e o horário
+  (4.4) dos próximos 7 dias, calculado no navegador com o Open-Meteo, por dia local. Do potencial **moderado**
+  para cima, o aviso fica em **vermelho** (contorno de 2 px, ícones ! e de tornado e título em `quente`), para
+  destacar: "**Alerta de tornado:**" quando há potencial alto e "**Atenção para tornado:**" quando só moderado. Cada dia vira uma linha com o dia e o horário
   ("possibilidade alta de tornado em qua., 25 de nov. entre 17:00 e 20:00."), mais a nota de método ("não é um
   aviso oficial"). Sem potencial moderado ou alto, uma linha discreta: "Sem potencial de tornado nos próximos 7
   dias". Sem Open-Meteo, o aviso não aparece (REQ-WEB-44 já informa). Função `tornadoOutlook` em `risk.js`.
-- **REQ-WEB-46 ✅ Tornado na previsão.** Dias com potencial moderado ou alto ganham o ícone de tornado na linha do
-  dia (amarelo ou vermelho, com rótulo acessível), e o painel do dia mostra o quadro "Potencial de tornado" com o
+- **REQ-WEB-46 ✅ Tornado na previsão.** Dias com potencial moderado ou alto ganham o ícone de tornado em vermelho
+  na linha do dia (com rótulo acessível), e o painel do dia mostra o quadro "Potencial de tornado" com o
   nível (Muito baixo, Baixo, Moderado, Alto) e o horário.
 
 ---
@@ -257,7 +257,8 @@ esta seção e o CSS são atualizados juntos.
   | `risco` | `#B3261E` | `#B3261E` | Fundo da faixa "Risco à sua vida!" e do cartão de bulbo úmido Extremo; texto `#F3F4F5` (6,0:1) e ícone amarelo `#FFD24D` (4,6:1) |
 
   Bulbo úmido: Normal sem cor; Alerta com contorno e ícone `alerta`; Perigo com contorno de 2 px `quente`; Extremo
-  com fundo `risco`. A faixa "Atenção" é um aviso com contorno `alerta` e ícone !.
+  com fundo `risco`. A faixa "Atenção" e o aviso de tornado (moderado ou alto) ficam em vermelho: contorno de 2 px,
+  ícone e título em `quente`.
 - **REQ-DS-07 🔄 Gráficos.** A barra de temperatura dos dias vai de `frio` a `quente`; o medidor de umidade usa
   `frio`. Os selos de pressão são neutros (A, B ou ≈ na cor do texto): a letra carrega o significado.
 
@@ -278,6 +279,14 @@ esta seção e o CSS são atualizados juntos.
   No rodapé, o lockup **jeronimo molina** (SVGs de `Marcas/` do design system, em `static/brand/`, versão do tema
   escuro e do claro, com link para `jeronimo.caxias.br`), a razão social "J. de Rossi Molina Ltda" e as redes.
   Contexto e DeRossi Inteligência não aparecem.
+- **REQ-DS-08 ✅ Rodapé.** Link para a página "Sobre bulbo úmido" (REQ-WEB-47), o site da empresa
+  `jeronimo.caxias.br` e os ícones das redes (com nome acessível e alvo de 44 px): Instagram, YouTube, TikTok e
+  Facebook `@jderossimolina`, X `@jdermolina`, LinkedIn `molinajeronimo` e GitHub `jeronimo-molina`. Ícones de marca
+  do Simple Icons (CC0), no mesmo sprite.
+- **REQ-WEB-47 ✅ Página "Sobre bulbo úmido"** (`/sobre-bulbo-umido`). O texto sobre bulbo úmido sai da página
+  inicial e vai para esta página: o que é, para que serve, o limite de cerca de 35 °C, a tabela dos níveis de 4.3
+  com o que fazer em cada um, a fórmula usada e a referência. O botão da busca passa a dizer "Veja a previsão do
+  tempo".
 
 ### 5.5 Ícones
 - **REQ-DS-06 🔄** Sem emoji na interface. Ícones **Lucide** (ISC) em contorno, traço de 2 px, 16 a 24 px, num sprite

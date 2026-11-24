@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-24 14:18-0300\n"
+"POT-Creation-Date: 2026-11-24 14:51-0300\n"
 "PO-Revision-Date: 2025-01-23 17:22-0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -16,19 +16,23 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.17.0\n"
+"Generated-By: Babel 2.18.0\n"
 
-#: app/routes.py:36
+#: app/routes.py:37
 msgid "City not found. Try adding the country code, e.g. \"Paris, FR\"."
 msgstr ""
 "Ciudad no encontrada. Intente agregar el código del país, ej.: \"Paris, "
 "FR\"."
 
-#: app/routes.py:40
+#: app/routes.py:41
 msgid "Weather service unavailable. Please try again later."
 msgstr "Servicio meteorológico no disponible. Inténtelo de nuevo más tarde."
 
-#: app/routes.py:79 app/templates/base.html:8
+#: app/meteo/wetbulb.py:45 app/routes.py:70
+msgid "Normal temperature."
+msgstr "Temperatura normal."
+
+#: app/routes.py:91 app/templates/base.html:8
 msgid ""
 "Wet bulb temperature, risk to life, tornado alert and 7-day forecast for "
 "your city."
@@ -235,10 +239,6 @@ msgstr ""
 msgid "Alert! Look for a cool place."
 msgstr "¡Alerta! Busca un lugar fresco."
 
-#: app/meteo/wetbulb.py:45
-msgid "Normal temperature."
-msgstr "Temperatura normal."
-
 #: app/meteo/wmo.py:10
 msgid "Clear sky"
 msgstr "Cielo despejado"
@@ -368,29 +368,42 @@ msgstr "Sin conexión:"
 msgid "the data shown may be out of date."
 msgstr "los datos en pantalla pueden estar desactualizados."
 
-#: app/templates/base.html:86
+#: app/templates/base.html:81
+msgid "Site pages"
+msgstr "Páginas del sitio"
+
+#: app/templates/base.html:82 app/templates/wet_bulb.html:3
+#: app/templates/wet_bulb.html:8
+msgid "About wet bulb"
+msgstr "Sobre el bulbo húmedo"
+
+#: app/templates/base.html:88
+msgid "Social media"
+msgstr "Redes sociales"
+
+#: app/templates/base.html:101
 msgid "Weather data:"
 msgstr "Datos meteorológicos:"
 
-#: app/templates/base.html:88
+#: app/templates/base.html:103
 msgid "Addresses:"
 msgstr "Direcciones:"
 
-#: app/templates/base.html:89
+#: app/templates/base.html:104
 msgid "Official alerts:"
 msgstr "Avisos oficiales:"
 
-#: app/templates/base.html:90
+#: app/templates/base.html:105
 msgid "Icons:"
 msgstr "Iconos:"
 
-#: app/templates/base.html:96
+#: app/templates/base.html:111
 msgid "We use cookies to ensure you get the best experience on our website."
 msgstr ""
 "Utilizamos cookies para garantizar que obtenga la mejor experiencia en "
 "nuestro sitio web."
 
-#: app/templates/base.html:97
+#: app/templates/base.html:112
 msgid "Accept"
 msgstr "Aceptar"
 
@@ -402,9 +415,9 @@ msgstr "Ciudad:"
 msgid "Enter city name"
 msgstr "Introduzca el nombre de la ciudad"
 
-#: app/templates/index.html:13
-msgid "Get Wet Bulb Temperature"
-msgstr "Obtener temperatura de bulbo húmedo"
+#: app/templates/index.html:13 app/templates/wet_bulb.html:7
+msgid "See the weather forecast"
+msgstr "Ver el pronóstico del tiempo"
 
 #: app/templates/offline.html:3
 msgid "No connection"
@@ -426,11 +439,11 @@ msgstr "Conéctate a internet y busca de nuevo."
 msgid "Try again"
 msgstr "Intentar de nuevo"
 
-#: app/templates/partials/_about.html:2
+#: app/templates/wet_bulb.html:10
 msgid "What is Wet Bulb Temperature?"
 msgstr "¿Qué es la temperatura de bulbo húmedo?"
 
-#: app/templates/partials/_about.html:3
+#: app/templates/wet_bulb.html:11
 msgid ""
 "The wet bulb temperature is the temperature measured by a thermometer "
 "whose bulb (the sensitive part) is wrapped in a wet cloth. This "
@@ -442,11 +455,11 @@ msgstr ""
 "húmedo. Esta temperatura refleja la cantidad de humedad en el aire, ya "
 "que la evaporación del agua del paño enfría el termómetro."
 
-#: app/templates/partials/_about.html:6
+#: app/templates/wet_bulb.html:15
 msgid "What is its use?"
 msgstr "¿Cual es su utilidad?"
 
-#: app/templates/partials/_about.html:7
+#: app/templates/wet_bulb.html:16
 msgid ""
 "Wet bulb temperature is crucial for understanding thermal comfort in "
 "environments. When the relative humidity is high, the evaporation of "
@@ -462,7 +475,37 @@ msgstr ""
 "dificultades para enfriarse de manera efectiva, lo que puede ser "
 "peligroso."
 
-#: app/templates/partials/_about.html:11
+#: app/templates/wet_bulb.html:20
+msgid ""
+"Above about 35 °C of wet bulb temperature, sustained for hours, the human"
+" body can no longer lose heat to the air, even in the shade and with "
+"water (Sherwood and Huber, 2010)."
+msgstr ""
+"Por encima de unos 35 °C de temperatura de bulbo húmedo, mantenidos "
+"durante horas, el cuerpo humano ya no puede perder calor hacia el aire, "
+"incluso a la sombra y con agua (Sherwood y Huber, 2010)."
+
+#: app/templates/wet_bulb.html:23
+msgid "Risk levels used by WYW"
+msgstr "Niveles de riesgo usados por WYW"
+
+#: app/templates/wet_bulb.html:25
+msgid "Wet bulb temperature"
+msgstr "Temperatura de bulbo húmedo"
+
+#: app/templates/wet_bulb.html:25
+msgid "What to do"
+msgstr "Qué hacer"
+
+#: app/templates/wet_bulb.html:35
+msgid ""
+"Wet bulb temperature calculated with the Stull formula (2011), from air "
+"temperature and relative humidity."
+msgstr ""
+"Temperatura de bulbo húmedo calculada con la fórmula de Stull (2011), a "
+"partir de la temperatura del aire y la humedad relativa."
+
+#: app/templates/wet_bulb.html:37
 msgid "Reference"
 msgstr "Referencia"
 
