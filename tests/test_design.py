@@ -35,7 +35,8 @@ def test_icon_sprite_has_every_icon_used_in_templates_and_code():
     symbols = set(re.findall(r'<symbol id="([\w-]+)"', sprite))
     used = set()
     for path in list((root / "templates").rglob("*.html")):
-        used |= set(re.findall(r"icon\('([\w-]+)'", path.read_text(encoding="utf-8")))
+        # Nomes montados no template ("brand-" ~ marca) são conferidos em test_footer_has_company_site_...
+        used |= {n for n in re.findall(r"icon\('([\w-]+)'", path.read_text(encoding="utf-8")) if not n.endswith("-")}
     used |= set(re.findall(r"icon\('([\w-]+)'", (root / "static" / "wyw.js").read_text(encoding="utf-8")))
     from app.meteo import wetbulb, wmo
     used |= {icon for _, icon in wmo.WMO_CODES.values()} | {wmo.DEFAULT_ICON}
@@ -85,3 +86,43 @@ def test_css_defines_both_themes_with_design_system_tokens():
     for value in re.findall(r"(\d*\.?\d+)(ms|s)\b", CSS):
         ms = float(value[0]) * (1 if value[1] == "ms" else 1000)
         assert ms <= 1200   # 1,2 s só no laço do indicador de carregamento
+
+
+SOCIAL = {
+    "brand-instagram": "https://www.instagram.com/jderossimolina",
+    "brand-youtube": "https://www.youtube.com/@jderossimolina",
+    "brand-tiktok": "https://www.tiktok.com/@jderossimolina",
+    "brand-x": "https://x.com/jdermolina",
+    "brand-facebook": "https://www.facebook.com/jderossimolina",
+    "brand-linkedin": "https://www.linkedin.com/in/molinajeronimo",
+    "brand-github": "https://github.com/derossimolina",
+}
+
+
+def test_footer_has_company_site_social_icons_and_wet_bulb_page(monkeypatch):
+    html = _page(monkeypatch, "/?lang=pt")
+    footer = html[html.index("<footer>"):html.index("</footer>")]
+    assert 'href="/sobre-bulbo-umido"' in footer and "Sobre bulbo úmido" in footer
+    assert 'href="https://jeronimo.caxias.br"' in footer and "jeronimo.caxias.br</a>" in footer
+    sprite = (Path(__file__).resolve().parent.parent / "app" / "static" / "icons.svg").read_text(encoding="utf-8")
+    for icon, url in SOCIAL.items():
+        assert f'href="{url}"' in footer and f"icons.svg#{icon}" in footer
+        assert f'<symbol id="{icon}"' in sprite
+    # Ícone sozinho precisa de nome acessível (DESIGN.md 2.6)
+    assert footer.count('role="img" aria-label="') >= len(SOCIAL)
+
+
+def test_search_button_and_wet_bulb_text_moved_to_its_own_page(monkeypatch):
+    html = _page(monkeypatch, "/?lang=pt")
+    assert "Veja a previsão do tempo" in html
+    assert "O que é temperatura de bulbo úmido?" not in html
+
+
+def test_wet_bulb_page(monkeypatch):
+    html = _page(monkeypatch, "/sobre-bulbo-umido?lang=pt")
+    assert "<title>Sobre bulbo úmido · WYW</title>" in html
+    assert "O que é temperatura de bulbo úmido?" in html and "10.1073/pnas.0913352107" in html
+    # Os quatro níveis, com os limites de app/meteo/wetbulb.py (SPEC.md 4.3)
+    for limit in ("&lt; 23 °C", "23–31 °C", "31–35 °C", "≥ 35 °C"):
+        assert limit in html
+    assert "Temperatura normal." in html and 'href="/"' in html

@@ -168,8 +168,9 @@ a:hover{ text-decoration-thickness:2px }
 .risk-banner-none .risk-banner-icon{ width:20px; height:20px; color:var(--acento) }
 .risk-banner-none .risk-banner-title{ font-family:var(--inter); font-weight:600; font-size:16px }
 .risk-banner-none .risk-banner-note{ color:var(--texto-3) }
-.risk-banner-attention{ border-color:var(--alerta) }
-.risk-banner-attention .risk-banner-icon{ color:var(--alerta) }
+/* Atenção e tornado (moderado ou alto) em vermelho, para destacar (pedido da pessoa responsável) */
+.risk-banner-attention{ border:2px solid var(--quente) }
+.risk-banner-attention .risk-banner-icon, .risk-banner-attention .risk-banner-title{ color:var(--quente) }
 .risk-banner-life, .risk-banner-extreme{ background:var(--risco); border-color:var(--risco); color:var(--sobre-risco) }
 .risk-banner-life .risk-banner-title, .risk-banner-extreme .risk-banner-title{ color:var(--sobre-risco); font-size:24px }
 .risk-banner-life .risk-banner-icon, .risk-banner-extreme .risk-banner-icon, .risk-banner-extreme .risk-tornado{ color:var(--icone-sobre-risco) }
@@ -179,8 +180,8 @@ a:hover{ text-decoration-thickness:2px }
 .tornado-alert[hidden]{ display:none }
 .tornado-alert .notice{ margin-top:0 }
 .tornado-alert .tornado-icons{ display:inline-flex; gap:4px; flex:none; color:inherit }
-.tornado-high{ border-color:var(--quente) }
-.tornado-high > .tornado-icons{ color:var(--quente) }
+.tornado-warn{ border:2px solid var(--quente) }
+.tornado-warn > .tornado-icons, .tornado-warn strong{ color:var(--quente) }
 .tornado-alert ul{ margin:4px 0 0; padding-left:18px }
 .tornado-alert .tornado-method{ color:var(--texto-3); margin-top:8px }
 .tornado-quiet{ display:flex; gap:8px; align-items:center; font-size:14px; color:var(--texto-3) }
@@ -259,7 +260,8 @@ a:hover{ text-decoration-thickness:2px }
 .meter > span{ display:block; height:100%; background:var(--frio) }
 .tile-tornado.tornado-high{ border-color:var(--quente) }
 .tile-tornado.tornado-high .tile-value{ color:var(--quente) }
-.tile-tornado.tornado-moderate{ border-color:var(--alerta) }
+.tile-tornado.tornado-moderate{ border-color:var(--quente) }
+.tile-tornado.tornado-moderate .tile-value{ color:var(--quente) }
 
 @media (max-width:760px){
 	.day-summary{ grid-template-columns:56px auto minmax(0,1fr) 20px; row-gap:8px; padding:12px }
@@ -296,7 +298,7 @@ a:hover{ text-decoration-thickness:2px }
 .day-tornado[hidden]{ display:none }
 .day-tornado .icon{ width:20px; height:20px }
 .day-tornado.tornado-high{ color:var(--quente) }
-.day-tornado.tornado-moderate{ color:var(--alerta) }
+.day-tornado.tornado-moderate{ color:var(--quente) }
 .tile-alerts .alert-row{ margin-top:4px; flex-wrap:nowrap; gap:12px }
 .tile-alerts .alert-badge{ padding-bottom:4px; border-bottom:3px solid var(--alert-color) }
 .tile-alerts .alert-badge-icon{ width:32px; height:32px }
@@ -312,8 +314,18 @@ a:hover{ text-decoration-thickness:2px }
 .tipbox .tip-heading{ display:block; margin-top:12px; font-family:var(--mono); font-weight:500; font-size:12px; letter-spacing:.06em; text-transform:uppercase }
 .tipbox .tip-item{ display:block; margin-top:2px }
 
-/* Sobre */
-.about p{ color:var(--texto-2); max-width:72ch }
+/* Página "Sobre bulbo úmido" */
+.about{ max-width:80ch }
+.about p{ color:var(--texto-2) }
+.back-link{ display:inline-flex; align-items:center; gap:8px; min-height:44px; font-weight:600 }
+.levels{ width:100%; border-collapse:collapse; margin:8px 0 12px; font-size:14px; line-height:1.5 }
+.levels th{ text-align:left; font-family:var(--mono); font-weight:500; font-size:12px; letter-spacing:.06em; text-transform:uppercase;
+	color:var(--texto-3); padding:8px 12px; border-bottom:1px solid var(--linha) }
+.levels td{ padding:12px; border-bottom:1px solid var(--linha); vertical-align:top }
+.levels td.num{ font-family:var(--mono); font-weight:500; white-space:nowrap; border-left:4px solid var(--linha) }
+.levels .level-alert td.num{ border-left-color:var(--alerta) }
+.levels .level-danger td.num{ border-left-color:var(--quente) }
+.levels .level-extreme td.num{ border-left-color:var(--risco) }
 
 /* Rodapé: logo da marca, razão social, redes e fontes dos dados */
 footer{ margin-top:64px; padding-top:24px; border-top:1px solid var(--linha); color:var(--texto-3); font-size:14px; line-height:1.5;
@@ -328,9 +340,15 @@ footer p{ margin:0 }
 	:root:not([data-theme="dark"]) .footer-logo-dark{ display:none }
 	:root:not([data-theme="dark"]) .footer-logo-light{ display:block }
 }
-footer .social{ display:flex; gap:8px 16px; flex-wrap:wrap }
-footer .social a{ display:inline-flex; align-items:center; gap:6px; min-height:44px }
-footer .social .icon{ width:18px; height:18px }
+.footer-info{ display:flex; flex-direction:column; gap:4px }
+.footer-nav{ display:flex; gap:4px 24px; flex-wrap:wrap }
+.footer-nav a{ display:inline-flex; align-items:center; gap:6px; min-height:44px; font-size:14px }
+.footer-nav .icon{ width:16px; height:16px }
+footer .social{ display:flex; gap:4px; flex-wrap:wrap; list-style:none; margin:0; padding:0 }
+footer .social a{ display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:var(--raio);
+	color:var(--texto-2); border:1px solid transparent; transition:color var(--duracao-rapida) var(--easing), border-color var(--duracao-rapida) var(--easing) }
+footer .social a:hover{ color:var(--acento); border-color:var(--linha) }
+footer .social .icon{ width:20px; height:20px }
 footer .sources{ font-family:var(--mono); font-size:12px; line-height:1.6 }
 footer .legal{ color:var(--texto-3) }
 @media (min-width:900px){
@@ -359,9 +377,6 @@ footer .legal{ color:var(--texto-3) }
 	.results{ display:grid; grid-template-columns:minmax(0, 5fr) minmax(0, 6fr); gap:0 48px; align-items:start }
 	.results > .notice{ grid-column:1 / -1 }
 	.current-grid{ grid-template-columns:repeat(2, minmax(0, 1fr)) }
-	.about{ columns:2; column-gap:48px }
-	.about h2, .about h3{ break-after:avoid }
-	.about p{ break-inside:avoid }
 }
 @media (min-width:1800px){
 	.current-grid{ grid-template-columns:repeat(4, minmax(0, 1fr)) }

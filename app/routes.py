@@ -4,6 +4,7 @@ from flask import Blueprint, current_app, jsonify, redirect, render_template, re
 from flask_babel import gettext as _
 
 from . import get_locale
+from .meteo import wetbulb
 from .services import forecast, geocoding, inmet, risk_window
 from .services.http import ServiceError
 
@@ -61,6 +62,17 @@ def index():
 def healthz():
     # Para o monitoramento: não chama serviços externos (SPEC.md 8.1)
     return "ok", 200, {"Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store"}
+
+
+@bp.route("/sobre-bulbo-umido")
+def about_wet_bulb():
+    """Página "Sobre bulbo úmido" (link no rodapé): o que é, para que serve e os níveis de risco (SPEC.md 4.3)."""
+    levels = [{"key": "normal", "from": None, "to": wetbulb.WET_BULB_LEVELS[-1][0], "message": _("Normal temperature.")}]
+    for threshold, key, _color, _icon, message in reversed(wetbulb.WET_BULB_LEVELS):
+        levels.append({"key": key, "from": threshold, "to": None, "message": message})
+    for level, nxt in zip(levels[1:], levels[2:] + [None]):
+        level["to"] = nxt["from"] if nxt else None
+    return render_template("wet_bulb.html", levels=levels)
 
 
 @bp.route("/manifest.webmanifest")
