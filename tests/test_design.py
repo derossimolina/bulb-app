@@ -95,7 +95,7 @@ SOCIAL = {
     "brand-x": "https://x.com/jdermolina",
     "brand-facebook": "https://www.facebook.com/jderossimolina",
     "brand-linkedin": "https://www.linkedin.com/in/molinajeronimo",
-    "brand-github": "https://github.com/jeronimo-molina",
+    "brand-github": "https://github.com/derossimolina",
 }
 
 

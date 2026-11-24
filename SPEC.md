@@ -281,7 +281,7 @@ esta seção e o CSS são atualizados juntos.
   Contexto e DeRossi Inteligência não aparecem.
 - **REQ-DS-08 ✅ Rodapé.** Link para a página "Sobre bulbo úmido" (REQ-WEB-47), o site da empresa
   `jeronimo.caxias.br` e os ícones das redes (com nome acessível e alvo de 44 px): Instagram, YouTube, TikTok e
-  Facebook `@jderossimolina`, X `@jdermolina`, LinkedIn `molinajeronimo` e GitHub `jeronimo-molina`. Ícones de marca
+  Facebook `@jderossimolina`, X `@jdermolina`, LinkedIn `molinajeronimo` e GitHub `derossimolina`. Ícones de marca
   do Simple Icons (CC0), no mesmo sprite.
 - **REQ-WEB-47 ✅ Página "Sobre bulbo úmido"** (`/sobre-bulbo-umido`). O texto sobre bulbo úmido sai da página
   inicial e vai para esta página: o que é, para que serve, o limite de cerca de 35 °C, a tabela dos níveis de 4.3
