@@ -2,8 +2,9 @@
 import logging
 from urllib.parse import urlencode
 
-from flask import Flask, redirect, request, session
+from flask import Flask, redirect, request, session, url_for
 from flask_babel import Babel
+from markupsafe import Markup, escape
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .config import Config
@@ -27,6 +28,16 @@ def alternate_links():
         "languages": [(lang, f"https://{domain}{suffix}") for domain, lang in domains.items()],
         "default": f"https://{current_app.config['DEFAULT_DOMAIN']}{suffix}",
     }
+
+
+def icon(name, classes="", label=None):
+    """Ícone Lucide do sprite static/icons.svg (design system, seção 2.6).
+
+    Sem label é decorativo (aria-hidden); com label, o texto vai para leitores de tela.
+    """
+    href = url_for("static", filename="icons.svg") + "#" + escape(name)
+    a11y = f'role="img" aria-label="{escape(label)}"' if label else 'aria-hidden="true"'
+    return Markup(f'<svg class="icon {escape(classes)}" {a11y} focusable="false"><use href="{href}"></use></svg>')
 
 
 def get_locale():
@@ -54,6 +65,7 @@ def create_app(config_object=Config):
         app.wsgi_app = ProxyFix(app.wsgi_app, x_for=proxies, x_proto=proxies, x_host=proxies)
 
     Babel(app, locale_selector=get_locale)
+    app.jinja_env.globals["icon"] = icon
 
     @app.before_request
     def redirect_to_new_address():

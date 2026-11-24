@@ -1,6 +1,6 @@
 import logging
 
-from flask import Blueprint, current_app, redirect, render_template, request, session, url_for
+from flask import Blueprint, current_app, jsonify, redirect, render_template, request, send_from_directory, session, url_for
 from flask_babel import gettext as _
 
 from . import get_locale
@@ -61,6 +61,49 @@ def index():
 def healthz():
     # Para o monitoramento: não chama serviços externos (SPEC.md 8.1)
     return "ok", 200, {"Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store"}
+
+
+@bp.route("/manifest.webmanifest")
+def manifest():
+    """Manifesto do app instalável (PWA), no idioma da página: alternativa ao app Android até ele sair."""
+    icons = [
+        {"src": url_for("static", filename="pwa/icon-192.png"), "sizes": "192x192", "type": "image/png"},
+        {"src": url_for("static", filename="pwa/icon-512.png"), "sizes": "512x512", "type": "image/png"},
+        {"src": url_for("static", filename="pwa/icon-maskable-512.png"), "sizes": "512x512", "type": "image/png",
+         "purpose": "maskable"},
+    ]
+    response = jsonify({
+        "id": "/",
+        "name": "WYW — Weather is your Weather",
+        "short_name": "WYW",
+        "description": _("Wet bulb temperature, risk to life, tornado alert and 7-day forecast for your city."),
+        "lang": get_locale(),
+        "start_url": url_for("main.index", source="pwa"),
+        "scope": "/",
+        "display": "standalone",
+        "orientation": "portrait",
+        "background_color": "#100C08",
+        "theme_color": "#100C08",
+        "categories": ["weather"],
+        "icons": icons,
+    })
+    response.mimetype = "application/manifest+json"
+    response.headers["Cache-Control"] = "no-cache"
+    return response
+
+
+@bp.route("/sw.js")
+def service_worker():
+    # Na raiz, para o service worker controlar o site inteiro (escopo "/")
+    response = send_from_directory(current_app.static_folder, "sw.js", mimetype="application/javascript", max_age=0)
+    response.headers["Cache-Control"] = "no-cache"
+    return response
+
+
+@bp.route("/offline")
+def offline():
+    """Página mostrada pelo app instalado quando não há conexão (guardada pelo service worker)."""
+    return render_template("offline.html")
 
 
 @bp.route("/change-language")

@@ -3,9 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>{% block title %}WYW{% endblock %}</title>
-    <meta name="color-scheme" content="light dark">
+    <meta name="description" content="{{ _('Wet bulb temperature, risk to life, tornado alert and 7-day forecast for your city.') }}">
+    <meta name="color-scheme" content="dark light">
+    <meta name="theme-color" content="#100C08" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#F3F4F5" media="(prefers-color-scheme: light)">
     {% set links = alternate_links() -%}
     <link rel="canonical" href="{{ links.canonical }}">
     {% for lang, href in links.languages -%}
@@ -19,10 +22,17 @@
             if (savedTheme === 'light' || savedTheme === 'dark') document.documentElement.setAttribute('data-theme', savedTheme);
         } catch (e) {}
     </script>
+    {# App instalável (PWA): alternativa ao app Android até ele estar disponível #}
+    <link rel="manifest" href="{{ url_for('main.manifest') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='pwa/favicon-32.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='pwa/apple-touch-icon.png') }}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="WYW">
+    {# Design system: Manrope (títulos), Inter (corpo e interface), JetBrains Mono (rótulos e dados) #}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
@@ -30,39 +40,54 @@
     <main class="container">
         <header class="app-header">
             <div class="brand">
-                <h1>WYW</h1>
-                <p class="brand-tagline">Weather is your Weather</p>
+                <img src="{{ url_for('static', filename='pwa/icon-192.png') }}" alt="" class="brand-mark" width="44" height="44">
+                <div>
+                    <h1>WYW</h1>
+                    <p class="brand-tagline">Weather is your Weather</p>
+                </div>
             </div>
             <div class="header-tools">
                 <div class="lang-switch" role="navigation" aria-label="Language selection">
                     {% for code, flag, label in [('en', 'us', 'English'), ('pt', 'br', 'Português'), ('es', 'es', 'Español')] %}
-                    <a href="{{ url_for('main.change_language', lang=code) }}"
-                       class="lang-btn {% if get_locale() == code %}active{% endif %}" title="{{ label }}">
+                    <a href="{{ url_for('main.change_language', lang=code) }}" lang="{{ code }}"
+                       class="lang-btn {% if get_locale() == code %}active{% endif %}" title="{{ label }}"
+                       {% if get_locale() == code %}aria-current="true"{% endif %}>
                         <img src="https://flagcdn.com/w20/{{ flag }}.png" alt="{{ label }}" width="20" height="15">
                     </a>
                     {% endfor %}
                 </div>
                 <button type="button" class="theme-btn" id="theme-toggle"
                         aria-label="{{ _('Switch between light and dark theme') }}" title="{{ _('Switch between light and dark theme') }}">
-                    <i class="fa-solid fa-moon" aria-hidden="true"></i>
-                    <i class="fa-solid fa-sun" aria-hidden="true"></i>
+                    {{ icon('moon', 'icon-moon') }}
+                    {{ icon('sun', 'icon-sun') }}
                 </button>
             </div>
         </header>
 
+        <p class="offline-bar" id="offline-bar" role="status" hidden>
+            {{ icon('wifi-off') }} <span><strong>{{ _('No connection:') }}</strong> {{ _('the data shown may be out of date.') }}</span>
+        </p>
+
         {% block content %}{% endblock %}
 
         <footer>
-            <p>Copyright 2025-6 <a href="https://derossi.dev">derossi research</a></p>
+            <a class="footer-brand" href="https://jeronimo.caxias.br" target="_blank" rel="noopener">
+                <img class="footer-logo footer-logo-dark" src="{{ url_for('static', filename='brand/jeronimo-lockup-principal.svg') }}"
+                     alt="jeronimo molina" width="182" height="56">
+                <img class="footer-logo footer-logo-light" src="{{ url_for('static', filename='brand/jeronimo-lockup-principal-claro.svg') }}"
+                     alt="jeronimo molina" width="182" height="56">
+            </a>
+            <p class="legal">© 2025–2026 J. de Rossi Molina Ltda</p>
             <div class="social">
-                <a href="https://github.com/jeronimo-molina" target="_blank" rel="noopener"><i class="fab fa-github"></i> GitHub</a>
-                <a href="https://www.linkedin.com/in/molinajeronimo" target="_blank" rel="noopener"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                <a href="https://github.com/jeronimo-molina" target="_blank" rel="noopener">{{ icon('github') }} GitHub</a>
+                <a href="https://www.linkedin.com/in/molinajeronimo" target="_blank" rel="noopener">{{ icon('linkedin') }} LinkedIn</a>
             </div>
             <p class="sources">
                 {{ _('Weather data:') }} <a href="https://www.met.no/en" target="_blank" rel="noopener">MET Norway</a> (CC BY 4.0)
                 · <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> (CC BY 4.0)
                 · {{ _('Addresses:') }} © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>
                 · {{ _('Official alerts:') }} <a href="https://avisos.inmet.gov.br" target="_blank" rel="noopener">INMET</a>
+                · {{ _('Icons:') }} <a href="https://lucide.dev" target="_blank" rel="noopener">Lucide</a> (ISC)
             </p>
         </footer>
     </main>
@@ -72,6 +97,8 @@
         <button class="btn" onclick="acceptCookies()">{{ _('Accept') }}</button>
     </div>
 
+    {# Endereço do sprite de ícones, para o JS (static/wyw.js) #}
+    <script type="application/json" id="wyw-icons">{{ {'sprite': url_for('static', filename='icons.svg')}|tojson }}</script>
     <script src="{{ url_for('static', filename='risk.js') }}"></script>
     <script src="{{ url_for('static', filename='wyw.js') }}"></script>
     <script>
@@ -83,11 +110,11 @@
             document.getElementById('cookie-consent').style.display = 'none';
         }
 
-        // Tema claro/escuro: alterna e salva a escolha; sem escolha, segue o sistema (REQ-DS-01)
+        // Tema claro/escuro: alterna e salva a escolha; sem escolha, segue o sistema (escuro é a base)
         document.getElementById('theme-toggle').addEventListener('click', function () {
             var root = document.documentElement;
             var current = root.getAttribute('data-theme') ||
-                (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
             var next = current === 'dark' ? 'light' : 'dark';
             root.setAttribute('data-theme', next);
             try { localStorage.setItem('wyw-theme', next); } catch (e) {}
@@ -176,6 +203,7 @@
                 var button = form.querySelector('button');
                 button.classList.add('loading');
                 button.disabled = true;
+                button.setAttribute('aria-busy', 'true');
                 results.classList.add('leaving');
 
                 // Endereço → Nominatim (no navegador); cidade → busca do servidor (REQ-WEB-11)
@@ -202,6 +230,7 @@
                     .then(function () {
                         button.classList.remove('loading');
                         button.disabled = false;
+                        button.removeAttribute('aria-busy');
                     });
             });
 
@@ -210,6 +239,9 @@
 
         // Página aberta direto com resultados: completa rajadas, tornado e risco
         if (window.WYW) window.WYW.enhance(document);
+
+        // App instalável: service worker, aviso de sem conexão e cartão de instalação
+        if (window.WYW) window.WYW.setupApp();
     </script>
 </body>
 

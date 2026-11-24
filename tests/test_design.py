@@ -1,4 +1,4 @@
-"""Design system no site (SPEC.md seção 5: REQ-WEB-03, REQ-DS-01 a 07)."""
+"""Design system no site: J. de Rossi Molina, marca jeronimo molina (SPEC.md seção 5; DESIGN.md v4.1.0)."""
 import re
 from pathlib import Path
 
@@ -23,9 +23,32 @@ def _page(monkeypatch, path="/?city=Porto+Alegre&lang=pt"):
 def test_design_system_fonts_and_icons_without_materialize(monkeypatch):
     html = _page(monkeypatch)
     assert "materialize" not in html
-    assert "family=EB+Garamond:wght@600&family=Inter" in html
-    assert "font-awesome/6.5.2" in html
-    assert 'class="fa-solid fa-cloud-bolt"' in html or 'class="fa-solid fa-cloud-sun"' in html
+    assert "family=Manrope:wght@600;700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@500" in html
+    # Ícones Lucide do sprite local; nada de Font Awesome (DESIGN.md 2.6)
+    assert "font-awesome" not in html and "fa-solid" not in html
+    assert "/static/icons.svg#cloud-lightning" in html or "/static/icons.svg#cloud-sun" in html
+
+
+def test_icon_sprite_has_every_icon_used_in_templates_and_code():
+    root = Path(__file__).resolve().parent.parent / "app"
+    sprite = (root / "static" / "icons.svg").read_text(encoding="utf-8")
+    symbols = set(re.findall(r'<symbol id="([\w-]+)"', sprite))
+    used = set()
+    for path in list((root / "templates").rglob("*.html")):
+        used |= set(re.findall(r"icon\('([\w-]+)'", path.read_text(encoding="utf-8")))
+    used |= set(re.findall(r"icon\('([\w-]+)'", (root / "static" / "wyw.js").read_text(encoding="utf-8")))
+    from app.meteo import wetbulb, wmo
+    used |= {icon for _, icon in wmo.WMO_CODES.values()} | {wmo.DEFAULT_ICON}
+    used |= {level[3] for level in wetbulb.WET_BULB_LEVELS} | {"leaf"}
+    assert used and used <= symbols, used - symbols
+
+
+def test_footer_has_brand_logo_in_both_themes(monkeypatch):
+    html = _page(monkeypatch, "/?lang=pt")
+    footer = html[html.index("<footer>"):html.index("</footer>")]
+    assert "brand/jeronimo-lockup-principal.svg" in footer and "brand/jeronimo-lockup-principal-claro.svg" in footer
+    assert 'alt="jeronimo molina"' in footer and "https://jeronimo.caxias.br" in footer
+    assert "J. de Rossi Molina Ltda" in footer
 
 
 def test_no_emoji_in_the_interface(monkeypatch):
@@ -38,16 +61,27 @@ def test_theme_toggle_and_saved_theme(monkeypatch):
     html = _page(monkeypatch, "/?lang=pt")
     assert 'id="theme-toggle"' in html and "Alternar entre tema claro e escuro" in html
     assert "localStorage.getItem('wyw-theme')" in html
-    assert '<meta name="color-scheme" content="light dark">' in html
+    assert '<meta name="color-scheme" content="dark light">' in html
 
 
 def test_css_defines_both_themes_with_design_system_tokens():
     assert "@media (prefers-color-scheme: dark)" in CSS
     assert ':root[data-theme="dark"]' in CSS
-    for token in ("--ink:#0f0e0d", "--ivory:#fafaf9", "--g3:#6b6862", "--marmore:#ede6da",
-                  "--ouro:#c9964a", "--bronze:#7a4a22", "--risco-vida:#b3261e", "--alerta-icone:#f5c518"):
-        assert token in CSS
-    # Cantos retos: só a pílula tem raio (8px) e o spinner é circular
+    # Escuro é a base (:root); claro é o reverso (DESIGN.md 2.1)
+    dark = CSS[CSS.index(":root{"):CSS.index("}", CSS.index(":root{"))]
+    for token in ("--fundo:#100C08", "--tinta:#F3F4F5", "--texto-2:#DBE0E1", "--texto-3:#9AA0A3", "--linha:#2B2620",
+                  "--acento:#FB5133", "--acento-hover:#FF6B4F", "--erro:#FF6B8B", "--alerta:#FFD24D"):
+        assert token in dark
+    light = CSS[CSS.index(':root[data-theme="light"]{'):]
+    for token in ("--fundo:#F3F4F5", "--tinta:#100C08", "--texto-3:#5E6366", "--acento:#C93414", "--alerta:#7A5200"):
+        assert token in light
+    # Azul e vermelho só como temperatura e alerta (frio, quente, risco)
+    assert "--frio:" in dark and "--quente:" in dark and "--risco:#B3261E" in dark
+    # Raio único de 8 px; só os pontos e o indicador são circulares
     radii = {r.strip() for r in re.findall(r"border-radius:([^;}]+)", CSS)}
-    assert radii <= {"0", "8px", "50%"}
+    assert radii <= {"var(--raio)", "50%"} and "--raio:8px" in CSS
     assert "box-shadow" not in CSS
+    # Movimento: nenhuma transição de interface passa de 400 ms
+    for value in re.findall(r"(\d*\.?\d+)(ms|s)\b", CSS):
+        ms = float(value[0]) * (1 if value[1] == "ms" else 1000)
+        assert ms <= 1200   # 1,2 s só no laço do indicador de carregamento

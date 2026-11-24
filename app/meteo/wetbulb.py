@@ -27,11 +27,11 @@ def calculate_wet_bulb(temp, humidity):
 
 # Limiares baseados em Sherwood & Huber (2010) e literatura de estresse térmico.
 WET_BULB_LEVELS = [
-    (35, "extreme", "red", "fa-skull-crossbones",
+    (35, "extreme", "red", "skull",
      _l("Life risk! Seek an air-conditioned place immediately!")),
-    (31, "danger", "orange", "fa-exclamation-triangle",
+    (31, "danger", "orange", "triangle-alert",
      _l("Danger! Seek an air-conditioned place. Risk of life for sensitive people.")),
-    (23, "alert", "yellow", "fa-exclamation-circle",
+    (23, "alert", "yellow", "circle-alert",
      _l("Alert! Look for a cool place.")),
 ]
 
@@ -42,4 +42,4 @@ def wet_bulb_risk(wet_bulb_temp):
         for threshold, key, color, icon, message in WET_BULB_LEVELS:
             if wet_bulb_temp >= threshold:
                 return {"key": key, "color": color, "icon": icon, "message": message}
-    return {"key": "normal", "color": "green", "icon": "fa-leaf", "message": _l("Normal temperature.")}
+    return {"key": "normal", "color": "green", "icon": "leaf", "message": _l("Normal temperature.")}

@@ -7,16 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-06 16:15-0300\n"
+"POT-Creation-Date: 2026-11-24 14:18-0300\n"
 "PO-Revision-Date: 2025-01-23 17:22-0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: es <LL@li.org>\n"
 "Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Generated-By: Babel 2.18.0\n"
+"Generated-By: Babel 2.17.0\n"
 
 #: app/routes.py:36
 msgid "City not found. Try adding the country code, e.g. \"Paris, FR\"."
@@ -28,7 +28,15 @@ msgstr ""
 msgid "Weather service unavailable. Please try again later."
 msgstr "Servicio meteorológico no disponible. Inténtelo de nuevo más tarde."
 
-#: app/meteo/indices.py:15 app/templates/partials/_forecast.html:83
+#: app/routes.py:79 app/templates/base.html:8
+msgid ""
+"Wet bulb temperature, risk to life, tornado alert and 7-day forecast for "
+"your city."
+msgstr ""
+"Temperatura de bulbo húmedo, riesgo para la vida, alerta de tornado y "
+"pronóstico de 7 días para tu ciudad."
+
+#: app/meteo/indices.py:15 app/templates/partials/_forecast.html:90
 msgid "High pressure"
 msgstr "Alta presión"
 
@@ -36,7 +44,7 @@ msgstr "Alta presión"
 msgid "Stable weather, few clouds"
 msgstr "Tiempo estable, pocas nubes"
 
-#: app/meteo/indices.py:18 app/templates/partials/_forecast.html:85
+#: app/meteo/indices.py:18 app/templates/partials/_forecast.html:92
 msgid "Low pressure"
 msgstr "Baja presión"
 
@@ -44,7 +52,7 @@ msgstr "Baja presión"
 msgid "Unstable weather, clouds and rain likely"
 msgstr "Tiempo inestable, probables nubes y lluvia"
 
-#: app/meteo/indices.py:21 app/templates/partials/_forecast.html:84
+#: app/meteo/indices.py:21 app/templates/partials/_forecast.html:91
 msgid "Normal pressure"
 msgstr "Presión normal"
 
@@ -111,16 +119,16 @@ msgstr "Viento fuerte %(when)s (aviso del INMET: %(alert)s)"
 
 #: app/meteo/risk.py:177 app/meteo/risk.py:198
 msgid ""
-"Unhealthy heat even in the shade: if you are outdoors, go to a cool or air-"
-"conditioned place."
+"Unhealthy heat even in the shade: if you are outdoors, go to a cool or "
+"air-conditioned place."
 msgstr ""
-"Calor insalubre incluso a la sombra: si está al aire libre, busque un lugar "
-"fresco o con aire acondicionado."
+"Calor insalubre incluso a la sombra: si está al aire libre, busque un "
+"lugar fresco o con aire acondicionado."
 
 #: app/meteo/risk.py:178 app/meteo/risk.py:199
 msgid ""
-"If you are outdoors and in the sun, get out of the sun and look for shade or"
-" a cool place."
+"If you are outdoors and in the sun, get out of the sun and look for shade"
+" or a cool place."
 msgstr ""
 "Si está al aire libre y al sol, salga del sol y busque sombra o un lugar "
 "fresco."
@@ -150,8 +158,8 @@ msgid ""
 "This indicator does not replace alerts from the authorities and Civil "
 "Defense."
 msgstr ""
-"Este indicador no sustituye las alertas de las autoridades y de Protección "
-"Civil."
+"Este indicador no sustituye las alertas de las autoridades y de "
+"Protección Civil."
 
 #: app/meteo/risk.py:206 app/templates/partials/_risk.html:9
 msgid "Tornado"
@@ -162,14 +170,63 @@ msgstr "Tornado"
 msgid "Gusts up to %(value)s km/h"
 msgstr "Ráfagas de hasta %(value)s km/h"
 
+#: app/meteo/risk.py:209
+msgid "Tornado alert:"
+msgstr "Alerta de tornado:"
+
+#: app/meteo/risk.py:210
+msgid "Tornado watch:"
+msgstr "Vigilancia de tornado:"
+
+#: app/meteo/risk.py:211
+#, python-format
+msgid "high possibility of a tornado on %(day)s %(when)s."
+msgstr "posibilidad alta de tornado el %(day)s %(when)s."
+
+#: app/meteo/risk.py:212
+#, python-format
+msgid "moderate possibility of a tornado on %(day)s %(when)s."
+msgstr "posibilidad moderada de tornado el %(day)s %(when)s."
+
+#: app/meteo/risk.py:213
+msgid "No tornado potential in the next 7 days."
+msgstr "Sin potencial de tornado en los próximos 7 días."
+
+#: app/meteo/risk.py:214
+msgid ""
+"Estimated from instability (CAPE, lifted index) and wind shear forecast "
+"by Open-Meteo. It is not an official warning."
+msgstr ""
+"Estimado a partir de la inestabilidad (CAPE, índice de elevación) y la "
+"cizalladura del viento pronosticadas por Open-Meteo. No es un aviso "
+"oficial."
+
+#: app/meteo/risk.py:215
+msgid "Very low"
+msgstr "Muy bajo"
+
+#: app/meteo/risk.py:216
+msgid "Low"
+msgstr "Bajo"
+
+#: app/meteo/risk.py:217
+msgid "Moderate"
+msgstr "Moderado"
+
+#: app/meteo/risk.py:218
+msgid "High"
+msgstr "Alto"
+
+#: app/meteo/risk.py:219 app/templates/partials/_forecast.html:78
+msgid "Tornado potential"
+msgstr "Potencial de tornado"
+
 #: app/meteo/wetbulb.py:31
 msgid "Life risk! Seek an air-conditioned place immediately!"
-msgstr ""
-"¡Peligro de muerte! ¡Busque un lugar con aire acondicionado de inmediato!"
+msgstr "¡Peligro de muerte! ¡Busque un lugar con aire acondicionado de inmediato!"
 
 #: app/meteo/wetbulb.py:33
-msgid ""
-"Danger! Seek an air-conditioned place. Risk of life for sensitive people."
+msgid "Danger! Seek an air-conditioned place. Risk of life for sensitive people."
 msgstr ""
 "¡Peligro! Busque un lugar con aire acondicionado. Riesgo de muerte para "
 "personas sensibles."
@@ -299,29 +356,41 @@ msgstr "Tormenta con granizo fuerte"
 msgid "%(hour)s:00"
 msgstr "%(hour)s:00"
 
-#: app/templates/base.html:40
+#: app/templates/base.html:60
 msgid "Switch between light and dark theme"
 msgstr "Alternar entre tema claro y oscuro"
 
-#: app/templates/base.html:56
+#: app/templates/base.html:68 app/templates/offline.html:10
+msgid "No connection:"
+msgstr "Sin conexión:"
+
+#: app/templates/base.html:68
+msgid "the data shown may be out of date."
+msgstr "los datos en pantalla pueden estar desactualizados."
+
+#: app/templates/base.html:86
 msgid "Weather data:"
 msgstr "Datos meteorológicos:"
 
-#: app/templates/base.html:58
+#: app/templates/base.html:88
 msgid "Addresses:"
 msgstr "Direcciones:"
 
-#: app/templates/base.html:59
+#: app/templates/base.html:89
 msgid "Official alerts:"
 msgstr "Avisos oficiales:"
 
-#: app/templates/base.html:65
+#: app/templates/base.html:90
+msgid "Icons:"
+msgstr "Iconos:"
+
+#: app/templates/base.html:96
 msgid "We use cookies to ensure you get the best experience on our website."
 msgstr ""
 "Utilizamos cookies para garantizar que obtenga la mejor experiencia en "
 "nuestro sitio web."
 
-#: app/templates/base.html:66
+#: app/templates/base.html:97
 msgid "Accept"
 msgstr "Aceptar"
 
@@ -333,9 +402,29 @@ msgstr "Ciudad:"
 msgid "Enter city name"
 msgstr "Introduzca el nombre de la ciudad"
 
-#: app/templates/index.html:14
+#: app/templates/index.html:13
 msgid "Get Wet Bulb Temperature"
 msgstr "Obtener temperatura de bulbo húmedo"
+
+#: app/templates/offline.html:3
+msgid "No connection"
+msgstr "Sin conexión"
+
+#: app/templates/offline.html:10
+msgid ""
+"the forecast and the risk to life need current data, so WYW does not show"
+" old copies."
+msgstr ""
+"el pronóstico y el riesgo para la vida necesitan datos actuales, por eso "
+"WYW no muestra copias antiguas."
+
+#: app/templates/offline.html:11
+msgid "Connect to the internet and search again."
+msgstr "Conéctate a internet y busca de nuevo."
+
+#: app/templates/offline.html:13
+msgid "Try again"
+msgstr "Intentar de nuevo"
 
 #: app/templates/partials/_about.html:2
 msgid "What is Wet Bulb Temperature?"
@@ -343,15 +432,15 @@ msgstr "¿Qué es la temperatura de bulbo húmedo?"
 
 #: app/templates/partials/_about.html:3
 msgid ""
-"The wet bulb temperature is the temperature measured by a thermometer whose "
-"bulb (the sensitive part) is wrapped in a wet cloth. This temperature "
-"reflects the amount of moisture in the air, as the evaporation of water from"
-" the cloth cools the thermometer."
+"The wet bulb temperature is the temperature measured by a thermometer "
+"whose bulb (the sensitive part) is wrapped in a wet cloth. This "
+"temperature reflects the amount of moisture in the air, as the "
+"evaporation of water from the cloth cools the thermometer."
 msgstr ""
 "La temperatura de bulbo húmedo es la temperatura que se mide con un "
-"termómetro cuyo bulbo (la parte sensible) está envuelto en un paño húmedo. "
-"Esta temperatura refleja la cantidad de humedad en el aire, ya que la "
-"evaporación del agua del paño enfría el termómetro."
+"termómetro cuyo bulbo (la parte sensible) está envuelto en un paño "
+"húmedo. Esta temperatura refleja la cantidad de humedad en el aire, ya "
+"que la evaporación del agua del paño enfría el termómetro."
 
 #: app/templates/partials/_about.html:6
 msgid "What is its use?"
@@ -360,17 +449,18 @@ msgstr "¿Cual es su utilidad?"
 #: app/templates/partials/_about.html:7
 msgid ""
 "Wet bulb temperature is crucial for understanding thermal comfort in "
-"environments. When the relative humidity is high, the evaporation of sweat "
-"from the human body decreases, making the perceived temperature feel hotter."
-" In extreme cases, when the wet bulb temperature is too high, the body may "
-"struggle to cool down effectively, which can be dangerous."
+"environments. When the relative humidity is high, the evaporation of "
+"sweat from the human body decreases, making the perceived temperature "
+"feel hotter. In extreme cases, when the wet bulb temperature is too high,"
+" the body may struggle to cool down effectively, which can be dangerous."
 msgstr ""
 "La temperatura de bulbo húmedo es fundamental para comprender el confort "
-"térmico en los entornos. Cuando la humedad relativa es alta, la evaporación "
-"del sudor del cuerpo humano disminuye, lo que hace que la temperatura "
-"percibida se sienta más alta. En casos extremos, cuando la temperatura de "
-"bulbo húmedo es demasiado alta, el cuerpo puede tener dificultades para "
-"enfriarse de manera efectiva, lo que puede ser peligroso."
+"térmico en los entornos. Cuando la humedad relativa es alta, la "
+"evaporación del sudor del cuerpo humano disminuye, lo que hace que la "
+"temperatura percibida se sienta más alta. En casos extremos, cuando la "
+"temperatura de bulbo húmedo es demasiado alta, el cuerpo puede tener "
+"dificultades para enfriarse de manera efectiva, lo que puede ser "
+"peligroso."
 
 #: app/templates/partials/_about.html:11
 msgid "Reference"
@@ -394,36 +484,36 @@ msgstr ""
 msgid "Results for"
 msgstr "Resultados para"
 
-#: app/templates/partials/_current.html:14
+#: app/templates/partials/_current.html:17
 msgid "Now"
 msgstr "Ahora"
 
-#: app/templates/partials/_current.html:20
+#: app/templates/partials/_current.html:23
 msgid "Feels like"
 msgstr "Sensación"
 
-#: app/templates/partials/_current.html:31
+#: app/templates/partials/_current.html:34
 msgid "Wet Bulb Temperature:"
 msgstr "Temperatura de bulbo húmedo:"
 
-#: app/templates/partials/_current.html:36
+#: app/templates/partials/_current.html:39
 msgid "Relative humidity"
 msgstr "Humedad relativa"
 
-#: app/templates/partials/_current.html:38
+#: app/templates/partials/_current.html:41
 msgid "Dew point"
 msgstr "Punto de rocío"
 
-#: app/templates/partials/_current.html:42
-#: app/templates/partials/_forecast.html:50
+#: app/templates/partials/_current.html:45
+#: app/templates/partials/_forecast.html:51
 msgid "Pressure"
 msgstr "Presión"
 
-#: app/templates/partials/_current.html:48
+#: app/templates/partials/_current.html:51
 msgid "Wind"
 msgstr "Viento"
 
-#: app/templates/partials/_current.html:59
+#: app/templates/partials/_current.html:62
 msgid "INMET alert service is unavailable right now."
 msgstr "El servicio de avisos del INMET no está disponible en este momento."
 
@@ -435,27 +525,60 @@ msgstr "Pronóstico del tiempo para 7 días"
 msgid "Today"
 msgstr "Hoy"
 
-#: app/templates/partials/_forecast.html:21
-#: app/templates/partials/_forecast.html:45
+#: app/templates/partials/_forecast.html:22
+#: app/templates/partials/_forecast.html:46
 msgid "Rain"
 msgstr "Lluvia"
 
-#: app/templates/partials/_forecast.html:39
+#: app/templates/partials/_forecast.html:40
 msgid "Humidity"
 msgstr "Humedad"
 
-#: app/templates/partials/_forecast.html:60
+#: app/templates/partials/_forecast.html:61
 msgid "Max wind"
 msgstr "Viento máx."
 
-#: app/templates/partials/_forecast.html:66
+#: app/templates/partials/_forecast.html:67
 msgid "INMET alerts"
 msgstr "Avisos del INMET"
 
-#: app/templates/partials/_forecast.html:71
+#: app/templates/partials/_forecast.html:72
 msgid "Wet bulb max"
 msgstr "Bulbo húmedo máx."
 
-#: app/templates/partials/_forecast.html:86
+#: app/templates/partials/_forecast.html:93
 msgid "trend vs. previous day"
 msgstr "tendencia respecto al día anterior"
+
+#: app/templates/partials/_install.html:3
+msgid "Install the app"
+msgstr "Instala la app"
+
+#: app/templates/partials/_install.html:6
+msgid "Install WYW on your phone."
+msgstr "Instala WYW en tu teléfono."
+
+#: app/templates/partials/_install.html:7
+msgid ""
+"The Android app is not available yet: this web app opens from your home "
+"screen and works in full screen, like an app."
+msgstr ""
+"La app para Android todavía no está disponible: esta app web se abre "
+"desde la pantalla de inicio y ocupa toda la pantalla, como una app."
+
+#: app/templates/partials/_install.html:9
+msgid "In Safari, tap Share"
+msgstr "En Safari, toca Compartir"
+
+#: app/templates/partials/_install.html:10
+msgid "Choose “Add to Home Screen”"
+msgstr "Elige “Agregar a inicio”"
+
+#: app/templates/partials/_install.html:13
+msgid "Install app"
+msgstr "Instalar app"
+
+#: app/templates/partials/_install.html:14
+msgid "Not now"
+msgstr "Ahora no"
+

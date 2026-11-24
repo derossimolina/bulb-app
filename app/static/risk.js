@@ -50,6 +50,35 @@
         return 'low';
     }
 
+    var TORNADO_RANK = { very_low: 0, low: 1, moderate: 2, high: 3 };
+
+    /*
+     * Alerta de tornado dos próximos dias (SPEC.md 4.4): o maior potencial de cada dia local e o
+     * primeiro e o último horário (hora local) em que ele aparece, quando for moderado ou alto.
+     * h = bloco "hourly" do Open-Meteo (timeformat=unixtime, vento em m/s); offset = utc_offset_seconds;
+     * now = segundos Unix (horários já passados ficam de fora). Devolve [{date, level, start, end}].
+     */
+    function tornadoOutlook(h, offset, now) {
+        var days = {}, order = [];
+        (h && h.time || []).forEach(function (t, i) {
+            if (present(now) && t + 3600 <= now) return;
+            var at = function (name) { var s = h[name]; return s ? s[i] : null; };
+            var deep = bulkShear(at('wind_speed_10m'), at('wind_direction_10m'), at('wind_speed_500hPa'), at('wind_direction_500hPa'));
+            var low = bulkShear(at('wind_speed_10m'), at('wind_direction_10m'), at('wind_speed_850hPa'), at('wind_direction_850hPa'));
+            var level = tornadoPotential(at('cape'), at('lifted_index'), deep, low);
+            var local = new Date((t + (offset || 0)) * 1000);
+            var date = local.toISOString().slice(0, 10), hour = local.getUTCHours();
+            var day = days[date];
+            if (!day) { day = days[date] = { date: date, level: 'very_low', hours: [] }; order.push(date); }
+            if (TORNADO_RANK[level] > TORNADO_RANK[day.level]) { day.level = level; day.hours = []; }
+            if (level === day.level && TORNADO_RANK[level] >= TORNADO_RANK.moderate) day.hours.push(hour);
+        });
+        return order.map(function (key) {
+            var d = days[key], n = d.hours.length;
+            return { date: d.date, level: d.level, start: n ? d.hours[0] : null, end: n ? d.hours[n - 1] : null };
+        });
+    }
+
     function alertsOf(hour, events) {
         return (hour.alerts || []).filter(function (a) { return events.indexOf(normalize(a.event)) !== -1; });
     }
@@ -167,5 +196,6 @@
     }
 
     return { evaluate: evaluate, describe: describe, heatRecommendation: heatRecommendation,
-             wetBulb: wetBulb, bulkShear: bulkShear, tornadoPotential: tornadoPotential, normalize: normalize };
+             wetBulb: wetBulb, bulkShear: bulkShear, tornadoPotential: tornadoPotential, tornadoOutlook: tornadoOutlook,
+             normalize: normalize };
 });

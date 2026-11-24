@@ -123,6 +123,16 @@ decimais (~1 km). O servidor não guarda buscas; os logs de acesso podem conter 
   autoridades e da Defesa Civil.*"
 - **REQ-WEB-44 ✅** Se o navegador não conseguir os dados do Open-Meteo, o risco é calculado sem os indicadores
   de tornado e rajadas, e a faixa informa: "Indicador de tornado indisponível no momento".
+- **REQ-WEB-45 ✅ Alerta de tornado (7 dias).** Abaixo da faixa de risco, o site mostra o potencial de tornado
+  (4.4) dos próximos 7 dias, calculado no navegador com o Open-Meteo, por dia local. Com potencial **alto** em
+  algum dia: aviso "**Alerta de tornado:**" com contorno vermelho (`quente`) e ícones ! e de tornado; só
+  **moderado**: aviso "**Atenção para tornado:**" em `alerta`. Cada dia vira uma linha com o dia e o horário
+  ("possibilidade alta de tornado em qua., 25 de nov. entre 17:00 e 20:00."), mais a nota de método ("não é um
+  aviso oficial"). Sem potencial moderado ou alto, uma linha discreta: "Sem potencial de tornado nos próximos 7
+  dias". Sem Open-Meteo, o aviso não aparece (REQ-WEB-44 já informa). Função `tornadoOutlook` em `risk.js`.
+- **REQ-WEB-46 ✅ Tornado na previsão.** Dias com potencial moderado ou alto ganham o ícone de tornado na linha do
+  dia (amarelo ou vermelho, com rótulo acessível), e o painel do dia mostra o quadro "Potencial de tornado" com o
+  nível (Muito baixo, Baixo, Moderado, Alto) e o horário.
 
 ---
 
@@ -219,66 +229,60 @@ exemplo:
 
 ## 5. Design system (site e app)
 
-O site e o app seguem o design system **Contexto v8** (artefato "Contexto" no Claude,
-[claude.ai/artifact/6ThQ7KTG8djxUFBkF8zqPn](https://claude.ai/artifact/6ThQ7KTG8djxUFBkF8zqPn), revisão de
-02/11/2026), com temas **claro e escuro** (D-8, D-9). Os valores estão copiados aqui para o repositório não depender
-do artefato. Se o design system mudar, esta seção é atualizada primeiro.
+O site e o app seguem o **design system da J. de Rossi Molina, v4.1.0** (repositório
+[`derossimolina/design-system`](https://github.com/derossimolina/design-system), arquivo `DESIGN.md`), com a marca
+**jeronimo molina** (D-14). Os valores usados estão copiados em `app/static/style.css`; se o design system mudar,
+esta seção e o CSS são atualizados juntos.
 
 ### 5.1 Temas e cores
-- **REQ-DS-01 ✅ Temas claro e escuro.** O tema **escuro** é o "Padrão" do design system; o **claro** é derivado da
-  mesma paleta (D-9). Por padrão, segue a preferência do sistema; no site, um botão no cabeçalho alterna os temas e
-  a escolha fica salva no navegador.
+- **REQ-DS-01 🔄 Temas escuro e claro.** O **escuro** é a base; o **claro** é o reverso. Sem escolha salva, segue a
+  preferência do sistema; o botão do cabeçalho alterna e a escolha fica salva no navegador. Tokens (DESIGN.md 2.1):
 
-  | Papel | Escuro | Claro | Uso |
+  | Token | Escuro | Claro | Uso |
   |---|---|---|---|
-  | `fundo` | `ink` `#0f0e0d` | `ivory` `#fafaf9` | Fundo da página e dos cards |
-  | `faixa` | `g4` `#3a3835` | `marmore` `#ede6da` | Faixas: dia aberto, blocos internos, barra de navegação do app |
-  | `texto` | `ivory` | `ink` | Texto principal, nome WYW, valores (18,46:1) |
-  | `texto-apoio` | `g1` `#d6d4cf` | `g4` | Texto de apoio (13,02:1 · 11,19:1) |
-  | `texto-meta` | `g2` `#a6a39c` | `g3` `#6b6862` | Rótulos e metadados (7,66:1 · 5,32:1); no claro, nunca sobre `faixa` (4,48:1) |
-  | `borda` | `g3` | `g3` | Bordas de cards, campos e botões (3,47:1 · 5,32:1) |
-  | `filete` | `g4` | `hair` `#c8c5be` | Divisórias decorativas |
-  | `acento` | `ouro` `#c9964a` | `bronze` `#7a4a22` | Texto de destaque e item ativo (7,30:1 · 7,10:1) |
-  | `acento-filete` | `ouro` | `ouro` | Só filetes e barras decorativos (no claro, 2,53:1: nunca texto) |
+  | `fundo` | `#100C08` | `#F3F4F5` | Fundo da página e dos cartões |
+  | `tinta` | `#F3F4F5` | `#100C08` | Texto principal (17,7:1) |
+  | `texto-2` | `#DBE0E1` | `#3F4245` | Texto secundário |
+  | `texto-3` | `#9AA0A3` | `#5E6366` | Rótulos, legendas, fontes, contorno de campo |
+  | `linha` | `#2B2620` | `#DBE0E1` | Divisórias e bordas de cartão (só decorativo) |
+  | `acento` | `#FB5133` | `#C93414` | Botão primário, links, foco, item ativo (`acento-jeronimo`) |
+  | `erro` / `alerta` | `#FF6B8B` / `#FFD24D` | `#B0123F` / `#7A5200` | Erro (ícone X) e alerta (ícone !) |
 
-- **REQ-DS-05 ✅ Cores de risco (exceção semântica, D-6).** O design system proíbe vermelho e amarelo puro como cor
-  de marca. No WYW, eles são permitidos **apenas para comunicar risco**, nunca como decoração, iguais nos dois temas:
+- **REQ-DS-05 🔄 Azul e vermelho só em temperatura e alertas (D-15).** Exceção semântica ao design system:
 
-  | Token WYW | Valor | Uso | Contraste |
+  | Token | Escuro | Claro | Uso |
   |---|---|---|---|
-  | `risco-vida` | `#b3261e` | Fundo da faixa e da notificação "Risco à sua vida!" e do card de bulbo úmido no nível Extremo | `ivory` sobre ele: 6,26:1 |
-  | `alerta-icone` | `#f5c518` | Ícone de alerta sobre `risco-vida` | 4,01:1 (ícone, mínimo 3:1) |
-  | `atencao` | `#e8a64f` (= `ambar`) | Faixa "Atenção" e card de bulbo úmido no nível Alerta | `ink` sobre ele: 9,18:1 |
-  | `perigo` | `#7a4a22` (= `bronze`) | Card de bulbo úmido no nível Perigo | `ivory` sobre ele: 7,10:1 |
+  | `frio` | `#6FA8FF` | `#1F5FBF` | Mínima, chuva, medidor de umidade, início da barra de temperatura (8,0:1 · 5,5:1) |
+  | `quente` | `#FF5C5C` | `#C21F1F` | Máxima, fim da barra, bulbo úmido em Perigo, alerta de tornado alto (6,4:1 · 5,3:1) |
+  | `risco` | `#B3261E` | `#B3261E` | Fundo da faixa "Risco à sua vida!" e do cartão de bulbo úmido Extremo; texto `#F3F4F5` (6,0:1) e ícone amarelo `#FFD24D` (4,6:1) |
 
-  Bulbo úmido no nível Normal usa o card padrão, sem cor. `risco-vida` nunca aparece como texto, borda ou ícone
-  sobre `ink` (2,95:1, abaixo do mínimo de 3:1).
-- **REQ-DS-07 ✅ Gráficos.** A barra de temperatura dos dias usa gradiente `ardosia` `#5b6770` → `ambar` → `bronze`
-  (decorativo); medidores (umidade) usam `texto-meta`. Os selos de pressão são neutros (letra A, B ou ≈ na cor de
-  texto, borda `borda`): a letra carrega o significado, não a cor.
+  Bulbo úmido: Normal sem cor; Alerta com contorno e ícone `alerta`; Perigo com contorno de 2 px `quente`; Extremo
+  com fundo `risco`. A faixa "Atenção" é um aviso com contorno `alerta` e ícone !.
+- **REQ-DS-07 🔄 Gráficos.** A barra de temperatura dos dias vai de `frio` a `quente`; o medidor de umidade usa
+  `frio`. Os selos de pressão são neutros (A, B ou ≈ na cor do texto): a letra carrega o significado.
 
 ### 5.2 Tipografia
-- **REQ-DS-02 ✅** Fontes SIL OFL (no site, pelo Google Fonts; no app, embutidas):
-  - **EB Garamond SemiBold**: nome WYW, títulos de seção e de tela, em frase normal (não caixa alta).
-  - **Inter**: todo o resto (valores, rótulos, textos), com algarismos tabulares nos números.
-  - **Chapéu**: Inter 500, caixa alta, tracking 0,28em, para rótulos de card ("AGORA", "BULBO ÚMIDO").
+- **REQ-DS-02 🔄** Fontes SIL OFL pelo Google Fonts: **Manrope** 700 no nome WYW e nos números de destaque, 600 nos
+  títulos de seção; **Inter** 400 e 600 no corpo e na interface (botões e rótulos de campo em Inter 600);
+  **JetBrains Mono** 500 nos rótulos (caixa-alta, +0,06 em: "AGORA", "UMIDADE"), datas, dados e fontes.
 
-### 5.3 Forma e movimento
-- **REQ-DS-03 ✅** Cantos retos (0px) em cards, faixas, campos e botões; raio de 8px só em pílulas (etiquetas de
-  nível de aviso). Cards sem sombra: fundo `fundo` com borda de 1px `borda`. Margem lateral de 16px no celular.
-  As animações do site (resultados saindo de baixo da busca, acordeão) continuam, e todas respeitam
-  "reduzir movimento" do sistema.
+### 5.3 Forma, espaçamento e movimento
+- **REQ-DS-03 🔄** Raio único de 8 px em botões, campos, cartões e avisos; sem sombra; bordas de 1 px em `linha`.
+  Alvo de toque de 44 px. Margem lateral de 16 px no celular a 64 px em telas largas; a página ocupa toda a largura
+  e, a partir de 1200 px, condições atuais e previsão ficam lado a lado. Transições de até 400 ms com
+  `cubic-bezier(.2, 0, 0, 1)`, só opacidade e 4 px de deslocamento; cartões em cascata de 60 ms; botão carregando
+  com três pontos. Com "reduzir movimento", nada se move.
 
 ### 5.4 Nome e marcas
-- **REQ-DS-04 ✅** "WYW" escrito em texto (EB Garamond SemiBold, cor `texto`), sem logo. Abaixo, "Weather is your
-  Weather" no estilo chapéu, em `texto-meta`. Site e app não usam as marcas da Contexto (wordmark `contexto`, símbolo
-  `{c}`, tagline) nem as cores da derossi.dev; o crédito "derossi research" aparece em texto (rodapé do site, tela
-  Sobre do app).
+- **REQ-DS-04 🔄** "WYW" em texto (Manrope 700) ao lado do ícone do app, com "Weather is your Weather" como rótulo.
+  No rodapé, o lockup **jeronimo molina** (SVGs de `Marcas/` do design system, em `static/brand/`, versão do tema
+  escuro e do claro, com link para `jeronimo.caxias.br`), a razão social "J. de Rossi Molina Ltda" e as redes.
+  Contexto e DeRossi Inteligência não aparecem.
 
 ### 5.5 Ícones
-- **REQ-DS-06 ✅** Sem emoji na interface. No site, ícones do Font Awesome 6 (estilo sólido), na cor de texto do
-  tema; no app, ícones desenhados (REQ-APP-61). Exceções: os ícones oficiais dos avisos do INMET e as bandeiras de
-  idioma e de país, que são imagens.
+- **REQ-DS-06 🔄** Sem emoji na interface. Ícones **Lucide** (ISC) em contorno, traço de 2 px, 16 a 24 px, num sprite
+  local (`static/icons.svg`, gerado por `scripts/build_icons.js`) para funcionar também no app instalado. Exceções:
+  os ícones oficiais dos avisos do INMET e as bandeiras, que são imagens.
 
 ---
 
@@ -487,6 +491,9 @@ segurança automáticas com `unattended-upgrades`); configuração inicial de do
 | **D-12** | Idioma por domínio (Q-9) | `clima.derossi.dev` abre em português e `weather.derossi.dev` em inglês quando a pessoa não escolheu o idioma, com `hreflang` entre os dois (REQ-WEB-04). |
 
 | **D-13** | Monetização (10/11/2026) | Site continua grátis e ganha geolocalização. A receita vem da assinatura **WYW Alerta**, cobrada pelo Stripe: alertas de risco por e-mail, Telegram e notificação no celular (Web Push) para os locais salvos da pessoa. Exige login por e-mail, verificador periódico no servidor e a migração para o Lightsail (seção 12). |
+| **D-14** | Design system (24/11/2026) | O site passa do Contexto v8 para o design system da J. de Rossi Molina v4.1.0, marca jeronimo molina (seção 5). Substitui D-8 e D-9. |
+| **D-15** | Azul e vermelho (24/11/2026) | Liberados só quando se referem a temperatura ou alertas (`frio`, `quente`, `risco`). Substitui D-6 no site. |
+| **D-16** | App instalável (24/11/2026) | Até o app Android estar disponível, o site é instalável no celular (PWA, 12.3), sem guardar previsão offline. |
 
 ### Questões em aberto
 Cada uma traz uma proposta. Enquanto não houver resposta, a seção 12 foi escrita com a proposta.
@@ -553,9 +560,15 @@ WhatsApp, aviso de "risco encerrado", histórico de alertas na conta, outras moe
 
 ### 12.3 Site instalável e notificação no celular
 
-- **REQ-PWA-01 🆕** `manifest.webmanifest` (nome WYW, cores `ink` e `ivory`, ícone de REQ-APP-60 em 192 e 512 px e
-  versão mascarável) e um *service worker* em `/sw.js` que trata `push` e `notificationclick`. Sem cache offline de
-  previsão: dado de risco velho é pior que nenhum.
+- **REQ-PWA-01 🔄** `/manifest.webmanifest` (nome WYW, no idioma da página, fundo `#100C08`, ícone de REQ-APP-60 em
+  192 e 512 px e versão mascarável, gerados por `scripts/build_pwa_icons.py`) e um *service worker* em `/sw.js`.
+  **Feito (D-16):** instalação e página `/offline`; guarda só o visual (CSS, JS, ícones, logo, fontes) e a página
+  inicial. Sem cache offline de previsão: dado de risco velho é pior que nenhum. **Falta:** `push` e
+  `notificationclick` (REQ-PWA-02 e 03).
+- **REQ-PWA-04 ✅ Cartão "Instale o app".** Enquanto o app Android não sai, a página inicial mostra um aviso que
+  convida a instalar o app web: botão "Instalar app" no Android e no computador (pedido do navegador) e os passos
+  "Compartilhar → Adicionar à Tela de Início" no iPhone. Some no app instalado e depois de "Agora não". Sem conexão,
+  uma barra avisa que os dados na tela podem estar desatualizados.
 - **REQ-PWA-02 🆕** Web Push com chaves VAPID. A inscrição do aparelho é enviada ao servidor só por quem está logado.
   No iPhone, a página da conta explica que é preciso "Adicionar à Tela de Início" antes de ativar (iOS 16.4 ou mais
   novo).
